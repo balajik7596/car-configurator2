@@ -464,8 +464,6 @@ button.focus-view-button-btn {
   z-index: 1000; /* Ensure it is above other elements */
   background-color: rgba(255, 255, 255, 0.2);;
   padding-top: 15px;
-  margin-left: 5px;
-
 }
 
 .color-picker-container-new {
@@ -571,88 +569,44 @@ button.focus-view-button-btn {
   transform: scale(1.2); /* Slight enlargement for selected color */
 }
 
-@keyframes slideUp {
+
+
+
+
+@keyframes slideIn {
   0% {
-    transform: translateY(100%);
+    transform: translateY(-50%) translateX(-100%);
     opacity: 0;
   }
   100% {
-    transform: translateY(0);
+    transform: translateY(-50%) translateX(0);
     opacity: 1;
   }
 }
 
-@keyframes slideDown {
+@keyframes slideOut {
   0% {
-    transform: translateY(0);
+    transform: translateY(-50%) translateX(0);
     opacity: 1;
   }
   100% {
-    transform: translateY(100%);
+    transform: translateY(-50%) translateX(-100%);
     opacity: 0;
   }
 }
 
 .color-picker-container {
-  position: fixed;
-  left: 10px;
-  bottom: 60px; /* Slightly above the brush icon */
+  position: fixed; /* Fix to viewport */
+  left: 10px; /* Position on the left side */
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%) translateX(0); /* Default position */
   display: flex;
-  flex-direction: column-reverse; /* To slide buttons upwards */
+  flex-direction: column; /* Stack colors and icon vertically */
   align-items: center;
-  z-index: 1000;
-}
-
-.color-options {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  visibility: hidden;
-  opacity: 0;
-}
-
-.color-options.show {
-  visibility: visible;
-  animation: slideUp 0.5s ease forwards;
-}
-
-.color-options.hide {
-  animation: slideDown 0.5s ease forwards;
-}
-
-.color-circle {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  margin: 5px 0;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.color-circle.selected {
-  transform: scale(1.2); /* Highlight selected */
-}
-
-.tooltip {
-  position: relative;
-}
-
-.tooltiptext {
-  visibility: hidden;
-  position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: #fff;
-  padding: 5px;
-  border-radius: 5px;
-  white-space: nowrap;
-  font-size: 12px;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
+  z-index: 1000; /* Ensure it is above other elements */
+  background-color: rgba(255, 255, 255, 0.2);
+  padding-top: 15px;
+  animation: slideIn 0.5s ease forwards; /* Slide-in animation */
 }
 
 /* Other styles remain the same */
