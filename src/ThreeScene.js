@@ -1,5 +1,5 @@
 import React, { Suspense, useRef, useEffect ,useState} from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas,useFrame } from '@react-three/fiber';
 import { Perf } from 'r3f-perf'
 import { Environment, OrbitControls, useGLTF, useTexture } from '@react-three/drei';
 import { DirectionalLightHelper, ACESFilmicToneMapping } from 'three'; // Import from 'three'
@@ -14,6 +14,8 @@ function CarModel({color}) {
 
   // Define the roof meshes to exclude for specific colors
   const roofMeshes = ["shell_02779_2", "shell_03160", "Retopo_shell_03312", "shell_0106_14", "shell_0_02"];
+
+  const nonReflectiveMeshes = ['LicensePlate003','LicensePlate002','M_xogBPo001_Blackplane_Black','LicensePlate001','LicensePlate','shell_03361','shell_03173'];
 
   // Define default roof color (e.g., black)
   const defaultRoofColor = "#000000";
@@ -35,8 +37,7 @@ function CarModel({color}) {
     }
 
     // Exclude roof meshes for specific colors
-    if (
-      (color === "#efefef" || color === "#4489a7") && // Exact hex values for the black roof colors
+    if ((color === "#efefef" || color === "#4489a7") && // Exact hex values for the black roof colors
       roofMeshes.includes(child.name)
     ) {
       child.material.color.set(defaultRoofColor); // Reset to default roof color
@@ -45,10 +46,20 @@ function CarModel({color}) {
 
     // Apply color to the specified meshes
     if (colorableMeshes.includes(child.name)) {
-      console.log(child.material);
-      child.material.reflectivity = 0.5;
-
+      // console.log(child.material);
+      // child.material.reflectivity = 0.5;
       child.material.color.set(color);
+    }
+    if(roofMeshes.includes(child.name)&& !(color === "#efefef" || color === "#4489a7")){
+      child.material.roughness = 0.4;
+
+    }
+    if(nonReflectiveMeshes.includes(child.name)){
+      console.log("hit",child.name,child.material);
+      child.material.emmisive = new THREE.Color(0,0,0);
+      // child.material.color.set('black');
+      child.material.roughness = 1;
+
     }
 
   }
@@ -70,11 +81,27 @@ function CarShadow() {
   const texture = useTexture('/carshadow.webp'); // Replace with your actual .webp path
 
   return (
-    <mesh receiveShadow position={[1, -0.05, 0.5]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh receiveShadow scale={[1.2, 1.2, 1.2]} position={[1.30, -0.05, 0.65]} rotation={[-Math.PI / 2, 0, 0]}>
       {/* Plane Geometry with texture */}
       <planeGeometry args={[10, 10]} /> {/* Plane size: 10x10 */}
       <meshStandardMaterial map={texture} transparent = {true} opacity={0.8}/> {/* Apply the texture */}
     </mesh>
+  );
+}
+function RotatingEnvironment({ path, rotationValue = 0 }) {
+  const group = useRef();
+
+  // Apply the rotation to the group (for continuous or interactive rotation)
+  useFrame(() => {
+    if (group.current) {
+      group.current.rotation.y = rotationValue; // Set the rotation value for the Y-axis
+    }
+  });
+
+  return (
+    <group ref={group}>
+      <Environment files={path} background />
+    </group>
   );
 }
 
@@ -85,6 +112,7 @@ export default function ThreeScene() {
   const [selectedColor, setSelectedColor] = useState("#84a5b5");
   const [showColors, setShowColors] = useState(true);
   const [carColor, setCarColor] = useState("#4489a7");
+  const carRef = useRef();
 
 
   const colors = [
@@ -127,7 +155,7 @@ export default function ThreeScene() {
         camera={{ position: [-10, 15, 10], fov: 40 }}
         gl={{ antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.2,
+          toneMappingExposure: 1,
           // toneMapping: ACESFilmicToneMapping ,
          }} // Enable anti-aliasing
         // Set tone mapping to ACES Filmic
@@ -135,9 +163,9 @@ export default function ThreeScene() {
         {/* <Perf /> */}
         <Suspense fallback={null}>
           {/* Load HDR Environment */}
-          <Environment files="/studio_small.hdr" background />
+          <RotatingEnvironment path="/studio_small.hdr" rotationValue={90} />
           {/* Add the 3D Model */}
-          <CarModel color={carColor}/>
+          <CarModel ref={carRef} color={carColor}/>
           <SkyDome />
           <CarShadow/>
         </Suspense>
@@ -157,13 +185,28 @@ export default function ThreeScene() {
         <directionalLight
           // ref={lightRef} // Attach the reference to the light
           position={[5, 14.2, -7]} 
+          target={carRef.current}
           intensity={1}
           />
         <directionalLight
           ref={lightRef} // Attach the reference to the light
-          position={[5, 5, 15]} 
+          position={[0, 3, 10]} 
+          target={carRef.current}
           intensity={1}
-          />          
+          />   
+          //right left 
+          <directionalLight
+          // ref={lightRef} // Attach the reference to the light
+          position={[5, 5, 0]} 
+          target={carRef.current}
+          intensity={0.8}
+          />      
+          <directionalLight
+          // ref={lightRef} // Attach the reference to the light
+          position={[-5, 5, 0]} 
+          target={carRef.current}
+          intensity={4}
+          />      
       </Canvas>
       <div className={showColors ? "color-picker-container" : "color-picker-container-new"}>
           <div className="color-options-opened">
