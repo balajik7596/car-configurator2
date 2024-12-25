@@ -1,0 +1,658 @@
+/* .App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+} */
+
+
+
+
+/* Container for the viewer */
+/* .viewer-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.toggle-button {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.3s ease;
+}
+
+.toggle-button:hover {
+  background: #555;
+} */
+
+.viewer-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.bottom-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 10px 20px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.icon-button {
+  background: #f0f0f0;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-size: 20px;
+}
+
+.icon-button:hover {
+  background: #e0e0e0;
+}
+
+.icon-button i {
+  color: #333;
+  font-size: 24px;
+}
+
+
+
+
+/* Sidebar styling */
+.sidebar {
+  position: absolute;
+  top: 10%;
+  right: 20px;
+  width: 250px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  padding: 10px;
+}
+
+.sidebar-section {
+  margin-bottom: 10px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #f0f0f0;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.section-header:hover {
+  background: #e0e0e0;
+}
+
+.section-items {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+
+.section-items li {
+  padding: 5px 10px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.section-items li:last-child {
+  border-bottom: none;
+}
+
+.clickable-feature:hover {
+  background: #f0f0f0;
+}
+
+/* Feature Display */
+.feature-display {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  width: 300px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feature-display h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.feature-display p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Close Button */
+.close-button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-button:hover {
+  color: #f00;
+}
+
+.feature-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.remove-feature-button {
+  background: transparent;
+  border: none;
+  color: #333;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.remove-feature-button:hover {
+  color: #f00;
+}
+
+
+
+
+
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-spinner {
+  color: white;
+}
+
+
+
+
+
+.color-picker {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.color-checkbox {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.color-checkbox input {
+  display: none;
+}
+
+.color-box {
+  width: 30px;
+  height: 30px;
+  border: 2px solid white;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.color-checkbox input:checked + .color-box {
+  border: 2px solid black;
+}
+
+
+
+
+.animation-controls {
+  position: absolute;
+  right: 20px; /* Align to the left */
+  bottom: 20px; /* Position outside the bottom-bar */
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  gap: 10px; /* Add spacing between buttons */
+  z-index: 15;
+}
+
+.animation-controls button {
+  background: transparent; /* Transparent background */
+  border: 1px solid #ccc; /* Subtle border for visibility */
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  /* color: #333; */
+  color: white;
+  font-weight: bold;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.animation-controls button:hover {
+  background: rgba(255, 255, 255, 0.2); /* Highlight effect on hover */
+  color: #000;
+}
+
+.animation-controls button:active {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Bottom Bar Styling */
+.bottom-bar-container {
+  position: relative;
+}
+
+.bottom-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 10px 20px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+
+button.focus-view-button {
+  /* background-color: rgb(54, 53, 53); */
+  background-color: #fff;
+  color: #000;
+  cursor: pointer;
+}
+
+button.focus-view-button-btn {
+  background-color: rgb(54, 53, 53);
+  /* background-color: #fff; */
+  /* color: #000; */
+  color: #fff;
+  cursor: pointer;
+}
+
+
+.no-select {
+  user-select: none; /* Disable text selection */
+  /* pointer-events: none; Disable pointer events (clicks, hovers, etc.) */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  /* background-color: rgba(128, 128, 128, 0.8); */
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 10px; /* Add some padding for better readability */
+  position: absolute;
+  z-index: 1;
+  top: 50%; /* Center vertically */
+  left: 110%; /* Position to the right of the tooltip */
+  transform: translateY(-50%);
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%; /* Align with the tooltip */
+  transform: translateY(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent black transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
+
+
+
+
+
+.brush-icon {
+  /* margin-bottom: 10px; */
+}
+
+
+.tooltip {
+  position: relative;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  background-color: rgba(128, 128, 128, 0.8); /* Transparent gray */
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 110%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
+
+
+
+
+.color-picker-container {
+  position: fixed; /* Fix to viewport */
+  left: 10px; /* Position on the left side */
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Adjust for centering */
+  display: flex;
+  flex-direction: column; /* Stack colors and icon vertically */
+  align-items: center;
+  z-index: 1000; /* Ensure it is above other elements */
+  background-color: rgba(255, 255, 255, 0.2);;
+  padding-top: 15px;
+  margin-left: 5px;
+
+}
+
+.color-picker-container-new {
+  position: fixed; /* Fix to viewport */
+  left: 10px; /* Position on the left side */
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Adjust for centering */
+  display: flex;
+  flex-direction: column; /* Stack colors and icon vertically */
+  align-items: center;
+  z-index: 1000; /* Ensure it is above other elements */
+  background-color: transparent;
+  padding-top: 15px;
+  margin-left: 5px;
+}
+
+.color-options {
+  display: flex;
+  flex-direction: column; /* Display colors in a column */
+  align-items: center;
+  gap: 10px; /* Add spacing between color circles */
+  margin-bottom: 20px; /* Add space between colors and the brush icon */
+  transition: all 0.5s ease; /* Smooth transition */
+}
+
+.color-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%; /* Make it a circle */
+  cursor: pointer;
+  border: 2px solid #fff; /* Add a border for visibility */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Add a slight shadow */
+  transition: transform 0.2s ease; /* Smooth hover animation */
+}
+
+.color-circle:hover {
+  transform: scale(1.2); /* Enlarge on hover */
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  background-color: rgba(0, 0, 0, 0.7); /* Transparent gray background */
+  color: #fff;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 5px;
+  position: absolute;
+  top: 50%;
+  left: 110%; /* Place to the right of the color circle */
+  transform: translateY(-50%);
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.brush-icon {
+  cursor: pointer;
+  /* padding: 10px; */
+  background-color: #fff;
+  /* border-radius: 50%; */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.brush-icon:hover {
+  transform: scale(1.1); /* Slight enlargement on hover */
+}
+
+
+
+.color-circle.selected {
+  border: 2px solid #003469; /* Highlight with a gold border */
+  box-shadow: 0 0 10px #58a2ec; /* Add a glowing effect */
+  transform: scale(1.2); /* Slightly enlarge the selected color */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+}
+
+
+
+.color-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* Keep images circular */
+  border: 2px solid transparent; /* Default border */
+  cursor: pointer;
+  transition: transform 0.2s ease, border 0.2s ease;
+}
+
+.color-image:hover {
+  transform: scale(1.1); /* Slight enlargement on hover */
+}
+
+.color-image.selected {
+  border: 3px solid #ffcc00; /* Highlight selected color with gold border */
+  transform: scale(1.2); /* Slight enlargement for selected color */
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.color-picker-container {
+  position: fixed;
+  left: 10px;
+  bottom: 60px; /* Slightly above the brush icon */
+  display: flex;
+  flex-direction: column-reverse; /* To slide buttons upwards */
+  align-items: center;
+  z-index: 1000;
+}
+
+.color-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.color-options.show {
+  visibility: visible;
+  animation: slideUp 0.5s ease forwards;
+}
+
+.color-options.hide {
+  animation: slideDown 0.5s ease forwards;
+}
+
+.color-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin: 5px 0;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.color-circle.selected {
+  transform: scale(1.2); /* Highlight selected */
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+/* Other styles remain the same */
