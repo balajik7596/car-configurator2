@@ -131,7 +131,7 @@ export default function ThreeScene() {
   const carRef = useRef();
   const handleModelLoad = () => setModelLoaded(true);
   const { active, progress } = useProgress(); // Use progress from drei
-  const [maxDistance, setMaxDistance] = useState(11); // Default maxDistance
+  const [maxDistance, setMaxDistance] = useState(8); // Default maxDistance
 
 
   const colors = [
@@ -169,9 +169,9 @@ export default function ThreeScene() {
     const updateMaxDistance = () => {
       if (window.innerWidth <= 768) {
         // For tablets and smaller devices
-        setMaxDistance(18); // Assign a smaller maxDistance
+        setMaxDistance(12); // Assign a smaller maxDistance
       } else {
-        setMaxDistance(11); // Default value for larger screens
+        setMaxDistance(6); // Default value for larger screens
       }
     };
 
@@ -226,7 +226,7 @@ export default function ThreeScene() {
           enableRotate={true} 
           minPolarAngle={Math.PI / 4} // Limit looking up/down
           maxPolarAngle={Math.PI / 2.3} 
-          minDistance={6} // Minimum zoom distance
+          minDistance={4} // Minimum zoom distance
           maxDistance={maxDistance} // Maximum zoom distance
         />
         <ambientLight intensity={1} />
