@@ -341,25 +341,27 @@ html, body {
   margin-bottom: 20px; /* Add space between the colors and the brush icon */
 }
 .color-circle {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  position: relative;
   cursor: pointer;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s ease;
+  overflow: hidden; /* Ensures image fits within the circle */
 }
+
+.color-circle.selected {
+  border: 2px solid #000; /* Highlight selected color */
+}
+
+.color-image {
+  object-fit: cover; /* Ensures image fills the circle */
+}
+
 
 .color-circle:hover {
   transform: scale(1.2);
 }
 
-.color-circle.selected {
-  border: 2px solid #003469;
-  box-shadow: 0 0 10px #58a2ec;
-  transform: scale(1.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
 
 .brush-icon {
   cursor: pointer;
@@ -372,14 +374,7 @@ html, body {
   transform: scale(1.1);
 }
 
-.color-image {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: transform 0.2s ease, border 0.2s ease;
-}
+
 
 .color-image:hover {
   transform: scale(1.1);

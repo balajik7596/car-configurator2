@@ -12,10 +12,10 @@ function CarModel({color,onLoad}) {
     if (onLoad) onLoad();
   }, [onLoad]);
   // Define the meshes to apply the color to
-  const colorableMeshes = ["shell_0763_3", "shell_02365", "shell_02277", "shell_02161", "shell_0243_4", "shell_0267", "shell_02344", "shell_02162", "shell_02365", "shell_02277", "shell_03160", "shell_02779_2", "shell_02029_1", "shell_02161", "shell_0106_14", "shell_0_02", "Retopo_shell_03312"];
+  const colorableMeshes = ["shell_0763_3", "shell_02365", "shell_02277", "shell_02161", "shell_0243_4",'shell_02732_1', "shell_0267", "shell_02344", "shell_02162", "shell_02365", "shell_02277", "shell_03160", "shell_02779_2", "shell_02029_1", "shell_02161", "shell_0106_14", "shell_0_02", "Retopo_shell_03312"];
 
   // Define the roof meshes to exclude for specific colors
-  const roofMeshes = ["shell_02779_2", "shell_03160", "Retopo_shell_03312", "shell_0106_14", "shell_0_02"];
+  const roofMeshes = ["shell_02779_2", "shell_03160", "Retopo_shell_03312", "shell_0106_14", "shell_0_02",'shell_02732_1'];
 
   const nonReflectiveMeshes = ['LicensePlate003','LicensePlate002','M_xogBPo001_Blackplane_Black','LicensePlate001','LicensePlate','shell_03361','shell_03173','shell_0133_2','shell_0132_6','shell_02662'];
 
@@ -66,21 +66,21 @@ function CarModel({color,onLoad}) {
         child.material.envMapIntensity =0;
         child.material.lightMapIntensity =0;
       }
-      child.material.emmisive = new THREE.Color(0,0,0);
-      // child.material.lights = false;
-      child.material.specularColor = new THREE.Color(0,0,0);
-      child.material.specularIntensity = 0;
-      child.material.emmisiveIntensity = 0;
-      child.material.reflectivity = 0;
+      // child.material.emmisive = new THREE.Color(0,0,0);
+      // // child.material.lights = false;
+      // child.material.specularColor = new THREE.Color(0,0,0);
+      // child.material.specularIntensity = 0;
+      // child.material.emmisiveIntensity = 0;
+      // child.material.reflectivity = 0;
 
-      child.material.roughness = 1.0;
+      // child.material.roughness = 1.0;
 
     }
 
   }
   });
   return (
-    <group scale={[1.2, 1.2, 1.2]} position={[-1.30,0.03,0]}> {/* Scale up by 20% */}
+    <group scale={[1.2, 1.2, 1.2]} position={[0.3,0.03,-1.5]} rotation ={[0,-Math.PI/2,0]}>  {/* Scale up by 20% */}
       <primitive object={scene} />
     </group>
   );
@@ -96,10 +96,10 @@ function CarShadow() {
   const texture = useTexture('/carshadow.webp'); // Replace with your actual .webp path
 
   return (
-    <mesh scale={[0.8,0.8,0.8]} position={[0.2, 0, 0]} rotation={[-Math.PI / 2,0, Math.PI/2]}>
+    <mesh scale={[0.8,0.8,0.8]} position={[0.32, 0, 0]} rotation={[-Math.PI / 2,0, 0]}>
       {/* Plane Geometry with texture */}
       <planeGeometry args={[10, 10]} /> {/* Plane size: 10x10 */}
-      <meshStandardMaterial map={texture} transparent = {true} opacity={0.8}/> {/* Apply the texture */}
+      <meshStandardMaterial map={texture} transparent = {true} opacity={0.9}/> {/* Apply the texture */}
     </mesh>
   );
 }
@@ -134,17 +134,29 @@ export default function ThreeScene() {
   const [maxDistance, setMaxDistance] = useState(8); // Default maxDistance
 
 
+  // const colors = [
+  //   { id: "Abyss Black Pearl", hex: "#020202" },
+  //   { id: "Atlas White", hex: "#f0f0f0" },
+  //   { id: "Fiery Red Pearl", hex: "#782924" },//#930302
+  //   { id: "Starry Night", hex: "#0C2132" },//#3a496b
+  //   { id: "Frost Blue Metallic", hex: "#90aebc" },
+  //   { id: "Frost Blue Matte", hex: "#88aaba" },
+  //   { id: "Titan Grey Matte", hex: "#939393" },
+  //   { id: "Robust Emerald Matte", hex: "#132B27" },//#172f2b
+  //   { id: "Atlas White with black roof", hex: "#efefef" },
+  //   { id: "Frost Blue Metallic with black roof", hex: "#4489a7" },
+  // ];
   const colors = [
-    { id: "Abyss Black Pearl", hex: "#020202" },
-    { id: "Atlas White", hex: "#f0f0f0" },
-    { id: "Fiery Red Pearl", hex: "#782924" },//#930302
-    { id: "Starry Night", hex: "#0C2132" },//#3a496b
-    { id: "Frost Blue Metallic", hex: "#90aebc" },
-    { id: "Frost Blue Matte", hex: "#88aaba" },
-    { id: "Titan Grey Matte", hex: "#939393" },
-    { id: "Robust Emerald Matte", hex: "#132B27" },//#172f2b
-    { id: "Atlas White with black roof", hex: "#efefef" },
-    { id: "Frost Blue Metallic with black roof", hex: "#4489a7" },
+    { id: "Abyss Black Pearl", hex: "#020202", path: '/colors/Abyss Black Pearl.png' },
+    { id: "Atlas White", hex: "#f0f0f0", path: './colors/Atlas White.png' },
+    { id: "Fiery Red Pearl", hex: "#782924", path: './colors/Fiery Red Pearl.png' },//#930302
+    { id: "Starry Night", hex: "#0C2132", path: './colors/Starry Night.png' },//#3a496b
+    { id: "Frost Blue Metallic", hex: "#90aebc", path: './colors/Frost Blue Metallic.png' },
+    { id: "Frost Blue Matte", hex: "#88aaba", path: './colors/Frost Blue Matte.png' },
+    { id: "Titan Grey Matte", hex: "#939393", path: './colors/Titan Grey Matte.png' },
+    { id: "Robust Emerald Matte", hex: "#132B27", path: './colors/Robust Emerald Matte.png' },//#172f2b
+    { id: "Atlas White with black roof", hex: "#efefef", path: './colors/Atlas White with black roof.png' },
+    { id: "Frost Blue Metallic with black roof", hex: "#4489a7", path: '/colors/Frost Blue Metallic with black roof.png' },
   ];
   const handleColorChange = (hex) => {
     setCarColor(hex);
@@ -268,15 +280,24 @@ export default function ThreeScene() {
   {showColors && (
     <div className="color-options">
       {colors.map((color) => (
-        <div key={color.id} className="tooltip">
-          <div
-            className={`color-circle ${selectedColor === color.hex ? "selected" : ""}`}
-            style={{ backgroundColor: color.hex }}
-            onClick={() => handleColorChange(color.hex)}
-          ></div>
-          <span className="tooltiptext">{color.id}</span>
-        </div>
-      ))}
+  <div key={color.id} className="tooltip">
+    <div
+      className={`color-circle ${selectedColor === color.hex ? "selected" : ""}`}
+      style={{ backgroundColor: color.hex }}
+      onClick={() => handleColorChange(color.hex)}
+    >
+      {/* Add the image inside the color circle if needed */}
+      <img 
+        src={color.path} 
+        alt={color.id} 
+        className="color-image" 
+        style={{ display: selectedColor === color.hex ? "block" : "none", width: "100%", height: "100%" }}
+      />
+    </div>
+    <span className="tooltiptext">{color.id}</span>
+  </div>
+))}
+
     </div>
   )}
        </div>
