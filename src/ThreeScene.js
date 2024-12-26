@@ -6,9 +6,11 @@ import { DirectionalLightHelper, ACESFilmicToneMapping } from 'three'; // Import
 import * as THREE from 'three';
 import './app.css';
 
-function CarModel({color}) {
+function CarModel({color,onLoad}) {
   const { scene } = useGLTF('/main-car.glb');
-
+  useEffect(() => {
+    if (onLoad) onLoad();
+  }, [onLoad]);
   // Define the meshes to apply the color to
   const colorableMeshes = ["shell_0763_3", "shell_02365", "shell_02277", "shell_02161", "shell_0243_4", "shell_0267", "shell_02344", "shell_02162", "shell_02365", "shell_02277", "shell_03160", "shell_02779_2", "shell_02029_1", "shell_02161", "shell_0106_14", "shell_0_02", "Retopo_shell_03312"];
 
@@ -40,6 +42,8 @@ function CarModel({color}) {
     if ((color === "#efefef" || color === "#4489a7") && // Exact hex values for the black roof colors
       roofMeshes.includes(child.name)
     ) {
+      child.material.roughness = 0.4;
+      child.material.reflectivity = 0;
       child.material.color.set(defaultRoofColor); // Reset to default roof color
       return; // Skip applying the new color
     }
@@ -50,22 +54,33 @@ function CarModel({color}) {
       // child.material.reflectivity = 0.5;
       child.material.color.set(color);
     }
-    if(roofMeshes.includes(child.name)&& !(color === "#efefef" || color === "#4489a7")){
+    if(roofMeshes.includes(child.name)){//&& !(color === "#efefef" || color === "#4489a7")){
       child.material.roughness = 0.4;
-
+      child.material.reflectivity = 0;
     }
     if(nonReflectiveMeshes.includes(child.name)){
-      console.log("hit",child.name,child.material);
+      if(child.name.includes('LicensePlate')){
+        child.material.envMap =null;
+        child.material.envMapIntensity =0;
+        child.material.lightMapIntensity =0;
+      }
       child.material.emmisive = new THREE.Color(0,0,0);
-      // child.material.color.set('black');
-      child.material.roughness = 1;
+      // child.material.lights = false;
+      child.material.specularColor = new THREE.Color(0,0,0);
+      child.material.specularIntensity = 0;
+      child.material.emmisiveIntensity = 0;
+      child.material.reflectivity = 0;
+
+      child.material.roughness = 1.0;
+      console.log("hit",child.name,child.material);
+
 
     }
 
   }
   });
   return (
-    <group scale={[1.2, 1.2, 1.2]}> {/* Scale up by 20% */}
+    <group scale={[1.2, 1.2, 1.2]} position={[-1.30,0,-0.85]}> {/* Scale up by 20% */}
       <primitive object={scene} />
     </group>
   );
@@ -81,7 +96,7 @@ function CarShadow() {
   const texture = useTexture('/carshadow.webp'); // Replace with your actual .webp path
 
   return (
-    <mesh receiveShadow scale={[1.2, 1.2, 1.2]} position={[1.30, -0.05, 0.65]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh scale={[1.2, 1.2, 1.2]} position={[0, -0.05, -0.2]} rotation={[-Math.PI / 2, 0, 0]}>
       {/* Plane Geometry with texture */}
       <planeGeometry args={[10, 10]} /> {/* Plane size: 10x10 */}
       <meshStandardMaterial map={texture} transparent = {true} opacity={0.8}/> {/* Apply the texture */}
@@ -109,10 +124,12 @@ export default function ThreeScene() {
   const lightRef = useRef(); // Reference for the directional light
   const helperRef = useRef(); // Reference for the light helper
   const targetRef = useRef(); // Reference for the light target
-  const [selectedColor, setSelectedColor] = useState("#84a5b5");
+  const [selectedColor, setSelectedColor] = useState("#4489a7");
   const [showColors, setShowColors] = useState(true);
   const [carColor, setCarColor] = useState("#4489a7");
+  const [modelLoaded, setModelLoaded] = useState(false);
   const carRef = useRef();
+  const handleModelLoad = () => setModelLoaded(true);
 
 
   const colors = [
@@ -152,9 +169,9 @@ export default function ThreeScene() {
   return (
     <div className="viewer-container no-select" > {/* Full-screen canvas */}
       <Canvas
-        camera={{ position: [-10, 15, 10], fov: 40 }}
+        camera={{ position: [10, 10, -15], fov: 50 }}
         gl={{ antialias: true,
-          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMapping: THREE.CineonToneMapping,
           toneMappingExposure: 1,
           // toneMapping: ACESFilmicToneMapping ,
          }} // Enable anti-aliasing
@@ -165,7 +182,7 @@ export default function ThreeScene() {
           {/* Load HDR Environment */}
           <RotatingEnvironment path="/studio_small.hdr" rotationValue={90} />
           {/* Add the 3D Model */}
-          <CarModel ref={carRef} color={carColor}/>
+          <CarModel ref={carRef} color={carColor} onLoad={handleModelLoad}/>
           <SkyDome />
           <CarShadow/>
         </Suspense>
@@ -177,10 +194,15 @@ export default function ThreeScene() {
           minPolarAngle={Math.PI / 4} // Limit looking up/down
           maxPolarAngle={Math.PI / 2} 
           minDistance={6} // Minimum zoom distance
-          maxDistance={11} // Maximum zoom distance
+          maxDistance={21} // Maximum zoom distance
         />
         <ambientLight intensity={1} />
-        
+
+        <hemisphereLight
+            skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
+            groundColor={0x444444} // Color of the light from the ground (bottom hemisphere)
+            intensity={1} // Light intensity
+        />
         {/* Directional Light with Shadow Settings */}
         <directionalLight
           // ref={lightRef} // Attach the reference to the light
@@ -208,7 +230,7 @@ export default function ThreeScene() {
           intensity={4}
           />      
       </Canvas>
-      <div className={showColors ? "color-picker-container" : "color-picker-container-new"}>
+      {modelLoaded && (<div className={showColors ? "color-picker-container" : "color-picker-container-new"}>
           <div className="color-options-opened">
   {showColors && (
     <div className="color-options">
@@ -232,7 +254,7 @@ export default function ThreeScene() {
       style={{ width: "60px", cursor: "pointer" }}
     />
         </div>
-      </div>
+      </div>)}
     </div>
   );
 }
