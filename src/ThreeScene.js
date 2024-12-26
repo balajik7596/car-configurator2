@@ -50,13 +50,15 @@ function CarModel({color,onLoad}) {
 
     // Apply color to the specified meshes
     if (colorableMeshes.includes(child.name)) {
-      // console.log(child.material);
+      console.log(child.material.roughness);
+      if(color === '#132B27')
+        child.material.roughness = 0.3;
       // child.material.reflectivity = 0.5;
       child.material.color.set(color);
     }
     if(roofMeshes.includes(child.name)){//&& !(color === "#efefef" || color === "#4489a7")){
       child.material.roughness = 0.4;
-      child.material.reflectivity = 0;
+      // child.material.reflectivity = 0;
     }
     if(nonReflectiveMeshes.includes(child.name)){
       if(child.name.includes('LicensePlate')){
@@ -78,7 +80,7 @@ function CarModel({color,onLoad}) {
   }
   });
   return (
-    <group scale={[1.2, 1.2, 1.2]} position={[-1.30,0.03,-0.85]}> {/* Scale up by 20% */}
+    <group scale={[1.2, 1.2, 1.2]} position={[-1.30,0.03,0]}> {/* Scale up by 20% */}
       <primitive object={scene} />
     </group>
   );
@@ -94,7 +96,7 @@ function CarShadow() {
   const texture = useTexture('/carshadow.webp'); // Replace with your actual .webp path
 
   return (
-    <mesh scale={[1.2, 1.2, 1.2]} position={[0, -0.08, -0.2]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh scale={[0.8,0.8,0.8]} position={[0.2, 0, 0]} rotation={[-Math.PI / 2,0, Math.PI/2]}>
       {/* Plane Geometry with texture */}
       <planeGeometry args={[10, 10]} /> {/* Plane size: 10x10 */}
       <meshStandardMaterial map={texture} transparent = {true} opacity={0.8}/> {/* Apply the texture */}
@@ -135,12 +137,12 @@ export default function ThreeScene() {
   const colors = [
     { id: "Abyss Black Pearl", hex: "#020202" },
     { id: "Atlas White", hex: "#f0f0f0" },
-    { id: "Fiery Red Pearl", hex: "#930302" },
-    { id: "Starry Night", hex: "#3a496b" },
+    { id: "Fiery Red Pearl", hex: "#782924" },//#930302
+    { id: "Starry Night", hex: "#0C2132" },//#3a496b
     { id: "Frost Blue Metallic", hex: "#90aebc" },
     { id: "Frost Blue Matte", hex: "#88aaba" },
     { id: "Titan Grey Matte", hex: "#939393" },
-    { id: "Robust Emerald Matte", hex: "#2c3f1c" },
+    { id: "Robust Emerald Matte", hex: "#132B27" },//#172f2b
     { id: "Atlas White with black roof", hex: "#efefef" },
     { id: "Frost Blue Metallic with black roof", hex: "#4489a7" },
   ];
