@@ -18,6 +18,7 @@ html, body {
   align-items: center;
 }
 
+/* Banner */
 .brand-banner {
   position: absolute;
   top: 50%;  /* Initially center vertically */
@@ -58,13 +59,13 @@ html, body {
 
 @media (max-width: 768px) {
   .brand-logo {
-    width: 120px; /* Adjust width for smaller screens */
+    width: 200px; /* Adjust width for tablets */
   }
 }
 
 @media (max-width: 480px) {
   .brand-logo {
-    width: 100px; /* Adjust width for very small screens */
+    width: 150px; /* Adjust width for mobile phones */
   }
 }
 
@@ -73,7 +74,7 @@ html, body {
   position: absolute;
   top: calc(50% + 100px); /* Position below the banner */
   left: 50%;
-  transform: translateX(-55%);
+  transform: translateX(-50%);
   width: 80%; /* Full width of the bar */
   height: 8px;
   background-color: #e0e0e0; /* Light gray background */
@@ -87,6 +88,21 @@ html, body {
   width: 0; /* Start with 0 width */
   background-color: silver; /* Silver color */
   transition: width 0.2s ease; /* Smooth width transition */
+}
+
+@media (max-width: 768px) {
+  .loading-bar-container {
+    width: 90%; /* Make the progress bar narrower for smaller screens */
+    height: 6px; /* Reduce height for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-bar-container {
+    width: 90%; /* Full width on mobile */
+    height: 4px; /* Slimmer bar for very small screens */
+    top: calc(50% + 70px); /* Adjust position for smaller screens */
+  }
 }
 
 
