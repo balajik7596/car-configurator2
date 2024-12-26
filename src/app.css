@@ -18,6 +18,79 @@ html, body {
   align-items: center;
 }
 
+.brand-banner {
+  position: absolute;
+  top: 50%;  /* Initially center vertically */
+  left: 50%; /* Initially center horizontally */
+  transform: translate(-50%, -50%); /* Center the banner perfectly */
+  z-index: 100;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  opacity: 1; /* Fully visible initially */
+  transition: opacity 1s ease, transform 1s ease; /* Smooth transition for opacity and position */
+}
+
+.move-to-top-left {
+  animation: slideToTopLeft 1s ease forwards; /* Trigger animation */
+}
+
+@keyframes slideToTopLeft {
+  0% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Start from the center */
+    opacity: 1;
+  }
+  100% {
+    top: 20px; /* Move to the top with 20px margin */
+    left: 20px; /* Move to the left with 20px margin */
+    transform: translate(0, 0); /* Reset the transform */
+    opacity: 1;
+  }
+}
+
+.brand-logo {
+  width: 450px; /* Set a default width */
+  height: auto; /* Maintain aspect ratio */
+  max-width: 100%; /* Make it responsive */
+}
+
+@media (max-width: 768px) {
+  .brand-logo {
+    width: 120px; /* Adjust width for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-logo {
+    width: 100px; /* Adjust width for very small screens */
+  }
+}
+
+/* Loading Bar */
+.loading-bar-container {
+  position: absolute;
+  top: calc(50% + 100px); /* Position below the banner */
+  left: 50%;
+  transform: translateX(-55%);
+  width: 80%; /* Full width of the bar */
+  height: 8px;
+  background-color: #e0e0e0; /* Light gray background */
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 101;
+}
+
+.loading-bar {
+  height: 100%;
+  width: 0; /* Start with 0 width */
+  background-color: silver; /* Silver color */
+  transition: width 0.2s ease; /* Smooth width transition */
+}
+
+
+
 .bottom-bar {
   position: absolute;
   bottom: 20px;

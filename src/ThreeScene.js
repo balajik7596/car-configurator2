@@ -1,7 +1,7 @@
 import React, { Suspense, useRef, useEffect ,useState} from 'react';
 import { Canvas,useFrame } from '@react-three/fiber';
 import { Perf } from 'r3f-perf'
-import { Environment, OrbitControls, useGLTF, useTexture } from '@react-three/drei';
+import { Environment, OrbitControls, useGLTF, useTexture,useProgress } from '@react-three/drei';
 import { DirectionalLightHelper, ACESFilmicToneMapping } from 'three'; // Import from 'three'
 import * as THREE from 'three';
 import './app.css';
@@ -17,7 +17,7 @@ function CarModel({color,onLoad}) {
   // Define the roof meshes to exclude for specific colors
   const roofMeshes = ["shell_02779_2", "shell_03160", "Retopo_shell_03312", "shell_0106_14", "shell_0_02"];
 
-  const nonReflectiveMeshes = ['LicensePlate003','LicensePlate002','M_xogBPo001_Blackplane_Black','LicensePlate001','LicensePlate','shell_03361','shell_03173'];
+  const nonReflectiveMeshes = ['LicensePlate003','LicensePlate002','M_xogBPo001_Blackplane_Black','LicensePlate001','LicensePlate','shell_03361','shell_03173','shell_0133_2','shell_0132_6','shell_02662'];
 
   // Define default roof color (e.g., black)
   const defaultRoofColor = "#000000";
@@ -31,7 +31,7 @@ function CarModel({color,onLoad}) {
       
       child.material.emissive = new THREE.Color(1,0,0); 
     }else if(child.material.name.includes('BLACK GLASS')){
-      console.log(child.material.name);
+      // console.log(child.material.name);
       if(child.material.name === 'BLACK GLASS.003')
           child.material.opacity = 0.9;
       else
@@ -72,15 +72,13 @@ function CarModel({color,onLoad}) {
       child.material.reflectivity = 0;
 
       child.material.roughness = 1.0;
-      console.log("hit",child.name,child.material);
-
 
     }
 
   }
   });
   return (
-    <group scale={[1.2, 1.2, 1.2]} position={[-1.30,0,-0.85]}> {/* Scale up by 20% */}
+    <group scale={[1.2, 1.2, 1.2]} position={[-1.30,0.03,-0.85]}> {/* Scale up by 20% */}
       <primitive object={scene} />
     </group>
   );
@@ -96,7 +94,7 @@ function CarShadow() {
   const texture = useTexture('/carshadow.webp'); // Replace with your actual .webp path
 
   return (
-    <mesh scale={[1.2, 1.2, 1.2]} position={[0, -0.05, -0.2]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh scale={[1.2, 1.2, 1.2]} position={[0, -0.08, -0.2]} rotation={[-Math.PI / 2, 0, 0]}>
       {/* Plane Geometry with texture */}
       <planeGeometry args={[10, 10]} /> {/* Plane size: 10x10 */}
       <meshStandardMaterial map={texture} transparent = {true} opacity={0.8}/> {/* Apply the texture */}
@@ -130,6 +128,7 @@ export default function ThreeScene() {
   const [modelLoaded, setModelLoaded] = useState(false);
   const carRef = useRef();
   const handleModelLoad = () => setModelLoaded(true);
+  const { active, progress } = useProgress(); // Use progress from drei
 
 
   const colors = [
@@ -157,7 +156,7 @@ export default function ThreeScene() {
       // Add DirectionalLightHelper after light is added
       const helper = new DirectionalLightHelper(lightRef.current, 1); // 1 is the size of the helper
       helperRef.current = helper;
-      lightRef.current.parent.add(helper); // Add the helper to the light's parent
+      // lightRef.current.parent.add(helper); // Add the helper to the light's parent
     }
     
     if (lightRef.current && targetRef.current) {
@@ -168,8 +167,22 @@ export default function ThreeScene() {
 
   return (
     <div className="viewer-container no-select" > {/* Full-screen canvas */}
+    {/* Brand Banner */}
+    <div className={`brand-banner ${modelLoaded ? 'move-to-top-left' : ''}`}>
+      <img src="/banner.png" alt="Brand Logo" className="brand-logo" />
+    </div>
+    {/* Loading Bar */}
+    {!modelLoaded && (
+        <div className="loading-bar-container">
+          <div
+            className="loading-bar"
+            style={{ width: `${progress}%` }} // Update width based on progress
+          ></div>
+        </div>
+      )}
+
       <Canvas
-        camera={{ position: [10, 10, -15], fov: 50 }}
+        camera={{ position: [-9, 6, -15], fov: 50 }}
         gl={{ antialias: true,
           toneMapping: THREE.CineonToneMapping,
           toneMappingExposure: 1,
@@ -192,9 +205,9 @@ export default function ThreeScene() {
           enableZoom={true} 
           enableRotate={true} 
           minPolarAngle={Math.PI / 4} // Limit looking up/down
-          maxPolarAngle={Math.PI / 2} 
+          maxPolarAngle={Math.PI / 2.3} 
           minDistance={6} // Minimum zoom distance
-          maxDistance={21} // Maximum zoom distance
+          maxDistance={11} // Maximum zoom distance
         />
         <ambientLight intensity={1} />
 
@@ -211,7 +224,7 @@ export default function ThreeScene() {
           intensity={1}
           />
         <directionalLight
-          ref={lightRef} // Attach the reference to the light
+          // ref={lightRef} // Attach the reference to the light
           position={[0, 3, 10]} 
           target={carRef.current}
           intensity={1}
