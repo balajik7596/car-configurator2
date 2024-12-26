@@ -39,7 +39,6 @@ function CarModel({ color, onLoad }) {
     "Retopo_shell_03312",
     "Retopo_shell_0021",
     "Retopo_shell_0017",
-    "shell_02358",
   ];
 
   // Define the roof meshes to exclude for specific colors
@@ -64,7 +63,7 @@ function CarModel({ color, onLoad }) {
     "shell_0132_6",
     "shell_02662",
   ];
-
+  const backGlass = ["Retopo_shell_0016"];
   // Define default roof color (e.g., black)
   const defaultRoofColor = "#000000";
 
@@ -122,6 +121,12 @@ function CarModel({ color, onLoad }) {
         // child.material.reflectivity = 0;
 
         // child.material.roughness = 1.0;
+      }
+      // if (backGlass.includes(child.name)) {
+      //   child.material.opacity = 0.4;
+      // }
+      if (child.name.includes("shell_02358")) {
+        child.material.color.set("#aaaaaa");
       }
     }
   });
