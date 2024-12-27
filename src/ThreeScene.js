@@ -106,6 +106,7 @@ function CarModel({ color, onLoad }) {
   const backGlass = ["Retopo_shell_0016"];
   // Define default roof color (e.g., black)
   const defaultRoofColor = "#000000";
+  const l_side = ['R-Sheel-Back', 'R-Door-01', 'R-Door-02', 'R-Front-Blue', 'Handle-R-02', 'Handle-R-01'];
 
   scene.traverse((child) => {
     if (child.isMesh) {
@@ -181,12 +182,15 @@ function CarModel({ color, onLoad }) {
       if (child.name === "running_surface001") {
         // child.material.color.set("#3D3D3D");
       }
+      if(l_side.includes(child.name)){
+        child.material.color.set("#EBF9FF");
+      }
     }
   });
   return (
     <group
       scale={[1.2, 1.2, 1.2]}
-      position={[0, 0.03, 0]}
+      position={[0, 0.03, -1.5]}
       rotation={[0,3*Math.PI/2  , 0]}
     >
       {" "}
@@ -214,7 +218,7 @@ function CarShadow() {
     <mesh
       scale={[0.8, 0.8, 0.8]}
       position={[0, 0, 0]}
-      rotation={[-Math.PI / 2,0, Math.PI/2]}
+      rotation={[Math.PI/2,0,0]}
     >
       {/* Plane Geometry with texture */}
       <planeGeometry args={[10, 10]} /> {/* Plane size: 10x10 */}
@@ -389,7 +393,7 @@ export default function ThreeScene() {
         </div>
       )}
       <Canvas
-        camera={{ position: [-10, 3.5, 4], fov: 50 }}
+        camera={{ position: [-5, 3, -8], fov: 50 }}
         gl={{
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
@@ -409,19 +413,19 @@ export default function ThreeScene() {
           {/* Add the 3D Model */}
           <CarModel ref={carRef} color={carColor} onLoad={handleModelLoad} />
           <SkyDome />
-          {/* <CarShadow /> */}
+          <CarShadow />
         </Suspense>
         {/* Add Camera Controls */}
         <OrbitControls
           enablePan={false}
           enableZoom={true}
           enableRotate={true}
-          minPolarAngle={Math.PI / 4} // Limit looking up/down
+          minPolarAngle={Math.PI / 5} // Limit looking up/down
           maxPolarAngle={Math.PI / 2.3}
           minDistance={5} // Minimum zoom distance
           maxDistance={maxDistance} // Maximum zoom distance
         ></OrbitControls>
-        <ambientLight intensity={2} color={"#F0FDFF"} />
+        <ambientLight intensity={2} color="#E0F3FF" />
         {/* <pointLight position={[20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[-20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[0, 5, -5]} intensity={300}></pointLight>
