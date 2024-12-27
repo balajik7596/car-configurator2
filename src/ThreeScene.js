@@ -48,7 +48,9 @@ function CarModel({ color, onLoad }) {
     // "shell_0.3160_0",
     // "shell_0.395",
   ];
-
+  // const colorableMeshes = ['shell_0291','shell_0302','shell_0288','shell_0293','shell_0295','shell_0289','shell_0274','shell_0301','shell_0301','shell_0292','shell_0290','shell_0299','shell_0297','shell_0287'];
+  const colorableMat = ['CAR_PAINT_BODY-01'
+  ];
   // // Define the roof meshes to exclude for specific colors
   // const roofMeshes = [
   //   "shell_02779_2",
@@ -145,6 +147,9 @@ function CarModel({ color, onLoad }) {
         // child.material.roughness = 0.5;
         child.material.color.set(color);
       }
+      // if(colorableMat.includes(child.material.name)){
+      //   child.material.color.set(color);
+      // }
       if (roofMeshes.includes(child.name)) {
         //&& !(color === "#efefef" || color === "#bbe9ff")){
         // child.material.roughness = 0.4;
@@ -179,8 +184,8 @@ function CarModel({ color, onLoad }) {
   return (
     <group
       scale={[1.2, 1.2, 1.2]}
-      position={[0.3, 0.03, -1.5]}
-      rotation={[0, -Math.PI / 2, 0]}
+      position={[-1.5, 0.03, 0]}
+      // rotation={[0, -Math.PI / 2, 0]}
     >
       {" "}
       {/* Scale up by 20% */}
@@ -201,8 +206,8 @@ function CarShadow() {
   return (
     <mesh
       scale={[0.8, 0.8, 0.8]}
-      position={[0.32, 0, 0]}
-      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, 0, 0]}
+      rotation={[-Math.PI / 2,0, Math.PI/2]}
     >
       {/* Plane Geometry with texture */}
       <planeGeometry args={[10, 10]} /> {/* Plane size: 10x10 */}
@@ -319,7 +324,7 @@ export default function ThreeScene() {
         // For tablets and smaller devices
         setMaxDistance(12); // Assign a smaller maxDistance
       } else {
-        setMaxDistance(6); // Default value for larger screens
+        setMaxDistance(7); // Default value for larger screens
       }
     };
 
@@ -337,6 +342,32 @@ export default function ThreeScene() {
     <div className="viewer-container no-select">
       {" "}
       {/* Full-screen canvas */}
+      {modelLoaded && (
+    <div className="bottom-banner-container">
+      <div className="bottom-banner">
+      <div className="banner-image">
+          <img src="/Functions.png" alt="Functions Banner" />
+        </div>  
+        <div className="button-list">
+          <button className="function-button">
+            <img src="/Light Indicator.png" alt="Icon 1" />
+          </button>
+          {/* <button className="function-button">
+            <img src="/path-to-icon2.png" alt="Icon 2" />
+          </button>
+          <button className="function-button">
+            <img src="/path-to-icon3.png" alt="Icon 3" />
+          </button>
+          <button className="function-button">
+            <img src="/path-to-icon4.png" alt="Icon 4" />
+          </button>
+          <button className="function-button">
+            <img src="/path-to-icon5.png" alt="Icon 5" />
+          </button> */}
+        </div>
+      </div>
+    </div>
+  )}
       {/* Brand Banner */}
       <div className={`brand-banner ${modelLoaded ? "move-to-top-left" : ""}`}>
         <img src="/banner.png" alt="Brand Logo" className="brand-logo" />
@@ -351,14 +382,18 @@ export default function ThreeScene() {
         </div>
       )}
       <Canvas
-        camera={{ position: [-9, 6, -15], fov: 50 }}
+        camera={{ position: [-10, 3.5, 4], fov: 50 }}
         gl={{
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.2,
           // toneMapping: ACESFilmicToneMapping ,
-        }} // Enable anti-aliasing
-        // Set tone mapping to ACES Filmic
+        }}
+        onCreated={({ gl, camera }) => {
+          gl.physicallyCorrectLights = true;
+          gl.outputEncoding = THREE.SRGBColorSpace;
+          
+        }}
       >
         {/* <Perf /> */}
         <Suspense fallback={null}>
@@ -376,7 +411,7 @@ export default function ThreeScene() {
           enableRotate={true}
           minPolarAngle={Math.PI / 4} // Limit looking up/down
           maxPolarAngle={Math.PI / 2.3}
-          minDistance={4} // Minimum zoom distance
+          minDistance={5} // Minimum zoom distance
           maxDistance={maxDistance} // Maximum zoom distance
         ></OrbitControls>
         <ambientLight intensity={2} color={0xaaaaaa} />
@@ -388,7 +423,7 @@ export default function ThreeScene() {
           skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
           groundColor={0x444444} // Color of the light from the ground (bottom hemisphere)
           intensity={2}
-          position={[0,10,11]} // Light intensity
+          position={[0,10,0]} // Light intensity
         />
 
         {/* Directional Light with Shadow Settings */}

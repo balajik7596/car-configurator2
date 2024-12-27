@@ -18,6 +18,55 @@ html, body {
   align-items: center;
 }
 
+
+.bottom-banner-container {
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10; /* Ensures the banner appears above other elements */
+}
+
+.bottom-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.banner-image img {
+  width: 150px; /* Adjust the width as needed */
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 1px;
+}
+
+.button-list {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Adds spacing between buttons */
+}
+
+.function-button {
+  background: none;
+  border: none;
+  padding: 0px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.function-button img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.function-button:hover {
+  transform: scale(1.1); /* Slight zoom effect on hover */
+}
+
 /* Banner */
 .brand-banner {
   position: absolute;
@@ -309,16 +358,17 @@ html, body {
   z-index: 1000; /* Ensure it is above other elements */
   background-color: transparent;
   padding-top: 15px;
-  margin-left: 5px;
+  margin-left: 20px;
   animation: slideOut 0.5s ease forwards;
 
 }
 @keyframes slideIn {
   0% {
     transform: translateY(-50%) translateX(-0%);
-    opacity: 0;
+    opacity: 1;
   }
   100% {
+    left: 20px;
     transform: translateY(-50%) translateX(0);
     opacity: 1;
   }
