@@ -21,33 +21,34 @@ function CarModel({ color, onLoad }) {
     if (onLoad) onLoad();
   }, [onLoad]);
   // Define the meshes to apply the color to
-  const colorableMeshes = [
-    "shell_0763_3",
-    "shell_02365",
-    "shell_02277",
-    "shell_02161",
-    "shell_0243_4",
-    // "shell_02732_1",
-    "shell_0267",
-    "shell_02344",
-    "shell_02162",
-    "shell_02365",
-    "shell_02277",
-    // "shell_03160",
-    "shell_02779_2",
-    "shell_02029_1",
-    "shell_02161",
-    "shell_0106_14",
-    "shell_0_02",
-    "Retopo_shell_03312",
-    // "Retopo_shell_0021",//mirroe
-    // "Retopo_shell_0017",
-    // "shell_02732_1",
-    // "shell_02733",
-    // "shell_02733_1",
-    // "shell_0.3160_0",
-    // "shell_0.395",
-  ];
+  // const colorableMeshes = [
+  //   "shell_0763_3",
+  //   "shell_02365",
+  //   "shell_02277",
+  //   "shell_02161",
+  //   "shell_0243_4",
+  //   // "shell_02732_1",
+  //   "shell_0267",
+  //   "shell_02344",
+  //   "shell_02162",
+  //   "shell_02365",
+  //   "shell_02277",
+  //   // "shell_03160",
+  //   "shell_02779_2",
+  //   "shell_02029_1",
+  //   "shell_02161",
+  //   "shell_0106_14",
+  //   "shell_0_02",
+  //   "Retopo_shell_03312",
+  //   // "Retopo_shell_0021",//mirroe
+  //   // "Retopo_shell_0017",
+  //   // "shell_02732_1",
+  //   // "shell_02733",
+  //   // "shell_02733_1",
+  //   // "shell_0.3160_0",
+  //   // "shell_0.395",
+  // ];
+  const colorableMeshes =['L-Front-Blue', 'R-Front-Blue', 'Hood', 'Blue-Front', 'Back-Blue-Hatch-01', 'Back-Blue-hatch', 'L-Sheel-Back', 'R-Sheel-Back', 'R-Door-02', 'R-Door-01', 'L-Door-01', 'L-Door-02', 'Handle-L-01', 'Handle-L-02', 'Handle-R-02', 'Handle-R-01'];
   // const colorableMeshes = ['shell_0291','shell_0302','shell_0288','shell_0293','shell_0295','shell_0289','shell_0274','shell_0301','shell_0301','shell_0292','shell_0290','shell_0299','shell_0297','shell_0287'];
   const colorableMat = ['CAR_PAINT_BODY-01'
   ];
@@ -108,6 +109,7 @@ function CarModel({ color, onLoad }) {
 
   scene.traverse((child) => {
     if (child.isMesh) {
+      // child.material.envMapIntensity =4;
       if (
         child.material.isMeshPhysicalMaterial &&
         child.material.name.includes("RedClr")
@@ -130,7 +132,7 @@ function CarModel({ color, onLoad }) {
 
       // Exclude roof meshes for specific colors
       if (
-        (color === "#efefef" || color === "#F0FDFF") && // Exact hex values for the black roof colors
+        (color === "#efefef" || color === "#FFFFFF") && // Exact hex values for the black roof colors
         roofMeshes.includes(child.name)
       ) {
         // child.material.roughness = 0.4;
@@ -145,7 +147,7 @@ function CarModel({ color, onLoad }) {
         // if (color === "#132B27") child.material.roughness = 0.3;
         // child.material.reflectivity = 0.1;
         // child.material.roughness = 0.5;
-        child.material.color.set(color);
+        // child.material.color.set(color);
       }
       // if(colorableMat.includes(child.material.name)){
       //   child.material.color.set(color);
@@ -184,8 +186,8 @@ function CarModel({ color, onLoad }) {
   return (
     <group
       scale={[1.2, 1.2, 1.2]}
-      position={[-1.5, 0.03, 0]}
-      // rotation={[0, -Math.PI / 2, 0]}
+      position={[0, 0.03, 0]}
+      rotation={[0,3*Math.PI/2  , 0]}
     >
       {" "}
       {/* Scale up by 20% */}
@@ -196,7 +198,12 @@ function CarModel({ color, onLoad }) {
 
 function SkyDome() {
   const { scene } = useGLTF("/skydome.glb"); // Replace with the path to your GLB file
-  return <primitive object={scene} />;
+  return (
+    <group
+    rotation={[0, 3*Math.PI/2 , 0]}
+  >
+    <primitive object={scene} />
+    </group>);
 }
 
 function CarShadow() {
@@ -224,8 +231,8 @@ function RotatingEnvironment({ path, rotationValue = 180 }) {
   const group = useRef();
 
   return (
-    <group ref={group} rotation={[0, 100, 0]}>
-      <Environment files={path} background rotation={[0,Math.PI/2,0]} />
+    <group ref={group} >
+      <Environment files={path} background />
     </group>
   );
 }
@@ -236,7 +243,7 @@ export default function ThreeScene() {
   const targetRef = useRef(); // Reference for the light target
   const [selectedColor, setSelectedColor] = useState("#bbe9ff"); // 71b1cf
   const [showColors, setShowColors] = useState(true);
-  const [carColor, setCarColor] = useState("#F0FDFF");
+  const [carColor, setCarColor] = useState("#FFFFFF");
   const [modelLoaded, setModelLoaded] = useState(false);
   const carRef = useRef();
   const handleModelLoad = () => setModelLoaded(true);
@@ -295,7 +302,7 @@ export default function ThreeScene() {
     },
     {
       id: "Frost Blue Metallic with black roof",
-      hex: "#F0FDFF",
+      hex: "#FFFFFF",
       path: "/colors/Frost Blue Metallic with black roof.png",
     },
   ];
@@ -386,14 +393,14 @@ export default function ThreeScene() {
         gl={{
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.2,
+          toneMappingExposure: 1.0,
           // toneMapping: ACESFilmicToneMapping ,
         }}
-        onCreated={({ gl, camera }) => {
-          gl.physicallyCorrectLights = true;
-          gl.outputEncoding = THREE.SRGBColorSpace;
+        // onCreated={({ gl, camera }) => {
+        //   gl.physicallyCorrectLights = true;
+        //   gl.outputEncoding = THREE.SRGBColorSpace;
           
-        }}
+        // }}
       >
         {/* <Perf /> */}
         <Suspense fallback={null}>
@@ -402,7 +409,7 @@ export default function ThreeScene() {
           {/* Add the 3D Model */}
           <CarModel ref={carRef} color={carColor} onLoad={handleModelLoad} />
           <SkyDome />
-          <CarShadow />
+          {/* <CarShadow /> */}
         </Suspense>
         {/* Add Camera Controls */}
         <OrbitControls
@@ -414,18 +421,25 @@ export default function ThreeScene() {
           minDistance={5} // Minimum zoom distance
           maxDistance={maxDistance} // Maximum zoom distance
         ></OrbitControls>
-        <ambientLight intensity={2} color={0xaaaaaa} />
+        <ambientLight intensity={2} color={"#F0FDFF"} />
         {/* <pointLight position={[20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[-20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[0, 5, -5]} intensity={300}></pointLight>
         <pointLight position={[0, 5, 5]} intensity={300}></pointLight> */}
         <hemisphereLight
-          skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
-          groundColor={0x444444} // Color of the light from the ground (bottom hemisphere)
-          intensity={2}
-          position={[0,10,0]} // Light intensity
+          skyColor={0x016898} // Color of the light from the sky (top hemisphere)
+          groundColor={0x000000} // Color of the light from the ground (bottom hemisphere)
+          intensity={0.5}
+          rotation={[0,0,0]}
+          position={[0,5,12]} // Light intensity
         />
-
+        <hemisphereLight
+          skyColor={0x005075} // Color of the light from the sky (top hemisphere)
+          groundColor={0x000000} // Color of the light from the ground (bottom hemisphere)
+          intensity={0.5}
+          rotation={[0,0,0]}
+          position={[0,5,-12]} // Light intensity
+        />
         {/* Directional Light with Shadow Settings */}
         {/* <directionalLight
           // ref={lightRef} // Attach the reference to the light
