@@ -11,8 +11,11 @@ import {
 import { DirectionalLightHelper, ACESFilmicToneMapping } from "three"; // Import from 'three'
 import * as THREE from "three";
 import "./app.css";
-
+// import { useLoader } from "@react-three/fiber";
+// import { RGBELoader } from "three-stdlib";
 function CarModel({ color, onLoad }) {
+  // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
+
   const { scene } = useGLTF("/main-car.glb");
   useEffect(() => {
     if (onLoad) onLoad();
@@ -24,7 +27,7 @@ function CarModel({ color, onLoad }) {
     "shell_02277",
     "shell_02161",
     "shell_0243_4",
-    "shell_02732_1",
+    // "shell_02732_1",
     "shell_0267",
     "shell_02344",
     "shell_02162",
@@ -53,6 +56,7 @@ function CarModel({ color, onLoad }) {
     "Retopo_shell_03312",
     "shell_0106_14",
     "shell_0_02",
+    'shell_02732_1'
     // "shell_02732_1",
   ];
 
@@ -82,40 +86,45 @@ function CarModel({ color, onLoad }) {
         // console.log(child.material.name,child.material.color);
 
         child.material.emissive = new THREE.Color(1, 0, 0);
-      } else if (child.material.name.includes("BLACK GLASS")) {
-        // console.log(child.material.name);
+      } 
+      else if (child.material.name.includes("BLACK GLASS")) {
+        // child.material.envMap = hdrEquirect;
+        // console.log(child.material );
+        
         if (child.material.name === "BLACK GLASS.003")
           child.material.opacity = 0.9;
         else child.material.opacity = 0.8;
+        // child.needsUpdate = true; // Required after updating material properties
+
       }
 
       // Exclude roof meshes for specific colors
       if (
-        (color === "#efefef" || color === "#bbe9ff") && // Exact hex values for the black roof colors
+        (color === "#efefef" || color === "#F0FDFF") && // Exact hex values for the black roof colors
         roofMeshes.includes(child.name)
       ) {
-        child.material.roughness = 0.4;
-        child.material.reflectivity = 0;
-        child.material.color.set(defaultRoofColor); // Reset to default roof color
+        // child.material.roughness = 0.4;
+        // child.material.reflectivity = 0;
+        // child.material.color.set(defaultRoofColor); // Reset to default roof color
         return; // Skip applying the new color
       }
 
       // Apply color to the specified meshes
       if (colorableMeshes.includes(child.name)) {
         console.log(child.material.roughness);
-        if (color === "#132B27") child.material.roughness = 0.3;
-        child.material.reflectivity = 0.1;
-        child.material.roughness = 0.5;
+        // if (color === "#132B27") child.material.roughness = 0.3;
+        // child.material.reflectivity = 0.1;
+        // child.material.roughness = 0.5;
         child.material.color.set(color);
       }
       if (roofMeshes.includes(child.name)) {
         //&& !(color === "#efefef" || color === "#bbe9ff")){
-        child.material.roughness = 0.4;
+        // child.material.roughness = 0.4;
         // child.material.reflectivity = 0;
       }
       if (nonReflectiveMeshes.includes(child.name)) {
         if (child.name.includes("LicensePlate")) {
-          child.material.envMap = null;
+          // child.material.envMap = null;
           child.material.envMapIntensity = 0;
           child.material.lightMapIntensity = 0;
         }
@@ -132,7 +141,7 @@ function CarModel({ color, onLoad }) {
       //   child.material.opacity = 0.4;
       // }
       if (child.name.includes("shell_02358")) {
-        child.material.color.set("#aaaaaa");
+        // child.material.color.set("#aaaaaa");
       }
       if (child.name === "running_surface001") {
         // child.material.color.set("#3D3D3D");
@@ -178,19 +187,12 @@ function CarShadow() {
     </mesh>
   );
 }
-function RotatingEnvironment({ path, rotationValue = 0 }) {
+function RotatingEnvironment({ path, rotationValue = 180 }) {
   const group = useRef();
 
-  // Apply the rotation to the group (for continuous or interactive rotation)
-  useFrame(() => {
-    if (group.current) {
-      group.current.rotation.y = rotationValue; // Set the rotation value for the Y-axis
-    }
-  });
-
   return (
-    <group ref={group}>
-      <Environment files={path} background />
+    <group ref={group} rotation={[0, 100, 0]}>
+      <Environment files={path} background rotation={[0,Math.PI/2,0]} />
     </group>
   );
 }
@@ -201,7 +203,7 @@ export default function ThreeScene() {
   const targetRef = useRef(); // Reference for the light target
   const [selectedColor, setSelectedColor] = useState("#bbe9ff"); // 71b1cf
   const [showColors, setShowColors] = useState(true);
-  const [carColor, setCarColor] = useState("#bbe9ff");
+  const [carColor, setCarColor] = useState("#F0FDFF");
   const [modelLoaded, setModelLoaded] = useState(false);
   const carRef = useRef();
   const handleModelLoad = () => setModelLoaded(true);
@@ -260,7 +262,7 @@ export default function ThreeScene() {
     },
     {
       id: "Frost Blue Metallic with black roof",
-      hex: "#bbe9ff",
+      hex: "#F0FDFF",
       path: "/colors/Frost Blue Metallic with black roof.png",
     },
   ];
@@ -324,8 +326,8 @@ export default function ThreeScene() {
         camera={{ position: [-9, 6, -15], fov: 50 }}
         gl={{
           antialias: true,
-          toneMapping: THREE.CineonToneMapping,
-          toneMappingExposure: 1,
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.2,
           // toneMapping: ACESFilmicToneMapping ,
         }} // Enable anti-aliasing
         // Set tone mapping to ACES Filmic
@@ -333,7 +335,7 @@ export default function ThreeScene() {
         {/* <Perf /> */}
         <Suspense fallback={null}>
           {/* Load HDR Environment */}
-          <RotatingEnvironment path="/studio_small.hdr" rotationValue={90} />
+          <RotatingEnvironment path="/studio_small.hdr" rotationValue={180} />
           {/* Add the 3D Model */}
           <CarModel ref={carRef} color={carColor} onLoad={handleModelLoad} />
           <SkyDome />
@@ -357,7 +359,8 @@ export default function ThreeScene() {
         <hemisphereLight
           skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
           groundColor={0x444444} // Color of the light from the ground (bottom hemisphere)
-          intensity={2} // Light intensity
+          intensity={2}
+          position={[0,10,11]} // Light intensity
         />
 
         {/* Directional Light with Shadow Settings */}
