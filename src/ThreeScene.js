@@ -13,7 +13,7 @@ import * as THREE from "three";
 import "./app.css";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
-function CarModel({ color, onLoad }) {
+function CarModel({ color,lightsOn, onLoad }) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
 
   const { scene } = useGLTF("/main-car.glb");
@@ -110,6 +110,13 @@ function CarModel({ color, onLoad }) {
 
   scene.traverse((child) => {
     if (child.isMesh) {
+      if(child.material.name.includes('GLOW'))
+      {
+        if(lightsOn)
+          child.material.opacity = 1.0;
+        else
+        child.material.opacity = 0;
+        }
       // child.material.envMapIntensity =4;
       if (
         child.material.isMeshPhysicalMaterial &&
@@ -248,6 +255,7 @@ export default function ThreeScene() {
   const [selectedColor, setSelectedColor] = useState("#bbe9ff"); // 71b1cf
   const [showColors, setShowColors] = useState(true);
   const [carColor, setCarColor] = useState("#FFFFFF");
+  const [lightsOn, setlightsOn] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   const carRef = useRef();
   const handleModelLoad = () => setModelLoaded(true);
@@ -315,6 +323,9 @@ export default function ThreeScene() {
     // setShowColors(false); // Hide color options after selecting
     setSelectedColor(hex);
   };
+  const handleLightChange = ()=>{
+    setlightsOn(!lightsOn)
+  }
   const handleBrushClick = () => {
     setShowColors((prev) => !prev); // Toggle visibility
   };
@@ -360,7 +371,7 @@ export default function ThreeScene() {
           <img src="/Functions.png" alt="Functions Banner" />
         </div>  
         <div className="button-list">
-          <button className="function-button">
+          <button className="function-button" onClick={handleLightChange}>
             <img src="/Light Indicator.png" alt="Icon 1" />
           </button>
           {/* <button className="function-button">
@@ -411,7 +422,7 @@ export default function ThreeScene() {
           {/* Load HDR Environment */}
           <RotatingEnvironment path="/studio_small.hdr" rotationValue={180} />
           {/* Add the 3D Model */}
-          <CarModel ref={carRef} color={carColor} onLoad={handleModelLoad} />
+          <CarModel ref={carRef} color={carColor} onLoad={handleModelLoad} lightsOn ={lightsOn}/>
           <SkyDome />
           <CarShadow />
         </Suspense>
