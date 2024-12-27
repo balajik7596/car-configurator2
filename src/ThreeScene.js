@@ -49,6 +49,34 @@ function CarModel({ color, onLoad }) {
     // "shell_0.395",
   ];
 
+  // // Define the roof meshes to exclude for specific colors
+  // const roofMeshes = [
+  //   "shell_02779_2",
+  //   "shell_03160",
+  //   "Retopo_shell_03312",
+  //   "shell_0106_14",
+  //   "shell_0_02",
+  //   "shell_0267",
+  //   "shell_02344",
+  //   "shell_02162",
+  //   "shell_02365",
+  //   "shell_02277",
+  //   // "shell_03160",
+  //   "shell_02779_2",
+  //   "shell_02029_1",
+  //   "shell_02161",
+  //   "shell_0106_14",
+  //   "shell_0_02",
+  //   "Retopo_shell_03312",
+  //   // "Retopo_shell_0021",//mirroe
+  //   // "Retopo_shell_0017",
+  //   // "shell_02732_1",
+  //   // "shell_02733",
+  //   // "shell_02733_1",
+  //   // "shell_0.3160_0",
+  //   // "shell_0.395",
+  // ];
+
   // Define the roof meshes to exclude for specific colors
   const roofMeshes = [
     "shell_02779_2",
