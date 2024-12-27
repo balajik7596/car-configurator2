@@ -53,7 +53,7 @@ function CarModel({ color, onLoad }) {
     "Retopo_shell_03312",
     "shell_0106_14",
     "shell_0_02",
-    // "shell_02732_1",
+    "shell_02732_1",
   ];
 
   const nonReflectiveMeshes = [
