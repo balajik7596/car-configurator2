@@ -30,15 +30,20 @@ function CarModel({ color, onLoad }) {
     "shell_02162",
     "shell_02365",
     "shell_02277",
-    "shell_03160",
+    // "shell_03160",
     "shell_02779_2",
     "shell_02029_1",
     "shell_02161",
     "shell_0106_14",
     "shell_0_02",
     "Retopo_shell_03312",
-    "Retopo_shell_0021",
-    "Retopo_shell_0017",
+    // "Retopo_shell_0021",//mirroe
+    // "Retopo_shell_0017",
+    // "shell_02732_1",
+    // "shell_02733",
+    // "shell_02733_1",
+    // "shell_0.3160_0",
+    // "shell_0.395",
   ];
 
   // Define the roof meshes to exclude for specific colors
@@ -48,7 +53,7 @@ function CarModel({ color, onLoad }) {
     "Retopo_shell_03312",
     "shell_0106_14",
     "shell_0_02",
-    "shell_02732_1",
+    // "shell_02732_1",
   ];
 
   const nonReflectiveMeshes = [
@@ -86,7 +91,7 @@ function CarModel({ color, onLoad }) {
 
       // Exclude roof meshes for specific colors
       if (
-        (color === "#efefef" || color === "#4489a7") && // Exact hex values for the black roof colors
+        (color === "#efefef" || color === "#bbe9ff") && // Exact hex values for the black roof colors
         roofMeshes.includes(child.name)
       ) {
         child.material.roughness = 0.4;
@@ -99,11 +104,12 @@ function CarModel({ color, onLoad }) {
       if (colorableMeshes.includes(child.name)) {
         console.log(child.material.roughness);
         if (color === "#132B27") child.material.roughness = 0.3;
-        // child.material.reflectivity = 0.5;
+        child.material.reflectivity = 0.1;
+        child.material.roughness = 0.5;
         child.material.color.set(color);
       }
       if (roofMeshes.includes(child.name)) {
-        //&& !(color === "#efefef" || color === "#4489a7")){
+        //&& !(color === "#efefef" || color === "#bbe9ff")){
         child.material.roughness = 0.4;
         // child.material.reflectivity = 0;
       }
@@ -127,6 +133,9 @@ function CarModel({ color, onLoad }) {
       // }
       if (child.name.includes("shell_02358")) {
         child.material.color.set("#aaaaaa");
+      }
+      if (child.name === "running_surface001") {
+        // child.material.color.set("#3D3D3D");
       }
     }
   });
@@ -190,9 +199,9 @@ export default function ThreeScene() {
   const lightRef = useRef(); // Reference for the directional light
   const helperRef = useRef(); // Reference for the light helper
   const targetRef = useRef(); // Reference for the light target
-  const [selectedColor, setSelectedColor] = useState("#4489a7");
+  const [selectedColor, setSelectedColor] = useState("#bbe9ff"); // 71b1cf
   const [showColors, setShowColors] = useState(true);
-  const [carColor, setCarColor] = useState("#4489a7");
+  const [carColor, setCarColor] = useState("#bbe9ff");
   const [modelLoaded, setModelLoaded] = useState(false);
   const carRef = useRef();
   const handleModelLoad = () => setModelLoaded(true);
@@ -209,7 +218,7 @@ export default function ThreeScene() {
   //   { id: "Titan Grey Matte", hex: "#939393" },
   //   { id: "Robust Emerald Matte", hex: "#132B27" },//#172f2b
   //   { id: "Atlas White with black roof", hex: "#efefef" },
-  //   { id: "Frost Blue Metallic with black roof", hex: "#4489a7" },
+  //   { id: "Frost Blue Metallic with black roof", hex: "#bbe9ff" },
   // ];
   const colors = [
     {
@@ -251,7 +260,7 @@ export default function ThreeScene() {
     },
     {
       id: "Frost Blue Metallic with black roof",
-      hex: "#4489a7",
+      hex: "#bbe9ff",
       path: "/colors/Frost Blue Metallic with black roof.png",
     },
   ];
@@ -339,15 +348,20 @@ export default function ThreeScene() {
           maxPolarAngle={Math.PI / 2.3}
           minDistance={4} // Minimum zoom distance
           maxDistance={maxDistance} // Maximum zoom distance
-        />
-        <ambientLight intensity={1} />
+        ></OrbitControls>
+        <ambientLight intensity={2} color={0xaaaaaa} />
+        {/* <pointLight position={[20, 0, 2]} intensity={300}></pointLight>
+        <pointLight position={[-20, 0, 2]} intensity={300}></pointLight>
+        <pointLight position={[0, 5, -5]} intensity={300}></pointLight>
+        <pointLight position={[0, 5, 5]} intensity={300}></pointLight> */}
         <hemisphereLight
           skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
           groundColor={0x444444} // Color of the light from the ground (bottom hemisphere)
-          intensity={1} // Light intensity
+          intensity={2} // Light intensity
         />
+
         {/* Directional Light with Shadow Settings */}
-        <directionalLight
+        {/* <directionalLight
           // ref={lightRef} // Attach the reference to the light
           position={[5, 14.2, -7]}
           target={carRef.current}
@@ -371,7 +385,7 @@ export default function ThreeScene() {
           position={[-5, 5, 0]}
           target={carRef.current}
           intensity={4}
-        />
+        /> */}
       </Canvas>
       {modelLoaded && (
         <div
