@@ -46,12 +46,12 @@ html, body {
 
 .bottom-banner {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Align items vertically */
   align-items: center;
   width: 100%;
   max-width: 500px; /* Restrict width for better responsiveness */
-  border-radius: 10px; /* Rounded corners */
-  padding: 15px;
+  padding: 0; /* Remove padding here */
+  margin-bottom: 0; /* Remove any bottom margin */
   box-sizing: border-box;
 }
 
@@ -59,21 +59,22 @@ html, body {
   width: 120px; /* Image size */
   height: auto;
   object-fit: contain;
-  margin-bottom: 15px; /* Space between the image and the buttons */
+  margin-bottom: 0; /* No space between the image and the buttons */
 }
 
 .button-list {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px; /* Space between buttons */
+  gap: 1px; /* Space between buttons */
   flex-wrap: wrap;
+  margin-top: 0; /* Remove any margin above the buttons */
 }
 
 .function-button {
   background: none;
   border: none;
-  padding: 8px;
+  padding: 0px;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
@@ -105,7 +106,7 @@ html, body {
   }
 
   .button-list {
-    gap: 10px; /* Reduce button spacing for mobile */
+    gap: 1px; /* Reduce button spacing for mobile */
   }
 }
 
@@ -125,7 +126,7 @@ html, body {
   }
 
   .button-list {
-    gap: 8px; /* Tighter spacing for extra small screens */
+    gap: 1px; /* Tighter spacing for extra small screens */
   }
 }
 
