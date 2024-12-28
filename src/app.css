@@ -5,6 +5,30 @@ html, body {
   width: 100%;
   height: 100%;
 }
+@font-face {
+  font-family: 'HyundaiFont'; /* Replace with your font name */
+  src: url('./fonts/HyundaiSansHead-Regular.otf') format('opentype');
+  font-weight: normal; /* Optional: Specify weight */
+  font-style: normal;  /* Optional: Specify style */
+}
+/* This will apply when the device is in portrait mode */
+@media (orientation: portrait) {
+  body {
+    /* Ensure layout remains consistent in portrait mode */
+    transform: rotate(0deg); /* Reset rotation */
+    overflow: hidden; /* Prevent scrolling if necessary */
+  }
+}
+
+/* This will apply when the device is in landscape mode */
+@media (orientation: landscape) {
+  body {
+    /* Ensure layout remains consistent in landscape mode */
+    transform: rotate(0deg); /* Reset rotation */
+    overflow: hidden; /* Prevent scrolling if necessary */
+  }
+}
+
 
 .viewer-container {
   position: fixed;
@@ -18,54 +42,101 @@ html, body {
   align-items: center;
 }
 
-
 .bottom-banner-container {
   position: absolute;
-  bottom: 1px;
+  bottom: 10px; /* Adjusted to give some spacing for smaller screens */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10; /* Ensures the banner appears above other elements */
+  padding: 10px; /* Added padding for better spacing on mobile */
 }
 
 .bottom-banner {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%; /* Allow the banner to take full width */
+  max-width: 500px; /* Restrict width for better responsiveness */
 }
 
 .banner-image img {
-  width: 150px; /* Adjust the width as needed */
+  width: 120px; /* Reduced size for mobile devices */
   height: auto;
   object-fit: contain;
-  margin-bottom: 1px;
+  margin-bottom: 1px; /* Added more spacing for better readability */
 }
 
 .button-list {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap; /* Allows buttons to wrap to the next line on smaller screens */
+  justify-content: center;
   gap: 10px; /* Adds spacing between buttons */
+  margin-top: 0; /* Ensure no extra margin from the button list itself */
+
 }
 
 .function-button {
   background: none;
   border: none;
-  padding: 0px;
+  margin-top: 0px;
+  padding: 5px; /* Reduced padding for smaller screens */
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 
 .function-button img {
-  width: 60px;
-  height: 60px;
+  width: 50px; /* Reduced size for smaller screens */
+  height: 50px;
   object-fit: contain;
 }
 
 .function-button:hover {
   transform: scale(1.1); /* Slight zoom effect on hover */
 }
+
+/* Add media queries for additional mobile-specific adjustments */
+@media (max-width: 768px) {
+  .bottom-banner-container {
+    bottom: 20px; /* Adjust position for smaller screens */
+  }
+
+  .banner-image img {
+    width: 100px; /* Further reduce size for small devices */
+  }
+
+  .function-button img {
+    width: 40px; /* Smaller buttons for narrow screens */
+    height: 40px;
+  }
+
+  .button-list {
+    gap: 8px; /* Adjust gap for smaller layouts */
+  }
+}
+
+@media (max-width: 480px) {
+  .bottom-banner-container {
+    bottom: 15px;
+    padding: 5px; /* Reduced padding for extra small screens */
+  }
+
+  .banner-image img {
+    width: 80px; /* Further reduce image size */
+  }
+
+  .function-button img {
+    width: 35px; /* Adjust button size further */
+    height: 35px;
+  }
+
+  .button-list {
+    gap: 5px; /* Tighter spacing for extra small screens */
+  }
+}
+
 
 /* Banner */
 .brand-banner {
@@ -108,15 +179,16 @@ html, body {
 
 @media (max-width: 768px) {
   .brand-logo {
-    width: 200px; /* Adjust width for tablets */
+    width: calc(250px * 1.12); /* 12% larger for tablets */
   }
 }
 
 @media (max-width: 480px) {
   .brand-logo {
-    width: 150px; /* Adjust width for mobile phones */
+    width: calc(200px * 1.12); /* 12% larger for mobile phones */
   }
 }
+
 
 /* Loading Bar */
 .loading-bar-container {
@@ -293,7 +365,6 @@ html, body {
   position: relative;
   display: inline-block;
 }
-
 .tooltip .tooltiptext {
   visibility: hidden;
   background-color: rgba(0, 0, 0, 0.7);
@@ -308,7 +379,12 @@ html, body {
   transform: translateY(-50%);
   white-space: nowrap;
   transition: visibility 0s, opacity 0.5s ease-in-out;
+
+  /* Use the custom font */
+  font-family: 'MyCustomFont', sans-serif;
+  font-size: 14px; /* Adjust size as needed */
 }
+
 .tooltip .tooltiptext::after {
   content: "";
   position: absolute;
@@ -433,6 +509,34 @@ html, body {
 .color-image.selected {
   border: 3px solid #ffcc00;
   transform: scale(1.2);
+}
+@media (max-width: 768px) {
+  .color-options-container {
+    transform: scale(0.8); /* Reduce size to 80% */
+    transform-origin: center; /* Ensure scaling happens from the center */
+  }
+
+  .color-options {
+    gap: 8px; /* Reduce spacing between color options */
+    margin-bottom: 10px; /* Adjust space below the colors */
+  }
+
+  .color-circle {
+    width: 32px; /* Reduce size of color circles */
+    height: 32px;
+  }
+
+  .brush-icon {
+    width: 48px; /* Adjust brush icon size */
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center icon inside the button */
+  }
+
+  .color-picker-container {
+    padding-top: 10px; /* Adjust padding to reduce height */
+  }
 }
 
 
