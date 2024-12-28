@@ -11,24 +11,13 @@ html, body {
   font-weight: normal; /* Optional: Specify weight */
   font-style: normal;  /* Optional: Specify style */
 }
-/* This will apply when the device is in portrait mode */
-@media (orientation: portrait) {
+@media only screen and (max-width: 768px) {
+  /* Lock orientation on mobile devices */
   body {
-    /* Ensure layout remains consistent in portrait mode */
-    transform: rotate(0deg); /* Reset rotation */
-    overflow: hidden; /* Prevent scrolling if necessary */
+    transform: rotate(0deg); /* Prevent rotation for mobile */
+    overflow: hidden; /* Prevent scrolling */
   }
 }
-
-/* This will apply when the device is in landscape mode */
-@media (orientation: landscape) {
-  body {
-    /* Ensure layout remains consistent in landscape mode */
-    transform: rotate(0deg); /* Reset rotation */
-    overflow: hidden; /* Prevent scrolling if necessary */
-  }
-}
-
 
 .viewer-container {
   position: fixed;
@@ -40,102 +29,104 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 
 .bottom-banner-container {
   position: absolute;
-  bottom: 10px; /* Adjusted to give some spacing for smaller screens */
+  bottom: 10px; /* Adjusted for better spacing */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10; /* Ensures the banner appears above other elements */
-  padding: 10px; /* Added padding for better spacing on mobile */
+  z-index: 10;
+  padding: 10px; /* Padding for better spacing */
 }
 
 .bottom-banner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%; /* Allow the banner to take full width */
-  max-width: 500px; /* Restrict width for better responsiveness */
+  width: 100%;
+  max-width: 500px;
 }
 
 .banner-image img {
-  width: 120px; /* Reduced size for mobile devices */
+  width: 120px;
   height: auto;
   object-fit: contain;
-  margin-bottom: 1px; /* Added more spacing for better readability */
+  margin-bottom: 1px;
 }
 
 .button-list {
   display: flex;
-  flex-wrap: wrap; /* Allows buttons to wrap to the next line on smaller screens */
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 10px; /* Adds spacing between buttons */
-  margin-top: 0; /* Ensure no extra margin from the button list itself */
-
+  gap: 10px;
+  margin-top: 0;
 }
 
 .function-button {
   background: none;
   border: none;
-  margin-top: 0px;
-  padding: 5px; /* Reduced padding for smaller screens */
+  margin-top: 0;
+  padding: 5px;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 
 .function-button img {
-  width: 50px; /* Reduced size for smaller screens */
+  width: 50px;
   height: 50px;
   object-fit: contain;
 }
 
 .function-button:hover {
-  transform: scale(1.1); /* Slight zoom effect on hover */
+  transform: scale(1.1);
 }
 
-/* Add media queries for additional mobile-specific adjustments */
+/* Mobile specific adjustments */
 @media (max-width: 768px) {
   .bottom-banner-container {
-    bottom: 20px; /* Adjust position for smaller screens */
+    bottom: 5vh; /* Use viewport height for more dynamic positioning */
+    padding: 8px; /* Slightly reduce padding */
   }
 
   .banner-image img {
-    width: 100px; /* Further reduce size for small devices */
+    width: 100px;
   }
 
   .function-button img {
-    width: 40px; /* Smaller buttons for narrow screens */
+    width: 40px;
     height: 40px;
   }
 
   .button-list {
-    gap: 8px; /* Adjust gap for smaller layouts */
+    gap: 8px;
   }
 }
 
 @media (max-width: 480px) {
   .bottom-banner-container {
-    bottom: 15px;
-    padding: 5px; /* Reduced padding for extra small screens */
+    bottom: 5vh; /* Further adjust for extra small screens */
+    padding: 5px;
   }
 
   .banner-image img {
-    width: 80px; /* Further reduce image size */
+    width: 80px;
   }
 
   .function-button img {
-    width: 35px; /* Adjust button size further */
+    width: 35px;
     height: 35px;
   }
 
   .button-list {
-    gap: 5px; /* Tighter spacing for extra small screens */
+    gap: 5px;
   }
 }
+
 
 
 /* Banner */
