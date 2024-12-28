@@ -31,102 +31,99 @@ html, body {
   align-items: center;
   overflow: hidden;
 }
+
 .bottom-banner-container {
-  position: fixed;
-  bottom: 50px; /* Margin from the bottom */
+  position: absolute;
+  bottom: 10px; /* Adjusted for better spacing */
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10; /* Ensure the banner stays above other content */
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
-  width: 100%;
+  z-index: 10;
+  padding: 10px; /* Padding for better spacing */
 }
 
 .bottom-banner {
   display: flex;
-  flex-direction: column; /* Align items vertically */
+  flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 500px; /* Restrict width for better responsiveness */
-  padding: 0; /* Remove padding here */
-  margin-bottom: 0; /* Remove any bottom margin */
-  box-sizing: border-box;
+  max-width: 500px;
 }
 
 .banner-image img {
-  width: 120px; /* Image size */
+  width: 120px;
   height: auto;
   object-fit: contain;
-  margin-bottom: 0; /* No space between the image and the buttons */
+  margin-bottom: 1px;
 }
 
 .button-list {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1px; /* Space between buttons */
   flex-wrap: wrap;
-  margin-top: 0; /* Remove any margin above the buttons */
+  justify-content: center;
+  gap: 10px;
+  margin-top: 0;
 }
 
 .function-button {
   background: none;
   border: none;
-  padding: 0px;
+  margin-top: 0;
+  padding: 5px;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 
 .function-button img {
-  width: 50px; /* Size of the buttons */
+  width: 50px;
   height: 50px;
   object-fit: contain;
 }
 
 .function-button:hover {
-  transform: scale(1.1); /* Slight zoom effect on hover */
+  transform: scale(1.1);
 }
 
 /* Mobile specific adjustments */
 @media (max-width: 768px) {
   .bottom-banner-container {
-    bottom: 50px; /* Keep the margin from the bottom */
-    padding: 8px;
+    bottom: 5vh; /* Use viewport height for more dynamic positioning */
+    padding: 8px; /* Slightly reduce padding */
   }
 
   .banner-image img {
-    width: 100px; /* Adjust image size for smaller screens */
+    width: 100px;
   }
 
   .function-button img {
-    width: 40px; /* Adjust button size for smaller screens */
+    width: 40px;
     height: 40px;
   }
 
   .button-list {
-    gap: 1px; /* Reduce button spacing for mobile */
+    gap: 8px;
   }
 }
 
 @media (max-width: 480px) {
   .bottom-banner-container {
-    bottom: 5vh; /* Keep the margin from the bottom */
+    bottom: 5vh; /* Further adjust for extra small screens */
     padding: 5px;
   }
 
   .banner-image img {
-    width: 80px; /* Further adjust image size */
+    width: 80px;
   }
 
   .function-button img {
-    width: 35px; /* Adjust button size even further */
+    width: 35px;
     height: 35px;
   }
 
   .button-list {
-    gap: 1px; /* Tighter spacing for extra small screens */
+    gap: 5px;
   }
 }
 
