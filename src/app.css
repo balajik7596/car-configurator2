@@ -112,7 +112,7 @@ html, body {
 
 @media (max-width: 480px) {
   .bottom-banner-container {
-    bottom: 50px; /* Keep the margin from the bottom */
+    bottom: 5vh; /* Keep the margin from the bottom */
     padding: 5px;
   }
 
