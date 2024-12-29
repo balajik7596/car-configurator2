@@ -217,16 +217,58 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
 
   //   }
   // });
-  console.log(selColor, color);
+  console.log(selColor,color);
 
+  
   scene.traverse((child) => {
     if (child.isMesh) {
-      if (child.material.name.includes("GLOW")) {
-        if (lightsOn) child.material.opacity = 1.0;
-        else child.material.opacity = 0;
+      if(child.material.name === 'M_xogGLo001_Glass_WhiteClr.002'){
+        if(lightsOn){
+        child.material.emissive.set(0xffffff);
+        child.material.emissiveIntensity = 10;
+        child.material.needsUpdate = true;
+        }
+        else{
+        child.material.emissive.set(0x000000);
+        child.material.emissiveIntensity = 1;
+        child.material.needsUpdate = true;
+        }
+}
+if(child.material.name === 'CRETA_GLOW'){
+  child.material.color.set('#ffffff');
+
+}
+
+if(child.material.name === 'GROUND_SAHDOW '){
+  child.material.color.set('#000000');
+  child.material.roughness = 1;
+  child.material.opacity = 0.9;
+}
+
+      if(child.material.name.includes('GLOW'))
+            {
+              if(lightsOn)
+                child.material.opacity = 1.0;
+              
+              else
+              child.material.opacity = 0;
       }
-      if (roofMeshes.includes(child.name)) {
-        if (!selColor.includes("black roof")) {
+      if(child.material.name === 'Glass'){
+        child.material.roughness = 0.10;
+        child.material.metalness = 1;
+        child.material.color.set('#9E9E9E');
+      }
+      if(child.material.name === 'M_xogGLo001_Glass_WhiteClr.002'){
+        child.material.color.set('#ffffff');
+       // child.material.emissive.set(0xffffff);
+       // child.material.emissiveIntensity = 10;
+        child.material.needsUpdate = true;
+        child.material.metalness = 1;
+      }
+      if(roofMeshes.includes(child.name)){
+  
+        if(!selColor.includes('black roof'))
+        {
           child.material.color.set(color);
         } else {
           child.material.color.set("#000000");
@@ -241,59 +283,81 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         else child.material.roughness = 0.13;
         return;
       }
-      if (
-        child.name === "Top-SIDE-SILVER" &&
-        !selColor.includes("black roof")
-      ) {
-        child.material.color.set("#C0C0C0");
+      if(child.name === 'Top-SIDE-SILVER'){
+        child.material.roughness = 0.12;
+
       }
-      if (child.material.name === "CAR_PAINT_BODY-white") {
-        if (selColor.includes("Frost Blue")) {
-          child.material.color.set(color);
-          child.material.emissive.setHex("#000000");
-          child.material.emissiveIntensity = 1;
-          child.material.IOR = 1.0;
-          child.material.reflectivity = 0.5;
-        } else if (selColor === "Starry Night") {
-          child.material.color.set(color);
-          child.material.emissive.setHex("#000814"); // Set emissive color to red
-          child.material.emissiveIntensity = 3; // Increase the intensity
-          child.material.IOR = 1.8;
-          child.material.reflectivity = 0.71;
-        } else if (selColor === "Robust Emerald Matte") {
-          child.material.color.set(color);
-          child.material.emissive.setHex("#001404"); // Set emissive color to red
-          child.material.emissiveIntensity = 1.2; // Increase the intensity
-          child.material.roughness = 0.2;
-          child.material.IOR = 1.8;
-          child.material.reflectivity = 0.71;
-        } else if (selColor === "Fiery Red Pearl") {
-          child.material.color.set(color);
-          child.material.emissive.setHex("#000000"); // Set emissive color to red
-          child.material.emissiveIntensity = 1; // Increase the intensity
-          child.material.IOR = 1.0;
-          child.material.reflectivity = 0.5;
-        } else if (selColor === "Titan Grey Matte") {
-          child.material.color.set(color);
-          child.material.emissive.setHex("#1f1e1e");
-          child.material.emissiveIntensity = 1;
-          child.material.IOR = 1.0;
-          child.material.reflectivity = 0.5;
-        } else if (selColor.includes("Atlas White")) {
-          child.material.color.set(color);
-          child.material.emissive.setHex("#ffffff");
-          child.material.emissiveIntensity = 1;
-          child.material.IOR = 1.0;
-          child.material.reflectivity = 0.5;
-        } else if (selColor.includes("Abyss Black Pearl")) {
-          child.material.color.set(color);
-          child.material.emissive.setHex("#050505");
-          child.material.emissiveIntensity = 1.2;
-          child.material.IOR = 1.0;
-          child.material.reflectivity = 0.5;
-        }
-        if (selColor.includes("Matte")) child.material.roughness = 0.2;
-        else child.material.roughness = 0.13;
+      if(child.name === 'Top-SIDE-SILVER' && !selColor.includes('black roof') ){
+        child.material.color.set('#8F8F8F');
+      }
+      if(child.name === 'Top-SIDE-SILVER' && selColor.includes('black roof') ){
+        child.material.color.set('#1A1B23');
+      }
+      if(child.name === 'Top-SIDE-SILVER' && selColor.includes('Atlas White with black roof') ){
+        child.material.color.set('#000000');
+      }
+      if(child.material.name === 'UPPER_ALL' && selColor.includes('Atlas White with black roof') ){
+        child.material.color.set('#000000');
+        console.log(child.material.name);
+      }
+      if(child.material.name === 'CAR_PAINT_BODY-white'){
+      if(selColor.includes('Frost Blue')){
+        child.material.color.set(color);
+        child.material.emissive.setHex('#000000');
+        child.material.emissiveIntensity = 1;
+        child.material.IOR = 1.0;
+        child.material.reflectivity = 0.5;
+
+      }else if(selColor === 'Starry Night'){
+        child.material.color.set(color);
+        child.material.emissive.setHex('#678908'); // Set emissive color to red
+        child.material.emissiveIntensity = 3; // Increase the intensity
+        child.material.IOR = 1.8;
+        child.material.reflectivity = 0.71;
+
+      }else if(selColor === 'Robust Emerald Matte'){
+        child.material.color.set(color);
+        child.material.emissive.setHex('#001404'); // Set emissive color to red
+        child.material.emissiveIntensity = 1.2; // Increase the intensity
+        child.material.roughness = 0.2;
+        child.material.IOR = 1.8;
+        child.material.reflectivity = 0.71;
+
+      }else if(selColor ==='Fiery Red Pearl'){
+        child.material.color.set(color);
+        child.material.emissive.setHex('#000000'); // Set emissive color to red
+        child.material.emissiveIntensity = 1; // Increase the intensity
+        child.material.IOR = 1.0;
+        child.material.reflectivity = 0.5;
+
+      }else if(selColor === 'Titan Grey Matte'){
+        child.material.color.set(color);
+        child.material.emissive.setHex('#1f1e1e');
+        child.material.emissiveIntensity = 1;
+        child.material.IOR = 1.0;
+        child.material.reflectivity = 0.5;
+
+      }else if(selColor.includes('Atlas White')){        
+        child.material.color.set(color);
+        child.material.emissive.setHex('#ffffff');
+        child.material.emissiveIntensity = 1;
+        child.material.IOR = 1.0;
+        child.material.reflectivity = 0.5;
+
+      }else if(selColor.includes('Abyss Black Pearl')){        
+        child.material.color.set(color);
+        child.material.emissive.setHex('#050505');
+        child.material.emissiveIntensity = 1.2;
+        child.material.IOR = 1.0;
+        child.material.reflectivity = 0.5;
+
+      }
+      if(selColor.includes('Matte'))
+        child.material.roughness = 0.2;
+      else
+        child.material.roughness = 0.13;
+      
+
       }
     }
   });
@@ -361,7 +425,7 @@ export default function ThreeScene() {
   ); // 71b1cf
 
   const [showColors, setShowColors] = useState(true);
-  const [carColor, setCarColor] = useState("");
+  const [carColor, setCarColor] = useState("#7BCCF4");
   const [lightsOn, setlightsOn] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   const carRef = useRef();
@@ -393,25 +457,25 @@ export default function ThreeScene() {
       hex: "#850400",
       path: "./colors/Fiery Red Pearl.png",
     }, //#930302
-    { id: "Starry Night", hex: "#293d60", path: "./colors/Starry Night.png" }, //#3a496b
+    { id: "Starry Night", hex: "#122544", path: "./colors/Starry Night.png" }, //#3a496b
     {
       id: "Frost Blue Metallic",
-      hex: "#5DB0DA",
+      hex: "#7BCCF4",
       path: "./colors/Frost Blue Metallic.png",
     },
     {
       id: "Frost Blue Matte",
-      hex: "#5DB0DA",
+      hex: "#7BCCF4",
       path: "./colors/Frost Blue Matte.png",
     },
     {
       id: "Titan Grey Matte",
-      hex: "#4f4f4f",
+      hex: "#474747",
       path: "./colors/Titan Grey Matte.png",
     },
     {
       id: "Robust Emerald Matte",
-      hex: "#315242",
+      hex: "#3F4B3F",
       path: "./colors/Robust Emeraid Matte.png",
     }, //#172f2b
     {
@@ -421,7 +485,7 @@ export default function ThreeScene() {
     },
     {
       id: "Frost Blue Metallic with black roof",
-      hex: "#5DB0DA",
+      hex: "#7BCCF4",
       path: "/colors/Frost Blue Metallic with black roof.png",
     },
   ];
@@ -516,7 +580,7 @@ export default function ThreeScene() {
         gl={{
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.0,
+          toneMappingExposure: 1.2,
           // toneMapping: ACESFilmicToneMapping ,
         }}
         // onCreated={({ gl, camera }) => {
