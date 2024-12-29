@@ -287,6 +287,13 @@ if(child.material.name === 'GROUND_SAHDOW '){
         child.material.roughness = 0.12;
 
       }
+      if(child.material.name === 'M_A2Boxox_Default_Lacquer_AbyssBlackPea.011'){
+        child.material.roughness = 0.22;
+        child.material.metalness = 0.6;
+
+
+      }
+
       if(child.name === 'Top-SIDE-SILVER' && !selColor.includes('black roof') ){
         child.material.color.set('#8F8F8F');
       }
