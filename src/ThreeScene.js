@@ -13,7 +13,7 @@ import * as THREE from "three";
 import "./app.css";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
-function CarModel({ color,lightsOn, onLoad }) {
+function CarModel({ color,lightsOn, selColor, onLoad }) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
 
   const { scene } = useGLTF("/main-car.glb");
@@ -81,15 +81,7 @@ function CarModel({ color,lightsOn, onLoad }) {
   // ];
 
   // Define the roof meshes to exclude for specific colors
-  const roofMeshes = [
-    "shell_02779_2",
-    "shell_03160",
-    "Retopo_shell_03312",
-    "shell_0106_14",
-    "shell_0_02",
-    'shell_02732_1'
-    // "shell_02732_1",
-  ];
+  const roofMeshes = ['Retopo_shell_0017','Retopo_shell_0021','Roof'  ];
 
   const nonReflectiveMeshes = [
     "LicensePlate003",
@@ -108,90 +100,193 @@ function CarModel({ color,lightsOn, onLoad }) {
   const defaultRoofColor = "#000000";
   const l_side = ['R-Sheel-Back', 'R-Door-01', 'R-Door-02', 'R-Front-Blue', 'Handle-R-02', 'Handle-R-01'];
 
+  // scene.traverse((child) => {
+  //   if (child.isMesh) {
+  //     if(child.material.map)
+  //       console.log(child.material.map);
+        
+  //     if(child.material.name.includes('GLOW'))
+  //     {
+  //       if(lightsOn)
+  //         child.material.opacity = 1.0;
+  //       else
+  //       child.material.opacity = 0;
+  //       }
+  //     // child.material.envMapIntensity =4;
+  //     if (
+  //       child.material.isMeshPhysicalMaterial &&
+  //       child.material.name.includes("RedClr")
+  //     ) {
+  //       // Set emissive color based on the mesh's base color
+  //       // console.log(child.material.name,child.material.color);
+
+  //       child.material.emissive = new THREE.Color(1, 0, 0);
+  //     } 
+  //     else if (child.material.name.includes("BLACK GLASS")) {
+  //       // child.material.envMap = hdrEquirect;
+  //       // console.log(child.material );
+        
+  //       if (child.material.name === "BLACK GLASS.003")
+  //         child.material.opacity = 0.9;
+  //       else child.material.opacity = 0.8;
+  //       // child.needsUpdate = true; // Required after updating material properties
+
+  //     }
+
+  //     // Exclude roof meshes for specific colors
+  //     if (
+  //       (color === "#efefef" || color === "#FFFFFF") && // Exact hex values for the black roof colors
+  //       roofMeshes.includes(child.name)
+  //     ) {
+  //       // child.material.roughness = 0.4;
+  //       // child.material.reflectivity = 0;
+  //       // child.material.color.set(defaultRoofColor); // Reset to default roof color
+  //       return; // Skip applying the new color
+  //     }
+
+  //     // Apply color to the specified meshes
+  //     if (colorableMeshes.includes(child.name)) {
+  //       console.log(child.material.roughness);
+  //       // if (color === "#132B27") child.material.roughness = 0.3;
+  //       // child.material.reflectivity = 0.1;
+  //       // child.material.roughness = 0.5;
+  //       // child.material.color.set(color);
+  //     }
+  //     // if(colorableMat.includes(child.material.name)){
+  //     //   child.material.color.set(color);
+  //     // }
+  //     if (roofMeshes.includes(child.name)) {
+  //       //&& !(color === "#efefef" || color === "#bbe9ff")){
+  //       // child.material.roughness = 0.4;
+  //       // child.material.reflectivity = 0;
+  //     }
+  //     if (nonReflectiveMeshes.includes(child.name)) {
+  //       if (child.name.includes("LicensePlate")) {
+  //         // child.material.envMap = null;
+  //         child.material.envMapIntensity = 0;
+  //         child.material.lightMapIntensity = 0;
+  //       }
+  //       // child.material.emmisive = new THREE.Color(0,0,0);
+  //       // // child.material.lights = false;
+  //       // child.material.specularColor = new THREE.Color(0,0,0);
+  //       // child.material.specularIntensity = 0;
+  //       // child.material.emmisiveIntensity = 0;
+  //       // child.material.reflectivity = 0;
+
+  //       // child.material.roughness = 1.0;
+  //     }
+  //     // if (backGlass.includes(child.name)) {
+  //     //   child.material.opacity = 0.4;
+  //     // }
+  //     if (child.name.includes("shell_02358")) {
+  //       // child.material.color.set("#aaaaaa");
+  //     }
+  //     if (child.name === "running_surface001") {
+  //       // child.material.color.set("#3D3D3D");
+  //     }
+  //     if(l_side.includes(child.name)){
+  //       child.material.color.set("#EBF9FF");
+  //     }
+  //     if(child.material.map && child.material.map.name === 'bake-07 creta-white-02')
+  //       // child.material.map = new THREE.TextureLoader().load("/texture.webp");
+
+  //     child.material.needsUpdate = true;
+      
+  //   }
+  // });
+  console.log(selColor,color);
+  
   scene.traverse((child) => {
     if (child.isMesh) {
       if(child.material.name.includes('GLOW'))
-      {
-        if(lightsOn)
-          child.material.opacity = 1.0;
+            {
+              if(lightsOn)
+                child.material.opacity = 1.0;
+              else
+              child.material.opacity = 0;
+      }
+      if(roofMeshes.includes(child.name)){
+        if(!selColor.includes('black roof'))
+        {
+          child.material.color.set(color);
+        }else{
+          child.material.color.set('#000000');
+        }
+        // if(selColor.includes('Frost Blue')){
+        //   child.material.color.set(color);
+        //   child.material.emissive.setHex('#000000');
+        //   child.material.emissiveIntensity = 1;
+        //   child.material.IOR = 1.0;
+        // }
+        if(selColor.includes('Matte'))
+          child.material.roughness = 0.2;
         else
-        child.material.opacity = 0;
-        }
-      // child.material.envMapIntensity =4;
-      if (
-        child.material.isMeshPhysicalMaterial &&
-        child.material.name.includes("RedClr")
-      ) {
-        // Set emissive color based on the mesh's base color
-        // console.log(child.material.name,child.material.color);
+          child.material.roughness = 0.13;
+        return;
+      }
+      if(child.name === 'Top-SIDE-SILVER' && !selColor.includes('black roof') ){
+        child.material.color.set('#C0C0C0');
+      }
+      if(child.material.name === 'CAR_PAINT_BODY-white'){
+      if(selColor.includes('Frost Blue')){
+        child.material.color.set(color);
+        child.material.emissive.setHex('#000000');
+        child.material.emissiveIntensity = 1;
+        child.material.IOR = 1.0;
+        child.material.reflectivity = 0.5;
 
-        child.material.emissive = new THREE.Color(1, 0, 0);
-      } 
-      else if (child.material.name.includes("BLACK GLASS")) {
-        // child.material.envMap = hdrEquirect;
-        // console.log(child.material );
-        
-        if (child.material.name === "BLACK GLASS.003")
-          child.material.opacity = 0.9;
-        else child.material.opacity = 0.8;
-        // child.needsUpdate = true; // Required after updating material properties
+      }else if(selColor === 'Starry Night'){
+        child.material.color.set(color);
+        child.material.emissive.setHex('#000814'); // Set emissive color to red
+        child.material.emissiveIntensity = 3; // Increase the intensity
+        child.material.IOR = 1.8;
+        child.material.reflectivity = 0.71;
+
+      }else if(selColor === 'Robust Emerald Matte'){
+        child.material.color.set(color);
+        child.material.emissive.setHex('#001404'); // Set emissive color to red
+        child.material.emissiveIntensity = 1.2; // Increase the intensity
+        child.material.roughness = 0.2;
+        child.material.IOR = 1.8;
+        child.material.reflectivity = 0.71;
+
+      }else if(selColor ==='Fiery Red Pearl'){
+        child.material.color.set(color);
+        child.material.emissive.setHex('#000000'); // Set emissive color to red
+        child.material.emissiveIntensity = 1; // Increase the intensity
+        child.material.IOR = 1.0;
+        child.material.reflectivity = 0.5;
+
+      }else if(selColor === 'Titan Grey Matte'){
+        child.material.color.set(color);
+        child.material.emissive.setHex('#1f1e1e');
+        child.material.emissiveIntensity = 1;
+        child.material.IOR = 1.0;
+        child.material.reflectivity = 0.5;
+
+      }else if(selColor.includes('Atlas White')){        
+        child.material.color.set(color);
+        child.material.emissive.setHex('#ffffff');
+        child.material.emissiveIntensity = 1;
+        child.material.IOR = 1.0;
+        child.material.reflectivity = 0.5;
+
+      }else if(selColor.includes('Abyss Black Pearl')){        
+        child.material.color.set(color);
+        child.material.emissive.setHex('#050505');
+        child.material.emissiveIntensity = 1.2;
+        child.material.IOR = 1.0;
+        child.material.reflectivity = 0.5;
 
       }
+      if(selColor.includes('Matte'))
+        child.material.roughness = 0.2;
+      else
+        child.material.roughness = 0.13;
+      
 
-      // Exclude roof meshes for specific colors
-      if (
-        (color === "#efefef" || color === "#FFFFFF") && // Exact hex values for the black roof colors
-        roofMeshes.includes(child.name)
-      ) {
-        // child.material.roughness = 0.4;
-        // child.material.reflectivity = 0;
-        // child.material.color.set(defaultRoofColor); // Reset to default roof color
-        return; // Skip applying the new color
       }
-
-      // Apply color to the specified meshes
-      if (colorableMeshes.includes(child.name)) {
-        console.log(child.material.roughness);
-        // if (color === "#132B27") child.material.roughness = 0.3;
-        // child.material.reflectivity = 0.1;
-        // child.material.roughness = 0.5;
-        // child.material.color.set(color);
-      }
-      // if(colorableMat.includes(child.material.name)){
-      //   child.material.color.set(color);
-      // }
-      if (roofMeshes.includes(child.name)) {
-        //&& !(color === "#efefef" || color === "#bbe9ff")){
-        // child.material.roughness = 0.4;
-        // child.material.reflectivity = 0;
-      }
-      if (nonReflectiveMeshes.includes(child.name)) {
-        if (child.name.includes("LicensePlate")) {
-          // child.material.envMap = null;
-          child.material.envMapIntensity = 0;
-          child.material.lightMapIntensity = 0;
-        }
-        // child.material.emmisive = new THREE.Color(0,0,0);
-        // // child.material.lights = false;
-        // child.material.specularColor = new THREE.Color(0,0,0);
-        // child.material.specularIntensity = 0;
-        // child.material.emmisiveIntensity = 0;
-        // child.material.reflectivity = 0;
-
-        // child.material.roughness = 1.0;
-      }
-      // if (backGlass.includes(child.name)) {
-      //   child.material.opacity = 0.4;
-      // }
-      if (child.name.includes("shell_02358")) {
-        // child.material.color.set("#aaaaaa");
-      }
-      if (child.name === "running_surface001") {
-        // child.material.color.set("#3D3D3D");
-      }
-      if(l_side.includes(child.name)){
-        child.material.color.set("#EBF9FF");
-      }
+      
     }
   });
   return (
@@ -252,9 +347,12 @@ export default function ThreeScene() {
   const lightRef = useRef(); // Reference for the directional light
   const helperRef = useRef(); // Reference for the light helper
   const targetRef = useRef(); // Reference for the light target
-  const [selectedColor, setSelectedColor] = useState("#bbe9ff"); // 71b1cf
+  //const [selectedColor, setSelectedColor] = useState("#bbe9ff"); // 71b1cf
+  const [selectedColor, setSelectedColor] = useState("#EBF9FF"); // 71b1cf
+  const [selColor, setSelColor] = useState("Frost Blue Metallic with black roof"); // 71b1cf
+
   const [showColors, setShowColors] = useState(true);
-  const [carColor, setCarColor] = useState("#FFFFFF");
+  const [carColor, setCarColor] = useState("");
   const [lightsOn, setlightsOn] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   const carRef = useRef();
@@ -283,28 +381,28 @@ export default function ThreeScene() {
     { id: "Atlas White", hex: "#f0f0f0", path: "./colors/Atlas White.png" },
     {
       id: "Fiery Red Pearl",
-      hex: "#782924",
+      hex: "#850400",
       path: "./colors/Fiery Red Pearl.png",
     }, //#930302
-    { id: "Starry Night", hex: "#0C2132", path: "./colors/Starry Night.png" }, //#3a496b
+    { id: "Starry Night", hex: "#070F1D", path: "./colors/Starry Night.png" }, //#3a496b
     {
       id: "Frost Blue Metallic",
-      hex: "#90aebc",
+      hex: "#5DB0DA",
       path: "./colors/Frost Blue Metallic.png",
     },
     {
       id: "Frost Blue Matte",
-      hex: "#88aaba",
+      hex: "#5DB0DA",
       path: "./colors/Frost Blue Matte.png",
     },
     {
       id: "Titan Grey Matte",
-      hex: "#939393",
+      hex: "#303030",
       path: "./colors/Titan Grey Matte.png",
     },
     {
       id: "Robust Emerald Matte",
-      hex: "#132B27",
+      hex: "#2E382E",
       path: "./colors/Robust Emeraid Matte.png",
     }, //#172f2b
     {
@@ -314,12 +412,13 @@ export default function ThreeScene() {
     },
     {
       id: "Frost Blue Metallic with black roof",
-      hex: "#FFFFFF",
+      hex: "#5DB0DA",
       path: "/colors/Frost Blue Metallic with black roof.png",
     },
   ];
-  const handleColorChange = (hex) => {
+  const handleColorChange = (hex,id) => {
     setCarColor(hex);
+    setSelColor(id)
     // setShowColors(false); // Hide color options after selecting
     setSelectedColor(hex);
   };
@@ -422,7 +521,7 @@ export default function ThreeScene() {
           {/* Load HDR Environment */}
           <RotatingEnvironment path="/studio_small.hdr" rotationValue={180} />
           {/* Add the 3D Model */}
-          <CarModel ref={carRef} color={carColor} onLoad={handleModelLoad} lightsOn ={lightsOn}/>
+          <CarModel ref={carRef} color={carColor} selColor={selColor} onLoad={handleModelLoad} lightsOn ={lightsOn}/>
           <SkyDome />
           <CarShadow />
         </Suspense>
@@ -436,25 +535,25 @@ export default function ThreeScene() {
           minDistance={5} // Minimum zoom distance
           maxDistance={maxDistance} // Maximum zoom distance
         ></OrbitControls>
-        <ambientLight intensity={2} color="#E0F3FF" />
+        <ambientLight intensity={2} color="#ffffff" />
         {/* <pointLight position={[20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[-20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[0, 5, -5]} intensity={300}></pointLight>
         <pointLight position={[0, 5, 5]} intensity={300}></pointLight> */}
         <hemisphereLight
-          skyColor={0x016898} // Color of the light from the sky (top hemisphere)
+          skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
           groundColor={0x000000} // Color of the light from the ground (bottom hemisphere)
           intensity={0.5}
           rotation={[0,0,0]}
-          position={[0,5,12]} // Light intensity
+          position={[0,5,-5]} // Light intensity
         />
-        <hemisphereLight
+        {/* <hemisphereLight
           skyColor={0x005075} // Color of the light from the sky (top hemisphere)
           groundColor={0x000000} // Color of the light from the ground (bottom hemisphere)
           intensity={0.5}
           rotation={[0,0,0]}
           position={[0,5,-12]} // Light intensity
-        />
+        /> */}
         {/* Directional Light with Shadow Settings */}
         {/* <directionalLight
           // ref={lightRef} // Attach the reference to the light
@@ -495,10 +594,10 @@ export default function ThreeScene() {
                   <div key={color.id} className="tooltip">
                     <div
                       className={`color-circle ${
-                        selectedColor === color.hex ? "selected" : ""
+                        selColor === color.id ? "selected" : ""
                       }`}
                       style={{ backgroundColor: color.hex }}
-                      onClick={() => handleColorChange(color.hex)}
+                      onClick={() => handleColorChange(color.hex,color.id)}
                     >
                       {/* Add the image inside the color circle if needed */}
                       <img
