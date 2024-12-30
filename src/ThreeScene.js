@@ -11,12 +11,6 @@ import {
 import { DirectionalLightHelper, ACESFilmicToneMapping } from "three"; // Import from 'three'
 import * as THREE from "three";
 import "./app.css";
-import {
-  EffectComposer,
-  Bloom,
-  ToneMapping,
-} from "@react-three/postprocessing";
-
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
 function CarModel({ color, lightsOn, selColor, onLoad }) {
@@ -230,7 +224,7 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
       if (child.material.name === "M_xogGLo001_Glass_WhiteClr.002") {
         if (lightsOn) {
           child.material.emissive.set(0xffffff);
-          child.material.emissiveIntensity = 2;
+          child.material.emissiveIntensity = 10;
           child.material.needsUpdate = true;
         } else {
           child.material.emissive.set(0x000000);
@@ -253,10 +247,11 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         else child.material.opacity = 0;
       }
       if (child.material.name === "Front-Headlight-White") {
-        if (lightsOn) {
-          child.material.emissive = new THREE.Color(255, 255, 255);
-          child.material.emissiveIntensity = 0.01;
-        } else child.material.emissiveIntensity = 0;
+        if (lightsOn){
+          child.material.emissive = new THREE.Color(255,255,255);      
+          child.material.emissiveIntensity = 15.0;
+                }
+        else child.material.emissiveIntensity = 0;
       }
       if (child.material.name === "Glass") {
         child.material.roughness = 0.1;
@@ -286,9 +281,9 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         else child.material.roughness = 0.13;
         return;
       }
-      if (child.material.name === "UPPER-ROOF-BACK") {
+      if(child.material.name === 'UPPER-ROOF-BACK'){
         if (!selColor.includes("black roof")) {
-          child.material.color.set("#141414");
+          child.material.color.set('#141414');
         } else {
           child.material.color.set("#000000");
         }
@@ -380,22 +375,8 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
           child.material.IOR = 1.0;
           child.material.reflectivity = 0.5;
         }
-
         if (selColor.includes("Matte")) child.material.roughness = 0.2;
         else child.material.roughness = 0.13;
-      }
-
-      if (
-        child.material.name.includes("GLOW") ||
-        child.material.name.includes("WHITE EMIT LIGHT") ||
-        child.material.name.includes("CRETA_GLOW")
-      ) {
-        child.visible = true;
-        if (lightsOn) child.material.opacity = 0.5;
-        else child.material.opacity = 0;
-
-        if (lightsOn) child.material.emissiveIntensity = 2;
-        else child.material.emissiveIntensity = 0;
       }
     }
   });
@@ -655,10 +636,6 @@ export default function ThreeScene() {
           maxDistance={maxDistance} // Maximum zoom distance
         ></OrbitControls>
         <ambientLight intensity={2} color="#ffffff" />
-        <EffectComposer disableNormalPass>
-          <Bloom mipmapBlur luminanceThreshold={1} levels={5} intensity={2} />
-          <ToneMapping />
-        </EffectComposer>
         {/* <pointLight position={[20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[-20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[0, 5, -5]} intensity={300}></pointLight>
