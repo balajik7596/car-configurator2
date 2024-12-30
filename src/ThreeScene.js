@@ -246,9 +246,12 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         if (lightsOn) child.material.opacity = 1.0;
         else child.material.opacity = 0;
       }
-      if (child.material.name === "CRETA_GLOW") {
-        if (lightsOn) child.material.emissiveIntensity = 15.0;
-        else child.material.emissiveIntensity = 1;
+      if (child.material.name === "Front-Headlight-White") {
+        if (lightsOn){
+          child.material.emissive = new THREE.Color(255,255,255);      
+          child.material.emissiveIntensity = 15.0;
+                }
+        else child.material.emissiveIntensity = 0;
       }
       if (child.material.name === "Glass") {
         child.material.roughness = 0.1;
