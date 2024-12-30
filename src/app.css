@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -6,10 +7,10 @@ html, body {
   height: 100%;
 }
 @font-face {
-  font-family: 'HyundaiFont'; /* Replace with your font name */
-  src: url('./fonts/HyundaiSansHead-Regular.otf') format('opentype');
+  font-family: "HyundaiFont"; /* Replace with your font name */
+  src: url("./fonts/HyundaiSansHead-Regular.otf") format("opentype");
   font-weight: normal; /* Optional: Specify weight */
-  font-style: normal;  /* Optional: Specify style */
+  font-style: normal; /* Optional: Specify style */
 }
 @media only screen and (max-width: 768px) {
   /* Lock orientation on mobile devices */
@@ -40,7 +41,7 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  /* padding: 10px; */
   width: 100%;
 }
 
@@ -51,29 +52,31 @@ html, body {
   width: 100%;
   max-width: 500px; /* Restrict width for better responsiveness */
   border-radius: 10px; /* Rounded corners */
-  padding: 15px;
+  /* margin: -5px; */
+  /* padding: 15px; */
   box-sizing: border-box;
 }
 
 .banner-image img {
-  width: 120px; /* Image size */
+  width: 150px; /* Image size */
   height: auto;
+  margin: 0px;
   object-fit: contain;
-  margin-bottom: 1px; /* Space between the image and the buttons */
+  /* Space between the image and the buttons */
 }
 
 .button-list {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1px; /* Space between buttons */
+  /* Space between buttons */
   flex-wrap: wrap;
 }
 
 .function-button {
   background: none;
   border: none;
-  padding: 8px;
+  /* padding: 8px; */
   cursor: pointer;
   transition: transform 0.2s ease;
 }
@@ -81,6 +84,7 @@ html, body {
 .function-button img {
   width: 50px; /* Size of the buttons */
   height: 50px;
+  margin: -10px;
   object-fit: contain;
 }
 
@@ -92,7 +96,7 @@ html, body {
 @media (max-width: 768px) {
   .bottom-banner-container {
     bottom: 50px; /* Keep the margin from the bottom */
-    padding: 8px;
+    /* padding: 8px;   */
   }
 
   .banner-image img {
@@ -105,7 +109,7 @@ html, body {
   }
 
   .button-list {
-    gap: 10px; /* Reduce button spacing for mobile */
+    /* gap: 10px; */
   }
 }
 
@@ -116,7 +120,7 @@ html, body {
   }
 
   .banner-image img {
-    width: 80px; /* Further adjust image size */
+    width: 100px; /* Further adjust image size */
   }
 
   .function-button img {
@@ -125,16 +129,15 @@ html, body {
   }
 
   .button-list {
-    gap: 8px; /* Tighter spacing for extra small screens */
+    /* margin: -8px; */
+    /* Tighter spacing for extra small screens */
   }
 }
-
-
 
 /* Banner */
 .brand-banner {
   position: absolute;
-  top: 50%;  /* Initially center vertically */
+  top: 50%; /* Initially center vertically */
   left: 50%; /* Initially center horizontally */
   transform: translate(-50%, -50%); /* Center the banner perfectly */
   z-index: 100;
@@ -170,18 +173,50 @@ html, body {
   max-width: 100%; /* Make it responsive */
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .brand-logo {
-    width: calc(250px * 1.12); /* 12% larger for tablets */
+    width: calc(250px); /* 12% larger for tablets */
+  }
+}
+
+/* Media Query for low resolution  Tablets, Ipads */
+@media (min-width: 481px) and (max-width: 767px) {
+  .brand-logo {
+    width: calc(300px); /* 12% larger for tablets */
+  }
+}
+
+/* Media Query for Tablets Ipads portrait mode */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .brand-logo {
+    width: calc(400px); /* 12% larger for tablets */
+  }
+}
+
+/* Media Query for Laptops and Desktops */
+/* @media (min-width: 1025px) and (max-width: 1280px) {
+    .brand-logo {
+    width: calc(500px);
+  }
+        } */
+
+/* Media Query for Large screens */
+@media (min-width: 1025px) {
+  .brand-logo {
+    width: calc(450px); /* 12% larger for tablets */
+  }
+}
+/* @media (max-width: 768px) {
+  .brand-logo {
+    width: calc(250px * 1.12);
   }
 }
 
 @media (max-width: 480px) {
   .brand-logo {
-    width: calc(200px * 1.12); /* 12% larger for mobile phones */
+    width: calc(200px * 1.12);
   }
-}
-
+} */
 
 /* Loading Bar */
 .loading-bar-container {
@@ -218,8 +253,6 @@ html, body {
     top: calc(50% + 70px); /* Adjust position for smaller screens */
   }
 }
-
-
 
 .bottom-bar {
   position: absolute;
@@ -374,7 +407,7 @@ html, body {
   transition: visibility 0s, opacity 0.5s ease-in-out;
 
   /* Use the custom font */
-  font-family: 'MyCustomFont', sans-serif;
+  font-family: "MyCustomFont", sans-serif;
   font-size: 14px; /* Adjust size as needed */
 }
 
@@ -395,7 +428,8 @@ html, body {
 }
 
 @keyframes fadeOut {
-  0%, 80% {
+  0%,
+  80% {
     opacity: 1;
   }
   100% {
@@ -429,7 +463,6 @@ html, body {
   padding-top: 15px;
   margin-left: 20px;
   animation: slideOut 0.5s ease forwards;
-
 }
 @keyframes slideIn {
   0% {
@@ -476,11 +509,9 @@ html, body {
   object-fit: cover; /* Ensures image fills the circle */
 }
 
-
 .color-circle:hover {
   transform: scale(1.2);
 }
-
 
 .brush-icon {
   cursor: pointer;
@@ -493,8 +524,6 @@ html, body {
   transform: scale(1.1);
 }
 
-
-
 .color-image:hover {
   transform: scale(1.1);
 }
@@ -503,20 +532,21 @@ html, body {
   border: 3px solid #ffcc00;
   transform: scale(1.2);
 }
-@media (max-width: 768px) {
+@media (min-width: 481px) and (max-width: 767px) {
   .color-options-container {
     transform: scale(0.8); /* Reduce size to 80% */
     transform-origin: center; /* Ensure scaling happens from the center */
   }
 
   .color-options {
+    /* flex-direction: row; */
     gap: 8px; /* Reduce spacing between color options */
     margin-bottom: 10px; /* Adjust space below the colors */
   }
 
   .color-circle {
-    width: 32px; /* Reduce size of color circles */
-    height: 32px;
+    width: 25px; /* Reduce size of color circles */
+    height: 25px;
   }
 
   .brush-icon {
@@ -531,5 +561,75 @@ html, body {
     padding-top: 10px; /* Adjust padding to reduce height */
   }
 }
+@media only screen and (orientation: landscape) and (max-width: 768px) {
+  /* Styles for landscape mobile view */
+  .color-options-container {
+    transform: scale(0.7); /* Reduce size to 80% */
+    transform-origin: center; /* Ensure scaling happens from the center */
+    /* flex-direction: row !important; */
+    transform: translateY(-80%) translateX(50%);
+  }
+  .color-picker-container-new {
+    /* flex-direction: row; */
+    align-items: center;
+    top: 70%; /* Center vertically */
+    transform: translateX(-90%); /* Adjust for centering */
+  }
+  .color-picker-container {
+    top: 50%;
+    padding: 2px;
+    /* flex-direction: row-reverse; */
+    align-items: center;
+  }
+  .color-options {
+    gap: 5px; /* Reduce spacing between color options */
+    margin-bottom: 5px; /* Adjust space below the colors */
+  }
 
+  .color-circle {
+    width: 15px; /* Reduce size of color circles */
+    height: 15px;
+  }
 
+  .brush-icon {
+    width: 15px; /* Adjust brush icon size */
+    height: 15px;
+    top: 5px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center icon inside the button */
+  }
+
+  .color-picker-container {
+    padding-top: 10px; /* Adjust padding to reduce height */
+  }
+}
+@media (max-width: 480px) {
+  .color-options-container {
+    transform: scale(0.7); /* Reduce size to 80% */
+    transform-origin: center; /* Ensure scaling happens from the center */
+  }
+
+  .color-options {
+    gap: 5px; /* Reduce spacing between color options */
+    margin-bottom: 5px; /* Adjust space below the colors */
+  }
+
+  .color-circle {
+    width: 25px; /* Reduce size of color circles */
+    height: 25px;
+  }
+
+  .brush-icon {
+    width: 32px; /* Adjust brush icon size */
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center icon inside the button */
+  }
+
+  .color-picker-container {
+    padding-top: 10px; /* Adjust padding to reduce height */
+  }
+}
