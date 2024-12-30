@@ -84,7 +84,7 @@ body {
 .function-button img {
   width: 50px; /* Size of the buttons */
   height: 50px;
-  margin: -10px;
+  margin: -9px;
   object-fit: contain;
 }
 
@@ -537,7 +537,19 @@ body {
     transform: scale(0.8); /* Reduce size to 80% */
     transform-origin: center; /* Ensure scaling happens from the center */
   }
-
+  .color-picker-container-new {
+    /* flex-direction: row; */
+    align-items: center;
+    top: 50%; /* Center vertically */
+    transform: translateX(-50%); /* Adjust for centering */
+  }
+  .color-picker-container {
+    top: 40%;
+    padding: 2px;
+    transform: translateY(-40%);
+    /* flex-direction: row-reverse; */
+    align-items: center;
+  }
   .color-options {
     /* flex-direction: row; */
     gap: 8px; /* Reduce spacing between color options */
@@ -572,12 +584,13 @@ body {
   .color-picker-container-new {
     /* flex-direction: row; */
     align-items: center;
-    top: 70%; /* Center vertically */
-    transform: translateX(-90%); /* Adjust for centering */
+    top: 50%; /* Center vertically */
+    transform: translateX(-50%); /* Adjust for centering */
   }
   .color-picker-container {
-    top: 50%;
+    top: 40%;
     padding: 2px;
+    transform: translateY(-40%);
     /* flex-direction: row-reverse; */
     align-items: center;
   }
@@ -610,7 +623,19 @@ body {
     transform: scale(0.7); /* Reduce size to 80% */
     transform-origin: center; /* Ensure scaling happens from the center */
   }
-
+  .color-picker-container-new {
+    /* flex-direction: row; */
+    align-items: center;
+    top: 40%; /* Center vertically */
+    transform: translateX(-50%); /* Adjust for centering */
+  }
+  .color-picker-container {
+    top: 40%;
+    padding: 2px;
+    transform: translateY(-40%);
+    /* flex-direction: row-reverse; */
+    align-items: center;
+  }
   .color-options {
     gap: 5px; /* Reduce spacing between color options */
     margin-bottom: 5px; /* Adjust space below the colors */
