@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 
 function App() {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100dvw", height: "100dvh" }}>
       <iframe
         src="/three-scene"
         style={{
-          width: '100%',
-          height: '100%',
-          border: 'none',
+          width: "100%",
+          height: "100%",
+          border: "none",
         }}
         title="React Three Fiber Scene"
       />
