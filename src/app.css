@@ -581,6 +581,10 @@ body {
     /* flex-direction: row !important; */
     transform: translateY(-80%) translateX(50%);
   }
+  .bottom-banner-container {
+    bottom: 15dvh; /* Keep the margin from the bottom */
+    padding: 5px;
+  }
   .color-picker-container-new {
     /* flex-direction: row; */
     align-items: center;
