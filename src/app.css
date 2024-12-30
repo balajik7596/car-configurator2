@@ -34,7 +34,7 @@ body {
 }
 .bottom-banner-container {
   position: fixed;
-  bottom: 50px; /* Margin from the bottom */
+  bottom: 10dvh; /* Margin from the bottom */
   left: 50%;
   transform: translateX(-50%);
   z-index: 10; /* Ensure the banner stays above other content */
@@ -95,7 +95,7 @@ body {
 /* Mobile specific adjustments */
 @media (max-width: 768px) {
   .bottom-banner-container {
-    bottom: 50px; /* Keep the margin from the bottom */
+    bottom: 10dvh; /* Keep the margin from the bottom */
     /* padding: 8px;   */
   }
 
@@ -115,7 +115,7 @@ body {
 
 @media (max-width: 480px) {
   .bottom-banner-container {
-    bottom: 50px; /* Keep the margin from the bottom */
+    bottom: 10dvh; /* Keep the margin from the bottom */
     padding: 5px;
   }
 
