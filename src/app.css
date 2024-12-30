@@ -34,7 +34,7 @@ body {
 }
 .bottom-banner-container {
   position: fixed;
-  bottom: 10dvh; /* Margin from the bottom */
+  bottom: 1dvh; /* Margin from the bottom */
   left: 50%;
   transform: translateX(-50%);
   z-index: 10; /* Ensure the banner stays above other content */
@@ -95,7 +95,7 @@ body {
 /* Mobile specific adjustments */
 @media (max-width: 768px) {
   .bottom-banner-container {
-    bottom: 10dvh; /* Keep the margin from the bottom */
+    bottom: 1dvh; /* Keep the margin from the bottom */
     /* padding: 8px;   */
   }
 
@@ -104,8 +104,8 @@ body {
   }
 
   .function-button img {
-    width: 40px; /* Adjust button size for smaller screens */
-    height: 40px;
+    width: 45px; /* Adjust button size for smaller screens */
+    height: 45px;
   }
 
   .button-list {
@@ -115,8 +115,7 @@ body {
 
 @media (max-width: 480px) {
   .bottom-banner-container {
-    bottom: 10dvh; /* Keep the margin from the bottom */
-    padding: 5px;
+    bottom: 1dvh; /* Keep the margin from the bottom */
   }
 
   .banner-image img {
@@ -124,8 +123,8 @@ body {
   }
 
   .function-button img {
-    width: 35px; /* Adjust button size even further */
-    height: 35px;
+    width: 45px; /* Adjust button size even further */
+    height: 45px;
   }
 
   .button-list {
@@ -546,7 +545,7 @@ body {
   .color-picker-container {
     top: 40%;
     padding: 2px;
-    transform: translateY(-40%);
+    transform: translateY(-50%);
     /* flex-direction: row-reverse; */
     align-items: center;
   }
@@ -582,8 +581,8 @@ body {
     transform: translateY(-80%) translateX(50%);
   }
   .bottom-banner-container {
-    bottom: 15dvh; /* Keep the margin from the bottom */
-    padding: 5px;
+    bottom: 1dvh; /* Keep the margin from the bottom */
+    /* padding: 5px; */
   }
   .color-picker-container-new {
     /* flex-direction: row; */
@@ -594,7 +593,7 @@ body {
   .color-picker-container {
     top: 40%;
     padding: 2px;
-    transform: translateY(-40%);
+    transform: translateY(-50%);
     /* flex-direction: row-reverse; */
     align-items: center;
   }
@@ -636,7 +635,7 @@ body {
   .color-picker-container {
     top: 40%;
     padding: 2px;
-    transform: translateY(-40%);
+    transform: translateY(-50%);
     /* flex-direction: row-reverse; */
     align-items: center;
   }
