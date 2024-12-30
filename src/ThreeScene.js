@@ -221,6 +221,7 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
 
   scene.traverse((child) => {
     if (child.isMesh) {
+      //lights
       if (child.material.name === "M_xogGLo001_Glass_WhiteClr.002") {
         if (lightsOn) {
           child.material.emissive.set(0xffffff);
@@ -253,6 +254,28 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
                 }
         else child.material.emissiveIntensity = 0;
       }
+      if(child.name === 'SPOT-LIGHT'){
+        if(lightsOn)child.material.opacity = 1.0;
+        else child.material.opacity = 0;
+
+      }
+      if(child.material.name.includes("GLOW") ||
+      child.material.name.includes("WHITE EMIT LIGHT") ||
+      child.material.name.includes("CRETA_GLOW")
+    ) {
+      child.visible = true;
+      // if (lightsOn) child.material.opacity = 1;
+      // else child.material.opacity = 0;
+
+      if (lightsOn) child.material.emissiveIntensity = 100;
+      else child.material.emissiveIntensity = 1;
+    }
+    //back light
+    if(child.material.name.includes("RedClr")){
+      if (lightsOn) child.material.emissiveIntensity = 3;
+      else child.material.emissiveIntensity = 1;
+    }
+      //glass
       if (child.material.name === "Glass") {
         child.material.roughness = 0.1;
         child.material.metalness = 1;
