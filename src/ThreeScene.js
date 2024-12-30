@@ -129,125 +129,19 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
     "Handle-R-01",
   ];
 
-  // scene.traverse((child) => {
-  //   if (child.isMesh) {
-  //     if(child.material.map)
-  //       console.log(child.material.map);
-
-  //     if(child.material.name.includes('GLOW'))
-  //     {
-  //       if(lightsOn)
-  //         child.material.opacity = 1.0;
-  //       else
-  //       child.material.opacity = 0;
-  //       }
-  //     // child.material.envMapIntensity =4;
-  //     if (
-  //       child.material.isMeshPhysicalMaterial &&
-  //       child.material.name.includes("RedClr")
-  //     ) {
-  //       // Set emissive color based on the mesh's base color
-  //       // console.log(child.material.name,child.material.color);
-
-  //       child.material.emissive = new THREE.Color(1, 0, 0);
-  //     }
-  //     else if (child.material.name.includes("BLACK GLASS")) {
-  //       // child.material.envMap = hdrEquirect;
-  //       // console.log(child.material );
-
-  //       if (child.material.name === "BLACK GLASS.003")
-  //         child.material.opacity = 0.9;
-  //       else child.material.opacity = 0.8;
-  //       // child.needsUpdate = true; // Required after updating material properties
-
-  //     }
-
-  //     // Exclude roof meshes for specific colors
-  //     if (
-  //       (color === "#efefef" || color === "#FFFFFF") && // Exact hex values for the black roof colors
-  //       roofMeshes.includes(child.name)
-  //     ) {
-  //       // child.material.roughness = 0.4;
-  //       // child.material.reflectivity = 0;
-  //       // child.material.color.set(defaultRoofColor); // Reset to default roof color
-  //       return; // Skip applying the new color
-  //     }
-
-  //     // Apply color to the specified meshes
-  //     if (colorableMeshes.includes(child.name)) {
-  //       console.log(child.material.roughness);
-  //       // if (color === "#132B27") child.material.roughness = 0.3;
-  //       // child.material.reflectivity = 0.1;
-  //       // child.material.roughness = 0.5;
-  //       // child.material.color.set(color);
-  //     }
-  //     // if(colorableMat.includes(child.material.name)){
-  //     //   child.material.color.set(color);
-  //     // }
-  //     if (roofMeshes.includes(child.name)) {
-  //       //&& !(color === "#efefef" || color === "#bbe9ff")){
-  //       // child.material.roughness = 0.4;
-  //       // child.material.reflectivity = 0;
-  //     }
-  //     if (nonReflectiveMeshes.includes(child.name)) {
-  //       if (child.name.includes("LicensePlate")) {
-  //         // child.material.envMap = null;
-  //         child.material.envMapIntensity = 0;
-  //         child.material.lightMapIntensity = 0;
-  //       }
-  //       // child.material.emmisive = new THREE.Color(0,0,0);
-  //       // // child.material.lights = false;
-  //       // child.material.specularColor = new THREE.Color(0,0,0);
-  //       // child.material.specularIntensity = 0;
-  //       // child.material.emmisiveIntensity = 0;
-  //       // child.material.reflectivity = 0;
-
-  //       // child.material.roughness = 1.0;
-  //     }
-  //     // if (backGlass.includes(child.name)) {
-  //     //   child.material.opacity = 0.4;
-  //     // }
-  //     if (child.name.includes("shell_02358")) {
-  //       // child.material.color.set("#aaaaaa");
-  //     }
-  //     if (child.name === "running_surface001") {
-  //       // child.material.color.set("#3D3D3D");
-  //     }
-  //     if(l_side.includes(child.name)){
-  //       child.material.color.set("#EBF9FF");
-  //     }
-  //     if(child.material.map && child.material.map.name === 'bake-07 creta-white-02')
-  //       // child.material.map = new THREE.TextureLoader().load("/texture.webp");
-
-  //     child.material.needsUpdate = true;
-
-  //   }
-  // });
-  console.log(selColor, color);
-
   scene.traverse((child) => {
     if (child.isMesh) {
-      if (child.material.name === "M_xogGLo001_Glass_WhiteClr.002") {
-        if (lightsOn) {
-          child.material.emissive.set(0xffffff);
-          child.material.emissiveIntensity = 2;
-          child.material.needsUpdate = true;
-        } else {
-          child.material.emissive.set(0x000000);
-          child.material.emissiveIntensity = 1;
-          child.material.needsUpdate = true;
-        }
-      }
-      if (child.material.name === "CRETA_GLOW") {
-        child.material.color.set("#ffffff");
-      }
 
       if (child.material.name === "GROUND_SAHDOW ") {
         child.material.color.set("#000000");
         child.material.roughness = 1;
         child.material.opacity = 0.9;
       }
+      if(child.name === 'SPOT-LIGHT'){
+        if(lightsOn)child.material.opacity = 1.0;
+        else child.material.opacity = 0;
 
+      }
       if (child.material.name.includes("GLOW")) {
         if (lightsOn) child.material.opacity = 1.0;
         else child.material.opacity = 0;
@@ -255,7 +149,7 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
       if (child.material.name === "Front-Headlight-White") {
         if (lightsOn) {
           child.material.emissive = new THREE.Color(255, 255, 255);
-          child.material.emissiveIntensity = 0.01;
+          child.material.emissiveIntensity = 0.005;
         } else child.material.emissiveIntensity = 0;
       }
       if (child.material.name === "Glass") {
@@ -384,18 +278,45 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         if (selColor.includes("Matte")) child.material.roughness = 0.2;
         else child.material.roughness = 0.13;
       }
+      //glasses
+      if (child.material.name.includes("BLACK GLASS")) {
 
+        if (child.material.name === "BLACK GLASS.003")
+          child.material.opacity = 0.9;
+        else child.material.opacity = 0.8;
+
+      }
+      //lights M_xogGLo030_Glass_RedClr_1.002 M_xogGLo030_Glass_RedClr_1 M_xogGLo030_Glass_RedClr_1.002
+      if (child.material.name === "M_xogGLo001_Glass_WhiteClr.002") {
+        if (lightsOn) {
+          child.material.emissive.set(0xffffff);
+          child.material.emissiveIntensity = 3;
+          child.material.needsUpdate = true;
+        } else {
+          child.material.emissive.set(0x000000);
+          child.material.emissiveIntensity = 1;
+          child.material.needsUpdate = true;
+        }
+      }
+      if (child.material.name === "CRETA_GLOW") {
+        child.material.color.set("#ffffff");
+      }
       if (
         child.material.name.includes("GLOW") ||
         child.material.name.includes("WHITE EMIT LIGHT") ||
         child.material.name.includes("CRETA_GLOW")
       ) {
         child.visible = true;
-        if (lightsOn) child.material.opacity = 0.5;
-        else child.material.opacity = 0;
+        // if (lightsOn) child.material.opacity = 1;
+        // else child.material.opacity = 0;
 
-        if (lightsOn) child.material.emissiveIntensity = 2;
-        else child.material.emissiveIntensity = 0;
+        if (lightsOn) child.material.emissiveIntensity = 0.8;
+        else child.material.emissiveIntensity = 0.5;
+      }
+      //back light
+      if(child.material.name.includes("RedClr")){
+        if (lightsOn) child.material.emissiveIntensity = 3;
+        else child.material.emissiveIntensity = 1;
       }
     }
   });
@@ -657,7 +578,7 @@ export default function ThreeScene() {
         <ambientLight intensity={2} color="#ffffff" />
         <EffectComposer disableNormalPass>
           <Bloom mipmapBlur luminanceThreshold={1} levels={5} intensity={2} />
-          <ToneMapping />
+          {/* <ToneMapping mode={THREE.ACESFilmicToneMapping} exposure={100} /> */}
         </EffectComposer>
         {/* <pointLight position={[20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[-20, 0, 2]} intensity={300}></pointLight>
