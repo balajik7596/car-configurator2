@@ -246,6 +246,10 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         if (lightsOn) child.material.opacity = 1.0;
         else child.material.opacity = 0;
       }
+      if (child.material.name === "CRETA_GLOW") {
+        if (lightsOn) child.material.emissiveIntensity = 15.0;
+        else child.material.emissiveIntensity = 1;
+      }
       if (child.material.name === "Glass") {
         child.material.roughness = 0.1;
         child.material.metalness = 1;
@@ -274,6 +278,13 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         else child.material.roughness = 0.13;
         return;
       }
+      if(child.material.name === 'UPPER-ROOF-BACK'){
+        if (!selColor.includes("black roof")) {
+          child.material.color.set('#141414');
+        } else {
+          child.material.color.set("#000000");
+        }
+      }
       if (child.name === "Top-SIDE-SILVER") {
         child.material.roughness = 0.12;
       }
@@ -299,8 +310,8 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
       ) {
         child.material.color.set("#000000");
       }
-      if (child.name.includes("Roof-Rail")) {
-        if (!selColor.includes("with black roof")) {
+      if (child.material.name.includes("ROOF-RAIL")) {
+        if (!selColor.includes("black roof")) {
           child.material.color.set("#C4C4C4");
           child.material.roughness = 0.15;
           child.material.IOR = 1.5;
