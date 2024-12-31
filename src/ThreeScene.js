@@ -206,7 +206,7 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         }
         //ambient light
         if (ambientLightRef.current){
-          if(selColor.includes("Atlas White") || selColor === "Fiery Red Pearl" || selColor === "Starry Night" || selColor === 'Robust Emerald Matte') {
+          if(selColor.includes("Atlas White") || selColor === "Fiery Red Pearl" || selColor === "Starry Night" ) {
             ambientLightRef.current.intensity = 3;
           }else{
             ambientLightRef.current.intensity = 2;
