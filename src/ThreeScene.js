@@ -474,19 +474,8 @@ export default function ThreeScene() {
   const handleModelLoad = () => setModelLoaded(true);
   const { active, progress } = useProgress(); // Use progress from drei
   const [maxDistance, setMaxDistance] = useState(8); // Default maxDistance
-
-  // const colors = [
-  //   { id: "Abyss Black Pearl", hex: "#020202" },
-  //   { id: "Atlas White", hex: "#f0f0f0" },
-  //   { id: "Fiery Red Pearl", hex: "#782924" },//#930302
-  //   { id: "Starry Night", hex: "#0C2132" },//#3a496b
-  //   { id: "Ocean Blue Metallic", hex: "#90aebc" },
-  //   { id: "Ocean Blue Matte", hex: "#88aaba" },
-  //   { id: "Titan Grey Matte", hex: "#939393" },
-  //   { id: "Robust Emerald Matte", hex: "#132B27" },//#172f2b
-  //   { id: "Atlas White with black roof", hex: "#efefef" },
-  //   { id: "Ocean Blue Metallic with black roof", hex: "#bbe9ff" },
-  // ];
+  const [currentBox, setCurrentBox] = useState(0);
+  
   const colors = [
     {
       id: "Abyss Black Pearl",
@@ -531,6 +520,7 @@ export default function ThreeScene() {
       path: "/colors/Ocean Blue Metallic with black roof.png",
     },
   ];
+  
   const handleColorChange = (hex, id) => {
     setCarColor(hex);
     setSelColor(id);
@@ -550,11 +540,12 @@ export default function ThreeScene() {
       helperRef.current = helper;
       // lightRef.current.parent.add(helper); // Add the helper to the light's parent
     }
-
+  
     if (lightRef.current && targetRef.current) {
       // Set the target of the directional light to the origin (0, 0, 0)
       lightRef.current.target = targetRef.current;
     }
+  
     const updateMaxDistance = () => {
       if (window.innerWidth <= 768) {
         // For tablets and smaller devices
@@ -563,16 +554,32 @@ export default function ThreeScene() {
         setMaxDistance(7); // Default value for larger screens
       }
     };
-
+  
     // Call the function on initial load
     updateMaxDistance();
-
+  
     // Add a resize event listener to adjust maxDistance dynamically
     window.addEventListener("resize", updateMaxDistance);
-
-    // Cleanup the event listener on unmount
-    return () => window.removeEventListener("resize", updateMaxDistance);
-  }, []);
+  
+    // **New Logic**: Manage animation for boxes
+    if (!modelLoaded) {
+      const interval = setInterval(() => {
+        setCurrentBox((prev) => (prev + 1) % 4); // Cycle through 0 to 3
+      }, 300); // Adjust the duration (500ms per box)
+  
+      // Cleanup the interval when the model is loaded or the component unmounts
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener("resize", updateMaxDistance); // Cleanup resize event listener
+      };
+    }
+  
+    return () => {
+      // Ensure cleanup happens even if `modelLoaded` is already true
+      window.removeEventListener("resize", updateMaxDistance);
+    };
+  }, [modelLoaded]);
+  
 
   return (
     <div className="viewer-container no-select">
@@ -620,17 +627,17 @@ export default function ThreeScene() {
         </div>
       )} */}
       {!modelLoaded && (
-    <div className="loading-box-container">
-    {Array(4)
-      .fill(0)
-      .map((_, index) => (
-        <div
-          key={index}
-          className={`loading-box ${progress >= (index + 1) * 25 ? 'filled' : ''}`}
-        ></div>
-      ))}
-  </div>
-)}
+        <div className="loading-box-container">
+          {Array(4)
+            .fill(0)
+            .map((_, index) => (
+              <div
+                key={index}
+                className={`loading-box ${currentBox === index ? "filled" : ""}`}
+              ></div>
+            ))}
+        </div>
+      )}
       <Canvas
         camera={{ position: [-5, 3, -8], fov: 50 }}
         gl={{
