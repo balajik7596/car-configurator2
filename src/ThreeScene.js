@@ -174,10 +174,10 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
           child.material.reflectivity = 0.71;
         } else if (selColor === "Robust Emerald Matte") {
           child.material.color.set(color);
-          child.material.emissive.setHex("#001404"); // Set emissive color to red
-          child.material.emissiveIntensity = 1.2; // Increase the intensity
+          child.material.emissive.setHex("#000000"); // Set emissive color to red
+          child.material.emissiveIntensity = 1.0; // Increase the intensity
           child.material.roughness = 0.2;
-          child.material.IOR = 1.8;
+          child.material.IOR = 1.778;
           child.material.reflectivity = 0.71;
         } else if (selColor === "Fiery Red Pearl") {
           child.material.color.set(color);
@@ -206,7 +206,7 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         }
         //ambient light
         if (ambientLightRef.current){
-          if(selColor.includes("Atlas White") || selColor === "Fiery Red Pearl" || selColor === "Starry Night") {
+          if(selColor.includes("Atlas White") || selColor === "Fiery Red Pearl" || selColor === "Starry Night" || selColor === 'Robust Emerald Matte') {
             ambientLightRef.current.intensity = 3;
           }else{
             ambientLightRef.current.intensity = 2;
@@ -323,7 +323,7 @@ export default function ThreeScene() {
     },
     {
       id: "Robust Emerald Matte",
-      hex: "#3F4B3F",
+      hex: "#014638",
       path: "./colors/Robust Emeraid Matte.png",
     }, //#172f2b
     {
