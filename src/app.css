@@ -218,14 +218,14 @@ body {
 } */
 
 /* Loading Bar */
-.loading-bar-container {
+/* .loading-bar-container {
   position: absolute;
-  top: calc(50% + 100px); /* Position below the banner */
+  top: calc(50% + 100px); 
   left: 50%;
   transform: translateX(-50%);
-  width: 80%; /* Full width of the bar */
+  width: 80%; 
   height: 8px;
-  background-color: #e0e0e0; /* Light gray background */
+  background-color: #e0e0e0; 
   border-radius: 4px;
   overflow: hidden;
   z-index: 101;
@@ -233,25 +233,72 @@ body {
 
 .loading-bar {
   height: 100%;
-  width: 0; /* Start with 0 width */
-  background-color: silver; /* Silver color */
-  transition: width 0.2s ease; /* Smooth width transition */
+  width: 0; 
+  background-color: silver; 
+  transition: width 0.2s ease; 
 }
 
 @media (max-width: 768px) {
   .loading-bar-container {
-    width: 90%; /* Make the progress bar narrower for smaller screens */
-    height: 6px; /* Reduce height for smaller screens */
+    width: 90%; 
+    height: 6px; 
   }
 }
 
 @media (max-width: 480px) {
   .loading-bar-container {
-    width: 90%; /* Full width on mobile */
-    height: 4px; /* Slimmer bar for very small screens */
-    top: calc(50% + 70px); /* Adjust position for smaller screens */
+    width: 90%; 
+    height: 4px; 
+    top: calc(50% + 70px); 
+  }
+} */
+/* Loading container for the squares */
+.loading-box-container {
+  display: flex;
+  gap: 10px; /* Space between boxes */
+  justify-content: center;
+  position: absolute;
+  top: calc(50% + 75px); /* Position below the banner */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 101;
+}
+
+/* Individual loading box */
+.loading-box {
+  width: 25px; /* Width of each box */
+  height: 25px; /* Height of each box */
+  border: 2px solid rgb(109, 92, 92); /* Black outline */
+  background-color: transparent; /* Empty box background */
+  transition: background-color 0.5s ease; /* Smooth color transition */
+}
+
+/* Filled box */
+.loading-box.filled {
+  background-color: green; /* Green color for progress */
+}
+@media (max-width: 768px) {
+  .loading-box-container {
+    top: calc(50% + 50px); /* Position below the banner */
+
+  }
+  .loading-box {
+    width: 20px; /* Width of each box */
+    height: 20px;
   }
 }
+
+@media (max-width: 480px) {
+  .loading-box-container {
+    top: calc(50% + 50px); /* Position below the banner */
+
+  }
+  .loading-box {
+    width: 20px; /* Width of each box */
+    height: 20px;
+  }
+}
+
 
 .bottom-bar {
   position: absolute;

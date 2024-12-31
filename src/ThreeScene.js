@@ -294,7 +294,7 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         } else {
           child.material.color.set("#000000");
         }
-        // if(selColor.includes('Frost Blue')){
+        // if(selColor.includes('Ocean Blue')){
         //   child.material.color.set(color);
         //   child.material.emissive.setHex('#000000');
         //   child.material.emissiveIntensity = 1;
@@ -354,7 +354,7 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         console.log(child.material.name);
       }
       if (child.material.name === "CAR_PAINT_BODY-white") {
-        if (selColor.includes("Frost Blue")) {
+        if (selColor.includes("Ocean Blue")) {
           child.material.color.set(color);
           child.material.emissive.setHex("#000000");
           child.material.emissiveIntensity = 1;
@@ -463,7 +463,7 @@ export default function ThreeScene() {
   //const [selectedColor, setSelectedColor] = useState("#bbe9ff"); // 71b1cf
   const [selectedColor, setSelectedColor] = useState("#EBF9FF"); // 71b1cf
   const [selColor, setSelColor] = useState(
-    "Frost Blue Metallic with black roof"
+    "Ocean Blue Metallic with black roof"
   ); // 71b1cf
 
   const [showColors, setShowColors] = useState(true);
@@ -480,12 +480,12 @@ export default function ThreeScene() {
   //   { id: "Atlas White", hex: "#f0f0f0" },
   //   { id: "Fiery Red Pearl", hex: "#782924" },//#930302
   //   { id: "Starry Night", hex: "#0C2132" },//#3a496b
-  //   { id: "Frost Blue Metallic", hex: "#90aebc" },
-  //   { id: "Frost Blue Matte", hex: "#88aaba" },
+  //   { id: "Ocean Blue Metallic", hex: "#90aebc" },
+  //   { id: "Ocean Blue Matte", hex: "#88aaba" },
   //   { id: "Titan Grey Matte", hex: "#939393" },
   //   { id: "Robust Emerald Matte", hex: "#132B27" },//#172f2b
   //   { id: "Atlas White with black roof", hex: "#efefef" },
-  //   { id: "Frost Blue Metallic with black roof", hex: "#bbe9ff" },
+  //   { id: "Ocean Blue Metallic with black roof", hex: "#bbe9ff" },
   // ];
   const colors = [
     {
@@ -501,14 +501,14 @@ export default function ThreeScene() {
     }, //#930302
     { id: "Starry Night", hex: "#122544", path: "./colors/Starry Night.png" }, //#3a496b
     {
-      id: "Frost Blue Metallic",
+      id: "Ocean Blue Metallic",
       hex: "#7BCCF4",
-      path: "./colors/Frost Blue Metallic.png",
+      path: "./colors/Ocean Blue Metallic.png",
     },
     {
-      id: "Frost Blue Matte",
+      id: "Ocean Blue Matte",
       hex: "#7BCCF4",
-      path: "./colors/Frost Blue Matte.png",
+      path: "./colors/Ocean Blue Matte.png",
     },
     {
       id: "Titan Grey Matte",
@@ -526,9 +526,9 @@ export default function ThreeScene() {
       path: "./colors/Atlas White with black roof.png",
     },
     {
-      id: "Frost Blue Metallic with black roof",
+      id: "Ocean Blue Metallic with black roof",
       hex: "#7BCCF4",
-      path: "/colors/Frost Blue Metallic with black roof.png",
+      path: "/colors/Ocean Blue Metallic with black roof.png",
     },
   ];
   const handleColorChange = (hex, id) => {
@@ -611,14 +611,26 @@ export default function ThreeScene() {
         </div>
       )}
       {/* Loading Bar */}
-      {!modelLoaded && (
+      {/* {!modelLoaded && (
         <div className="loading-bar-container">
           <div
             className="loading-bar"
             style={{ width: `${progress}%` }} // Update width based on progress
           ></div>
         </div>
-      )}
+      )} */}
+      {!modelLoaded && (
+    <div className="loading-box-container">
+    {Array(4)
+      .fill(0)
+      .map((_, index) => (
+        <div
+          key={index}
+          className={`loading-box ${progress >= (index + 1) * 25 ? 'filled' : ''}`}
+        ></div>
+      ))}
+  </div>
+)}
       <Canvas
         camera={{ position: [-5, 3, -8], fov: 50 }}
         gl={{
