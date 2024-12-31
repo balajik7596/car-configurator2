@@ -104,8 +104,8 @@ body {
   }
 
   .function-button img {
-    width: 45px; /* Adjust button size for smaller screens */
-    height: 45px;
+    width: 50px; /* Adjust button size for smaller screens */
+    height: 50px;
   }
 
   .button-list {
@@ -123,8 +123,8 @@ body {
   }
 
   .function-button img {
-    width: 45px; /* Adjust button size even further */
-    height: 45px;
+    width: 50px; /* Adjust button size even further */
+    height: 50px;
   }
 
   .button-list {
@@ -440,7 +440,7 @@ body {
   position: fixed;
   left: 10px;
   top: 50%;
-  transform: translateY(-50%) translateX(0);
+  /* transform: translateY(-50%) translateX(0); */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -453,7 +453,7 @@ body {
   position: fixed; /* Fix to viewport */
   left: 10px; /* Position on the left side */
   top: 50%; /* Center vertically */
-  transform: translateY(-50%); /* Adjust for centering */
+  /* transform: translateY(-50%); Adjust for centering */
   display: flex;
   flex-direction: column; /* Stack colors and icon vertically */
   align-items: center;
@@ -533,7 +533,7 @@ body {
 }
 @media (min-width: 481px) and (max-width: 767px) {
   .color-options-container {
-    transform: scale(0.8); /* Reduce size to 80% */
+    transform: scale(0.9); /* Reduce size to 80% */
     transform-origin: center; /* Ensure scaling happens from the center */
   }
   .color-picker-container-new {
@@ -543,7 +543,7 @@ body {
     transform: translateX(-50%); /* Adjust for centering */
   }
   .color-picker-container {
-    top: 40%;
+    top: 50%;
     padding: 2px;
     transform: translateY(-50%);
     /* flex-direction: row-reverse; */
@@ -551,7 +551,7 @@ body {
   }
   .color-options {
     /* flex-direction: row; */
-    gap: 8px; /* Reduce spacing between color options */
+    /* gap: 8px; Reduce spacing between color options */
     margin-bottom: 10px; /* Adjust space below the colors */
   }
 
@@ -569,16 +569,16 @@ body {
   }
 
   .color-picker-container {
-    padding-top: 10px; /* Adjust padding to reduce height */
+    /* padding-top: 10px; Adjust padding to reduce height */
   }
 }
 @media only screen and (orientation: landscape) and (max-width: 768px) {
   /* Styles for landscape mobile view */
   .color-options-container {
-    transform: scale(0.7); /* Reduce size to 80% */
+    transform: scale(0.9); /* Reduce size to 80% */
     transform-origin: center; /* Ensure scaling happens from the center */
     /* flex-direction: row !important; */
-    transform: translateY(-80%) translateX(50%);
+    transform: translateY(-50%) translateX(50%);
   }
   .bottom-banner-container {
     bottom: 1dvh; /* Keep the margin from the bottom */
@@ -591,14 +591,14 @@ body {
     transform: translateX(-50%); /* Adjust for centering */
   }
   .color-picker-container {
-    top: 40%;
+    top: 50%;
     padding: 2px;
     transform: translateY(-50%);
     /* flex-direction: row-reverse; */
     align-items: center;
   }
   .color-options {
-    gap: 5px; /* Reduce spacing between color options */
+    /* gap: 5px; Reduce spacing between color options */
     margin-bottom: 5px; /* Adjust space below the colors */
   }
 
@@ -629,18 +629,18 @@ body {
   .color-picker-container-new {
     /* flex-direction: row; */
     align-items: center;
-    top: 40%; /* Center vertically */
+    top: 50%; /* Center vertically */
     transform: translateX(-50%); /* Adjust for centering */
   }
   .color-picker-container {
-    top: 40%;
+    top: 50%;
     padding: 2px;
     transform: translateY(-50%);
     /* flex-direction: row-reverse; */
     align-items: center;
   }
   .color-options {
-    gap: 5px; /* Reduce spacing between color options */
+    /* gap: 5px; Reduce spacing between color options */
     margin-bottom: 5px; /* Adjust space below the colors */
   }
 
