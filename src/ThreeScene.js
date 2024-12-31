@@ -15,209 +15,15 @@ import "./app.css";
 // import { RGBELoader } from "three-stdlib";
 function CarModel({ color, lightsOn, selColor, onLoad }) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
+  const ambientLightRef = useRef();
 
   const { scene } = useGLTF("/main-car.glb");
   useEffect(() => {
     if (onLoad) onLoad();
   }, [onLoad]);
-  // Define the meshes to apply the color to
-  // const colorableMeshes = [
-  //   "shell_0763_3",
-  //   "shell_02365",
-  //   "shell_02277",
-  //   "shell_02161",
-  //   "shell_0243_4",
-  //   // "shell_02732_1",
-  //   "shell_0267",
-  //   "shell_02344",
-  //   "shell_02162",
-  //   "shell_02365",
-  //   "shell_02277",
-  //   // "shell_03160",
-  //   "shell_02779_2",
-  //   "shell_02029_1",
-  //   "shell_02161",
-  //   "shell_0106_14",
-  //   "shell_0_02",
-  //   "Retopo_shell_03312",
-  //   // "Retopo_shell_0021",//mirroe
-  //   // "Retopo_shell_0017",
-  //   // "shell_02732_1",
-  //   // "shell_02733",
-  //   // "shell_02733_1",
-  //   // "shell_0.3160_0",
-  //   // "shell_0.395",
-  // ];
-  const colorableMeshes = [
-    "L-Front-Blue",
-    "R-Front-Blue",
-    "Hood",
-    "Blue-Front",
-    "Back-Blue-Hatch-01",
-    "Back-Blue-hatch",
-    "L-Sheel-Back",
-    "R-Sheel-Back",
-    "R-Door-02",
-    "R-Door-01",
-    "L-Door-01",
-    "L-Door-02",
-    "Handle-L-01",
-    "Handle-L-02",
-    "Handle-R-02",
-    "Handle-R-01",
-  ];
-  // const colorableMeshes = ['shell_0291','shell_0302','shell_0288','shell_0293','shell_0295','shell_0289','shell_0274','shell_0301','shell_0301','shell_0292','shell_0290','shell_0299','shell_0297','shell_0287'];
-  const colorableMat = ["CAR_PAINT_BODY-01"];
-  // // Define the roof meshes to exclude for specific colors
-  // const roofMeshes = [
-  //   "shell_02779_2",
-  //   "shell_03160",
-  //   "Retopo_shell_03312",
-  //   "shell_0106_14",
-  //   "shell_0_02",
-  //   "shell_0267",
-  //   "shell_02344",
-  //   "shell_02162",
-  //   "shell_02365",
-  //   "shell_02277",
-  //   // "shell_03160",
-  //   "shell_02779_2",
-  //   "shell_02029_1",
-  //   "shell_02161",
-  //   "shell_0106_14",
-  //   "shell_0_02",
-  //   "Retopo_shell_03312",
-  //   // "Retopo_shell_0021",//mirroe
-  //   // "Retopo_shell_0017",
-  //   // "shell_02732_1",
-  //   // "shell_02733",
-  //   // "shell_02733_1",
-  //   // "shell_0.3160_0",
-  //   // "shell_0.395",
-  // ];
 
   // Define the roof meshes to exclude for specific colors
   const roofMeshes = ["Retopo_shell_0017", "Retopo_shell_0021", "Roof"];
-
-  const nonReflectiveMeshes = [
-    "LicensePlate003",
-    "LicensePlate002",
-    "M_xogBPo001_Blackplane_Black",
-    "LicensePlate001",
-    "LicensePlate",
-    "shell_03361",
-    "shell_03173",
-    "shell_0133_2",
-    "shell_0132_6",
-    "shell_02662",
-  ];
-  const backGlass = ["Retopo_shell_0016"];
-  // Define default roof color (e.g., black)
-  const defaultRoofColor = "#000000";
-  const l_side = [
-    "R-Sheel-Back",
-    "R-Door-01",
-    "R-Door-02",
-    "R-Front-Blue",
-    "Handle-R-02",
-    "Handle-R-01",
-  ];
-
-  // scene.traverse((child) => {
-  //   if (child.isMesh) {
-  //     if(child.material.map)
-  //       console.log(child.material.map);
-
-  //     if(child.material.name.includes('GLOW'))
-  //     {
-  //       if(lightsOn)
-  //         child.material.opacity = 1.0;
-  //       else
-  //       child.material.opacity = 0;
-  //       }
-  //     // child.material.envMapIntensity =4;
-  //     if (
-  //       child.material.isMeshPhysicalMaterial &&
-  //       child.material.name.includes("RedClr")
-  //     ) {
-  //       // Set emissive color based on the mesh's base color
-  //       // console.log(child.material.name,child.material.color);
-
-  //       child.material.emissive = new THREE.Color(1, 0, 0);
-  //     }
-  //     else if (child.material.name.includes("BLACK GLASS")) {
-  //       // child.material.envMap = hdrEquirect;
-  //       // console.log(child.material );
-
-  //       if (child.material.name === "BLACK GLASS.003")
-  //         child.material.opacity = 0.9;
-  //       else child.material.opacity = 0.8;
-  //       // child.needsUpdate = true; // Required after updating material properties
-
-  //     }
-
-  //     // Exclude roof meshes for specific colors
-  //     if (
-  //       (color === "#efefef" || color === "#FFFFFF") && // Exact hex values for the black roof colors
-  //       roofMeshes.includes(child.name)
-  //     ) {
-  //       // child.material.roughness = 0.4;
-  //       // child.material.reflectivity = 0;
-  //       // child.material.color.set(defaultRoofColor); // Reset to default roof color
-  //       return; // Skip applying the new color
-  //     }
-
-  //     // Apply color to the specified meshes
-  //     if (colorableMeshes.includes(child.name)) {
-  //       console.log(child.material.roughness);
-  //       // if (color === "#132B27") child.material.roughness = 0.3;
-  //       // child.material.reflectivity = 0.1;
-  //       // child.material.roughness = 0.5;
-  //       // child.material.color.set(color);
-  //     }
-  //     // if(colorableMat.includes(child.material.name)){
-  //     //   child.material.color.set(color);
-  //     // }
-  //     if (roofMeshes.includes(child.name)) {
-  //       //&& !(color === "#efefef" || color === "#bbe9ff")){
-  //       // child.material.roughness = 0.4;
-  //       // child.material.reflectivity = 0;
-  //     }
-  //     if (nonReflectiveMeshes.includes(child.name)) {
-  //       if (child.name.includes("LicensePlate")) {
-  //         // child.material.envMap = null;
-  //         child.material.envMapIntensity = 0;
-  //         child.material.lightMapIntensity = 0;
-  //       }
-  //       // child.material.emmisive = new THREE.Color(0,0,0);
-  //       // // child.material.lights = false;
-  //       // child.material.specularColor = new THREE.Color(0,0,0);
-  //       // child.material.specularIntensity = 0;
-  //       // child.material.emmisiveIntensity = 0;
-  //       // child.material.reflectivity = 0;
-
-  //       // child.material.roughness = 1.0;
-  //     }
-  //     // if (backGlass.includes(child.name)) {
-  //     //   child.material.opacity = 0.4;
-  //     // }
-  //     if (child.name.includes("shell_02358")) {
-  //       // child.material.color.set("#aaaaaa");
-  //     }
-  //     if (child.name === "running_surface001") {
-  //       // child.material.color.set("#3D3D3D");
-  //     }
-  //     if(l_side.includes(child.name)){
-  //       child.material.color.set("#EBF9FF");
-  //     }
-  //     if(child.material.map && child.material.map.name === 'bake-07 creta-white-02')
-  //       // child.material.map = new THREE.TextureLoader().load("/texture.webp");
-
-  //     child.material.needsUpdate = true;
-
-  //   }
-  // });
-  console.log(selColor, color);
 
   scene.traverse((child) => {
     if (child.isMesh) {
@@ -377,8 +183,8 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
           child.material.color.set(color);
           child.material.emissive.setHex("#000000"); // Set emissive color to red
           child.material.emissiveIntensity = 1; // Increase the intensity
-          child.material.IOR = 1.0;
-          child.material.reflectivity = 0.5;
+          child.material.IOR = 1.778;
+          child.material.reflectivity = 0.7;
         } else if (selColor === "Titan Grey Matte") {
           child.material.color.set(color);
           child.material.emissive.setHex("#1f1e1e");
@@ -398,6 +204,15 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
           child.material.IOR = 1.0;
           child.material.reflectivity = 0.5;
         }
+        //ambient light
+        if (ambientLightRef.current){
+          if(selColor.includes("Atlas White") || selColor === "Fiery Red Pearl" || selColor === "Starry Night") {
+            ambientLightRef.current.intensity = 3;
+          }else{
+            ambientLightRef.current.intensity = 2;
+          }
+        } 
+
         if (selColor.includes("Matte")) child.material.roughness = 0.2;
         else child.material.roughness = 0.13;
       }
@@ -409,6 +224,8 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
       position={[0, 0.03, -1.5]}
       rotation={[0, (3 * Math.PI) / 2, 0]}
     >
+    <ambientLight ref ={ambientLightRef} intensity={2} color="#ffffff" />
+
       {" "}
       {/* Scale up by 20% */}
       <primitive object={scene} />
@@ -485,7 +302,7 @@ export default function ThreeScene() {
     { id: "Atlas White", hex: "#f0f0f0", path: "./colors/Atlas White.png" },
     {
       id: "Fiery Red Pearl",
-      hex: "#850400",
+      hex: "#8D0C07",
       path: "./colors/Fiery Red Pearl.png",
     }, //#930302
     { id: "Starry Night", hex: "#122544", path: "./colors/Starry Night.png" }, //#3a496b
@@ -677,7 +494,6 @@ export default function ThreeScene() {
           minDistance={5} // Minimum zoom distance
           maxDistance={maxDistance} // Maximum zoom distance
         ></OrbitControls>
-        <ambientLight intensity={2} color="#ffffff" />
         {/* <pointLight position={[20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[-20, 0, 2]} intensity={300}></pointLight>
         <pointLight position={[0, 5, -5]} intensity={300}></pointLight>
