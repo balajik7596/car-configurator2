@@ -129,6 +129,10 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
       if(child.name === 'OVRM_bottom'){
         child.material.color.set("#1c1c1c");
       }
+      if(child.name === 'shell_0096' || child.name === 'shell_0098'){
+        child.material.color.set("#0a0a0a");
+        child.material.roughness = 0.12;
+      }
 
       if (
         child.name === "Top-SIDE-SILVER" &&
@@ -494,7 +498,7 @@ export default function ThreeScene() {
           enableRotate={true}
           minPolarAngle={Math.PI / 5} // Limit looking up/down
           maxPolarAngle={Math.PI / 2.3}
-          minDistance={5} // Minimum zoom distance
+          minDistance={0} // Minimum zoom distance
           maxDistance={maxDistance} // Maximum zoom distance
         ></OrbitControls>
         {/* <pointLight position={[20, 0, 2]} intensity={300}></pointLight>
