@@ -498,7 +498,7 @@ export default function ThreeScene() {
           enableRotate={true}
           minPolarAngle={Math.PI / 5} // Limit looking up/down
           maxPolarAngle={Math.PI / 2.3}
-          minDistance={0} // Minimum zoom distance
+          minDistance={5} // Minimum zoom distance
           maxDistance={maxDistance} // Maximum zoom distance
         ></OrbitControls>
         {/* <pointLight position={[20, 0, 2]} intensity={300}></pointLight>
