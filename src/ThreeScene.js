@@ -11,8 +11,24 @@ import {
 import { DirectionalLightHelper, ACESFilmicToneMapping } from "three"; // Import from 'three'
 import * as THREE from "three";
 import "./app.css";
-// import { useLoader } from "@react-three/fiber";
-// import { RGBELoader } from "three-stdlib";
+
+function SkyDomeSunLit({visible}) {
+  const { scene } = useGLTF("/skydomesunlit.glb"); // Replace with the path to your GLB file
+  return (
+    <group rotation={[0, (3 * Math.PI) / 2, 0]} visible={visible}>
+      <primitive object={scene} />
+    </group>
+  );
+}
+function SkyDomeMoonLit({visible}) {
+  const { scene } = useGLTF("/skydomemoonlit.glb"); // Replace with the path to your GLB file
+  return (
+    <group rotation={[0, (3 * Math.PI) / 2, 0]} visible={visible}>
+      <primitive object={scene} />
+    </group>
+  );
+}
+
 function CarModel({ color, lightsOn, selColor, onLoad }) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
   const ambientLightRef = useRef();
@@ -232,18 +248,6 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
       rotation={[0, (3 * Math.PI) / 2, 0]}
     >
     <ambientLight ref ={ambientLightRef} intensity={2} color="#ffffff" />
-
-      {" "}
-      {/* Scale up by 20% */}
-      <primitive object={scene} />
-    </group>
-  );
-}
-
-function SkyDome() {
-  const { scene } = useGLTF("/skydome.glb"); // Replace with the path to your GLB file
-  return (
-    <group rotation={[0, (3 * Math.PI) / 2, 0]}>
       <primitive object={scene} />
     </group>
   );
@@ -299,7 +303,12 @@ export default function ThreeScene() {
   const { active, progress } = useProgress(); // Use progress from drei
   const [maxDistance, setMaxDistance] = useState(8); // Default maxDistance
   const [currentBox, setCurrentBox] = useState(0);
-  
+  const [selectedEnvMode, setSelectedEnvMode] = useState("sunlit"); // Track selected mode
+
+  const handleModeChange = (mode) => {
+    setSelectedEnvMode(mode);
+  };
+
   const colors = [
     {
       id: "Abyss Black Pearl",
@@ -435,6 +444,60 @@ export default function ThreeScene() {
           </div>
         </div>
       )}
+      {/* Top Center Buttons */}
+      {modelLoaded && (<div className="mode-toggle">
+          <button
+            className={`toggle-button ${selectedEnvMode === "sunlit" ? "selected" : ""}`}
+            onClick={() => handleModeChange('sunlit')}
+          >
+            Sunlit
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon sun-icon"
+            >
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <button
+            className={`toggle-button ${
+              selectedEnvMode === "moonlit" ? "selected" : ""}`}
+            onClick={() => handleModeChange('moonlit')}
+          >
+            Moonlit
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon moon-icon"
+            >
+              <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"></path>
+            </svg>
+          </button>
+      </div>)}
+
+
       {/* Brand Banner */}
       {!modelLoaded && (
         <div className={`brand-banner `}>
@@ -488,7 +551,8 @@ export default function ThreeScene() {
             onLoad={handleModelLoad}
             lightsOn={lightsOn}
           />
-          <SkyDome />
+          <SkyDomeSunLit visible={selectedEnvMode === 'sunlit'}/>
+          <SkyDomeMoonLit visible={selectedEnvMode === 'moonlit'}/>
           <CarShadow />
         </Suspense>
         {/* Add Camera Controls */}

@@ -453,7 +453,7 @@ body {
   transition: visibility 0s, opacity 0.5s ease-in-out;
 
   /* Use the custom font */
-  font-family: "MyCustomFont", sans-serif;
+  font-family: "HyundaiFont", sans-serif;
   font-size: 14px; /* Adjust size as needed */
 }
 
@@ -708,3 +708,57 @@ body {
     padding-top: 10px; /* Adjust padding to reduce height */
   }
 }
+
+
+/* Container for the toggle buttons */
+.mode-toggle {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0px; /* Space between buttons */
+  z-index: 1000; /* Ensure it's above the canvas */
+}
+
+/* Base styles for buttons */
+.toggle-button {
+  padding: 10px 20px;
+  border: 2px linear-gradient(90deg, #003469, #0054aa);
+  background-color: white;
+  color: blue;
+  font-family: "HyundaiFont", sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between text and icon */
+  transition: all 0.3s ease;
+}
+
+/* Icons */
+.icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Selected button styles */
+.toggle-button.selected {
+  background: linear-gradient(90deg, #003469, #0054aa); /* Gradient background */
+  color: white; /* White text */
+  border: none; /* Remove border for cleaner look */
+}
+
+.toggle-button.selected .icon {
+  stroke: white; /* Change icon color to match text when selected */
+}
+
+.toggle-button:not(.selected) .icon {
+  stroke: blue; /* Icon color when not selected */
+}
+
+/* Button hover effect */
+.toggle-button:hover {
+  opacity: 0.9;
+}
+
