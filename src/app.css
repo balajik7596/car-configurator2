@@ -713,7 +713,7 @@ body {
 /* Container for the toggle buttons */
 .mode-toggle {
   position: absolute;
-  top: 20px;
+  top: 1dvh;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -726,7 +726,7 @@ body {
   padding: 10px 20px;
   border: 2px linear-gradient(90deg, #003469, #0054aa);
   background-color: white;
-  color: blue;
+  color: black;
   font-family: "HyundaiFont", sans-serif;
   font-size: 16px;
   cursor: pointer;
@@ -754,11 +754,45 @@ body {
 }
 
 .toggle-button:not(.selected) .icon {
-  stroke: blue; /* Icon color when not selected */
+  stroke: black; /* Icon color when not selected */
 }
 
 /* Button hover effect */
 .toggle-button:hover {
   opacity: 0.9;
+}
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .mode-toggle {
+    top: 1dvh;
+    transform: translateX(-50%) scale(0.85); /* Scale down the entire container by 15% */
+  }
+
+  .toggle-button {
+    padding: 8.5px 17px; /* Reduce padding by 15% */
+    font-size: 13.6px; /* Reduce font size by 15% */
+  }
+
+  .icon {
+    width: 15.3px; /* Reduce icon width by 15% */
+    height: 15.3px; /* Reduce icon height by 15% */
+  }
+}
+
+@media (max-width: 480px) {
+  .mode-toggle {
+    top: 1dvh;
+    transform: translateX(-50%) scale(0.85); /* Scale down for smaller screens too */
+  }
+
+  .toggle-button {
+    padding: 8.5px 17px; /* Reduce padding */
+    font-size: 13.6px; /* Reduce font size */
+  }
+
+  .icon {
+    width: 15.3px; /* Adjust icon size */
+    height: 15.3px;
+  }
 }
 

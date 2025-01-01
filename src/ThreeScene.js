@@ -29,7 +29,7 @@ function SkyDomeMoonLit({visible}) {
   );
 }
 
-function CarModel({ color, lightsOn, selColor, onLoad }) {
+function CarModel({ color, lightsOn, selColor, onLoad, environment }) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
   const ambientLightRef = useRef();
 
@@ -232,7 +232,8 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
           if(selColor.includes("Atlas White") || selColor === "Fiery Red Pearl" || selColor === "Starry Night" ) {
             ambientLightRef.current.intensity = 3;
           }else{
-            ambientLightRef.current.intensity = 2;
+            environment === 'sunlit' ? ambientLightRef.current.intensity = 2 :
+            ambientLightRef.current.intensity = 1;
           }
         } 
 
@@ -545,11 +546,11 @@ export default function ThreeScene() {
           <RotatingEnvironment path="/studio_small.hdr" rotationValue={180} />
           {/* Add the 3D Model */}
           <CarModel
-            ref={carRef}
             color={carColor}
             selColor={selColor}
             onLoad={handleModelLoad}
             lightsOn={lightsOn}
+            environment = {selectedEnvMode}
           />
           <SkyDomeSunLit visible={selectedEnvMode === 'sunlit'}/>
           <SkyDomeMoonLit visible={selectedEnvMode === 'moonlit'}/>
