@@ -126,7 +126,7 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         child.material.roughness = 0.22;
         child.material.metalness = 0.6;
       }
-      if(child.name === 'shell_02733'){
+      if(child.name === 'OVRM_bottom'){
         child.material.color.set("#000000");
       }
 
