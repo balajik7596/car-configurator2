@@ -175,7 +175,7 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
           child.material.reflectivity = 0.5;
           if(selColor.includes('Metallic')){
             child.material.roughness = 0.13
-            child.material.reflectivity = 0.71;
+            child.material.reflectivity = 0.68;
           }
         } else if (selColor === "Starry Night") {
           child.material.color.set(color);
@@ -227,8 +227,8 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         if (selColor.includes("Matte")){
            child.material.roughness = 0.2;
            if(selColor.includes('Ocean')){
-              child.material.roughness = 0.22;
-              child.material.reflectivity = 0.3;
+              child.material.roughness = 0.2;
+              child.material.reflectivity = 0.4;
             }
         }
         else child.material.roughness = 0.13;
