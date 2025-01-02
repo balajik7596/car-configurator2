@@ -173,6 +173,10 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
           child.material.emissiveIntensity = 1;
           child.material.IOR = 1.0;
           child.material.reflectivity = 0.5;
+          if(selColor.includes('Metallic')){
+            child.material.roughness = 0.13
+            child.material.reflectivity = 0.71;
+          }
         } else if (selColor === "Starry Night") {
           child.material.color.set(color);
           child.material.emissive.setHex("#678908"); // Set emissive color to red
@@ -220,7 +224,13 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
           }
         } 
 
-        if (selColor.includes("Matte")) child.material.roughness = 0.2;
+        if (selColor.includes("Matte")){
+           child.material.roughness = 0.2;
+           if(selColor.includes('Ocean')){
+              child.material.roughness = 0.22;
+              child.material.reflectivity = 0.3;
+            }
+        }
         else child.material.roughness = 0.13;
       }
     }
