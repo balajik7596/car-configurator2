@@ -968,13 +968,12 @@ export default function ThreeScene() {
                 setPlayAnimation={setPlayAnimation}
                 selectedAnimation={selectedAnimation}
               />
-              <RotatingEnvironment path="/360.jpg" rotationValue={Math.PI/2} />
-
+              
             </group>)}
             {activeCamera === 'interior' && (
             <group>
               {/* <IntDome></IntDome> */}
-              <RotatingEnvironment path="/360.jpg" rotationValue={Math.PI/2} />
+              <RotatingEnvironment path="/pano.hdr" rotationValue={Math.PI/2} />
 
             </group>)} 
           {!hideOthers?(spriteClicked
