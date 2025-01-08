@@ -18,26 +18,92 @@ import SidePanel from './SidePanel'; // Import the side panel component
 import "./app.css";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
-function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation}) {
+function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlayAnimation}) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
   const { scene, animations } = useGLTF("/main-car.glb");
-  const [mixer, setMixer] = useState(null);
+  const [mixer, setMixer] = useState(new THREE.AnimationMixer(scene));
   const ambientLightRef = useRef();
   const clock = new THREE.Clock(); // to manage the animation time
-  const [isReversed, setIsReversed] = useState(true); // Track if animation should play in reverse
+  // const [isReversed, setIsReversed] = useState(true); // Track if animation should play in reverse
+// console.log(animations);
 
+  useEffect(() => {
+    if (animations && mixer && scene) {
+      // mixer = new THREE.AnimationMixer(scene);
+
+      // Find animations by name
+      const frontLeftDoor = animations.find((clip) => clip.name === "DOOR LEFT  FRONT CONTROLLERAction");
+      const frontRightDoor = animations.find((clip) => clip.name === "DOOR RIGHT FRONT CONTROLLERAction");
+      const rearLeftDoor = animations.find((clip) => clip.name === "DOOR LEFT BACKAction");
+      const rearRightDoor = animations.find((clip) => clip.name === "DOOR RIGHT BACKAction");
+      const behindBootDoor = animations.find((clip) => clip.name === "BACK GATE CONTROLLERAction");
+      const leftWheelRotation = animations.find((clip) => clip.name === "WHEEL L");
+      const rightWheelRotation = animations.find((clip) => clip.name === "WHEEL R");
+      const sunroofAnimation = animations.find((clip) => clip.name === "SUN ROOF");
+      const frontChargerFlap = animations.find((clip) => clip.name === "FRNT CHARGER FLAPAction"); // Front Charger Flap Animation
+
+      const createAction = (clip) => {
+        if (!clip) return null;
+        const action = mixer.clipAction(clip);
+        action.loop = THREE.LoopOnce; // Play only once
+        action.clampWhenFinished = true; // Freeze at the last frame
+        return action;
+      };
+
+      const actions = {
+        frontLeft: createAction(frontLeftDoor),
+        frontRight: createAction(frontRightDoor),
+        rearLeft: createAction(rearLeftDoor),
+        rearRight: createAction(rearRightDoor),
+        behindBoot: createAction(behindBootDoor),
+        leftWheel: createAction(leftWheelRotation),
+        rightWheel: createAction(rightWheelRotation),
+        sunroof: createAction(sunroofAnimation),
+        chargerFlap: createAction(frontChargerFlap), // Charger Flap Action
+      };
+
+      const playToggle = (action, isReversed) => {
+        console.log("hit",action,isReversed);
+        
+        if (!action) return;
+        action.paused = false;
+        action.setEffectiveTimeScale(isReversed ? -1 : 1); // Reverse or forward playback
+        action.setEffectiveWeight(1); // Ensure the action is fully active
+        if (isReversed) {
+          action.time = action.getClip().duration; // Start from the end of the clip
+        } else {
+          action.time = 0; // Start from the beginning of the clip
+        }
+        action.play(); // Play the animation
+      };
+
+      // Set play functions with toggle
+      setPlayAnimation({
+        openFrontLeftDoor: (isReversed) => playToggle(actions.frontLeft, isReversed),
+        openFrontRightDoor: (isReversed) => playToggle(actions.frontRight, isReversed),
+        openRearLeftDoor: (isReversed) => playToggle(actions.rearLeft, isReversed),
+        openRearRightDoor: (isReversed) => playToggle(actions.rearRight, isReversed),
+        openBehindBootDoor: (isReversed) => playToggle(actions.behindBoot, isReversed),
+        playLeftWheel: (isReversed) => playToggle(actions.leftWheel, isReversed),
+        playRightWheel: (isReversed) => playToggle(actions.rightWheel, isReversed),
+        toggleSunroof: (isReversed) => playToggle(actions.sunroof, isReversed),
+        toggleChargerFlap: (isReversed) => playToggle(actions.chargerFlap, isReversed), // Charger Flap Toggle
+      });
+    }
+    
+  }, [animations, scene, setPlayAnimation]);
     // Setup the animation mixer when the GLTF model is loaded
-    useEffect(() => {
-      if (animations && animations.length > 0) {
-        const animationMixer = new THREE.AnimationMixer(scene);
-        animations.forEach((clip) => {
-          animationMixer.clipAction(clip).paused = true; // Start paused
-        });
-        setMixer(animationMixer);
-      }
+    // useEffect(() => {
+    //   if (animations && animations.length > 0) {
+    //     const animationMixer = new THREE.AnimationMixer(scene);
+    //     animations.forEach((clip) => {
+    //       animationMixer.clipAction(clip).paused = true; // Start paused
+    //     });
+    //     setMixer(animationMixer);
+    //   }
   
-      if (onLoad) onLoad();
-    }, [animations, scene, onLoad]);
+    //   if (onLoad) onLoad();
+    // }, [animations, scene, onLoad]);
   
     // Update the animation mixer on each frame
     useFrame(() => {
@@ -47,32 +113,32 @@ function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation}) {
     });
   
     // Play the selected animation when it changes
-    useEffect(() => {
-      if (mixer && selectedAnimation && animations) {
-        const animationClip = animations.filter(
-          (clip) => clip.name.includes(selectedAnimation)
-        );
-        const door = 
-        mixer.stopAllAction();
+    // useEffect(() => {
+    //   if (mixer && selectedAnimation && animations) {
+    //     const animationClip = animations.filter(
+    //       (clip) => clip.name.includes(selectedAnimation)
+    //     );
+    //     // const door = 
+    //     mixer.stopAllAction();
 
-        if (animationClip) {
+    //     if (animationClip) {
           
-          animationClip.forEach((clip) => {
-            // mixer.stopAllAction();
+    //       animationClip.forEach((clip) => {
+    //         // mixer.stopAllAction();
 
-            const action = mixer.clipAction(clip);
-            action.setEffectiveTimeScale(isReversed ? -1 : 1); // Reverse or forward playback
-            action.setEffectiveWeight(1);
-            action.reset().play(); 
-            action.setLoop(THREE.LoopOnce, 1);  // LoopOnce plays the animation once
-            action.clampWhenFinished = true; // Ensures it doesn't loop back to the beginning
-          });
+    //         const action = mixer.clipAction(clip);
+    //         action.setEffectiveTimeScale(isReversed ? -1 : 1); // Reverse or forward playback
+    //         action.setEffectiveWeight(1);
+    //         action.reset().play(); 
+    //         action.setLoop(THREE.LoopOnce, 1);  // LoopOnce plays the animation once
+    //         action.clampWhenFinished = true; // Ensures it doesn't loop back to the beginning
+    //       });
           
-        }
-        setIsReversed(!isReversed);
+    //     }
+    //     // setIsReversed(!isReversed);
 
-      }
-    }, [selectedAnimation, animations, mixer]);
+    //   }
+    // }, [selectedAnimation, animations, mixer]);
     
 
   useEffect(() => {
@@ -553,6 +619,15 @@ export default function ThreeScene() {
   const [selectedAnimation, setselectedAnimation] = useState(""); // State to manage the active camera
   const defaultCameraRef = useRef();
   const interiorCameraRef = useRef();
+  const [sunroofState, setSunroofState] = useState(false);
+  const [playAnimation, setPlayAnimation] = useState({
+    openFrontLeftDoor: () => { },
+    openFrontRightDoor: () => { },
+    openRearLeftDoor: () => { },
+    openRearRightDoor: () => { },
+    openBehindBootDoor: () => { },
+    toggleSunroof: () => { },
+  });
   const svgString = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="100px" height="100px">
     <!-- Outer Circle (more transparent) -->
@@ -634,12 +709,59 @@ export default function ThreeScene() {
     else
       setActiveCamera("default");
   }
-  const handlePlayAnimation = (name) => {
-    setselectedAnimation(name); // Replace with your animation name
+  const handlePlayAnimation = (door) => {
+    setDoorStates((prev) => {
+      const isReversed = prev[door];
+      if (playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]) {
+        playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`](isReversed);
+      }
+      return { ...prev, [door]: !prev[door] }; // Toggle the door state
+    });
   };
 
   const handleStopAnimation = () => {
     carModelRef.current?.stopAnimation("YourAnimationName"); // Replace with your animation name
+  };
+
+  const handleToggleSunroof = () => {
+    setSunroofState((prev) => {
+      playAnimation.toggleSunroof(prev); // Play or reverse the sunroof animation
+      return !prev; // Toggle the state
+    });
+  };
+  const [doorStates, setDoorStates] = useState({
+    frontLeft: false,
+    frontRight: false,
+    rearLeft: false,
+    rearRight: false,
+    behindBoot: false,
+  });
+  const handlePlayAllDoors = () => {
+    const allDoorsOpen = Object.values(doorStates).every((state) => state === true);
+
+    setDoorStates((prev) => {
+      const newStates = {};
+      for (const door in prev) {
+        const isReversed = allDoorsOpen; // Reverse if all doors are open
+        if (!allDoorsOpen && prev[door] === false) {
+          // Only play animation to open doors that are closed
+          if (playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]) {
+            playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`](isReversed);
+          }
+          newStates[door] = true; // Mark door as open
+        } else if (allDoorsOpen && prev[door] === true) {
+          // Only play animation to close doors that are open
+          if (playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]) {
+            playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`](isReversed);
+          }
+          newStates[door] = false; // Mark door as closed
+        } else {
+          // Keep state unchanged for already open/closed doors
+          newStates[door] = prev[door];
+        }
+      }
+      return newStates;
+    });
   };
   useEffect(() => {
     if (lightRef.current && !helperRef.current) {
@@ -703,25 +825,25 @@ export default function ThreeScene() {
               <button className="function-button" onClick={handleLightChange}>
                 <img src="/Light Indicator.png" alt="Icon 1" />
               </button>
-              <button className="function-button" onClick={() =>handlePlayAnimation('DOOR RIGHT FRONT')}>
+              <button className="function-button" onClick={() =>handlePlayAnimation("frontRight")}>
                 <img src="/doorrf.png" alt="Icon 1" />
               </button>
-              <button className="function-button" onClick={() =>handlePlayAnimation('DOOR LEFT  FRONT')}>
+              <button className="function-button" onClick={() =>handlePlayAnimation('frontLeft')}>
                 <img src="/doorlf.png" alt="Icon 1" />
               </button>
-              <button className="function-button" onClick={() =>handlePlayAnimation('DOOR RIGHT BACK')}>
+              <button className="function-button" onClick={() =>handlePlayAnimation('rearRight')}>
                 <img src="/doorbr.png" alt="Icon 1" />
               </button>
-              <button className="function-button" onClick={() =>handlePlayAnimation('DOOR LEFT BACK')}>
+              <button className="function-button" onClick={() =>handlePlayAnimation('rearLeft')}>
                 <img src="/doorbl.png" alt="Icon 1" />
               </button>
-              <button className="function-button" onClick={() =>handlePlayAnimation('DOOR')}>
+              <button className="function-button" onClick={handlePlayAllDoors}>
                 <img src="/door.png" alt="Icon 1" />
               </button>
-              {/* <button className="function-button" onClick={() =>handlePlayAnimation('SUN')}>
+              {/* <button className="function-button" onClick={handleToggleSunroof}>
                 <img src="/Light Indicator.png" alt="Icon 1" />
               </button> */}
-              <button className="function-button" onClick={() =>handlePlayAnimation('GATE')}>
+              <button className="function-button" onClick={() => handlePlayAnimation("behindBoot")}>
                 <img src="/back.png" alt="Icon 1" />
               </button>
               {/* <button className="function-button" onClick={() =>handlePlayAnimation('FRNT')}>
@@ -800,6 +922,7 @@ export default function ThreeScene() {
             selColor={selColor}
             onLoad={handleModelLoad}
             lightsOn={lightsOn}
+            setPlayAnimation={setPlayAnimation}
             selectedAnimation={selectedAnimation}
           />
           {!spriteClicked && (<group>
