@@ -366,7 +366,22 @@ function SkyDome({onClick}) {
     </group>
   );
 }
-
+function IntDome({onClick}) {
+  const { scene } = useGLTF("/pano.glb"); // Replace with the path to your GLB file
+  const handleClick = (event) => {
+    // console.log(event.object.name);
+        
+    // Call the parent handler when clicked
+    if (onClick && typeof onClick === 'function') {
+      onClick(event.object.name); // Pass event if needed or modify the handler
+    }
+  };
+  return (
+    <group rotation={[0, (3 * Math.PI) / 2, 0]} onClick = {handleClick}>
+      <primitive object={scene} />
+    </group>
+  );
+}
 function CarShadow() {
   // Load the texture (replace with your actual .webp file path)
   const texture = useTexture("/carshadow.webp"); // Replace with your actual .webp path
@@ -585,6 +600,8 @@ export default function ThreeScene() {
   const { active, progress } = useProgress(); // Use progress from drei
   const [currentBox, setCurrentBox] = useState(0);
   const [spriteClicked, setSpriteClicked] = useState(false);
+  const [hideOthers, sethideOthers] = useState(false);
+
   const [target, setTarget] = useState([-5, 3, -8]);
   const [minDistance, setMinDistance] = useState(5);
   const [maxDistance, setMaxDistance] = useState(8); // Default maxDistance
@@ -597,6 +614,10 @@ export default function ThreeScene() {
   const [selectedAnimation, setselectedAnimation] = useState(""); // State to manage the active camera
   const defaultCameraRef = useRef();
   const interiorCameraRef = useRef();
+  const [toneMapexp, settoneMapexp] = useState(1.2);
+  const [toneMap, settoneMap] = useState(THREE.ACESFilmicToneMapping);
+
+
   const [sunroofState, setSunroofState] = useState(false);
   const [playAnimation, setPlayAnimation] = useState({
     openFrontLeftDoor: () => { },
@@ -664,8 +685,8 @@ export default function ThreeScene() {
     { id: 'airflaps', event: 'handleSpriteClick', position: [-0.257, 0.46, -2.7] },
     { id: 'bumper', event: 'handleSpriteClick', position: [-0.16973610994713895, 0.600119960444232, 2.7082867790909097] },
     { id: 'wheel', event: 'handleSpriteClick', position: [1.166633102010636, 0.6027375218705294, -1.6985152476025873] },
-    { id: 'interior', event: 'switchTointerior', position: [1.1206609966479046, 1.1603088054062152, 0.2972193984778875] },
-    { id: 'exterior', event: 'switchTointerior', position: [0.6864094940674355, 1.0438238091050263, 0.16418587917159022] },
+    // { id: 'interior', event: 'switchTointerior', position: [1.1206609966479046, 1.1603088054062152, 0.2972193984778875] },
+    // { id: 'exterior', event: 'switchTointerior', position: [0.6864094940674355, 1.0438238091050263, 0.16418587917159022] },
     { id: 'steering', event: 'handleSpriteClick', position: [0.42432859476185947, 1.2086424446862685, -0.3089562841676877] },
     { id: 'display', event: 'handleSpriteClick', position: [0.17507262595172307, 1.3055110190586945, -0.5184277591798003] },
     { id: 'seat', event: 'handleSpriteClick', position: [-0.6472811047481658, 0.8115163349545533, -0.3406045298454772] },
@@ -696,10 +717,23 @@ export default function ThreeScene() {
     // console.log("Sprite clicked! Current state:", spriteClicked);
   }
   const switchTointerior = (id) => {
-    if(activeCamera === 'default')
+    // setSpriteClicked(!spriteClicked);
+    // setselectedSpriteId('new');
+    console.log(activeCamera,id);
+    
+    if(activeCamera === 'default' && id === 'in'){
       setActiveCamera("interior");
-    else
+      sethideOthers(true);
+      settoneMap(THREE.LinearToneMapping);
+      settoneMapexp(1);
+
+    }
+    else if (activeCamera === 'interior' && id === 'out'){
       setActiveCamera("default");
+      sethideOthers(false);
+      settoneMap(THREE.ACESFilmicToneMapping);
+      settoneMapexp(1.2);
+    }
   }
   const handlePlayAnimation = (door) => {
     setDoorStates((prev) => {
@@ -815,7 +849,7 @@ export default function ThreeScene() {
     <div className="viewer-container no-select">
       {" "}
       {/* Full-screen canvas */}
-      {modelLoaded && !spriteClicked && (
+      {modelLoaded && !spriteClicked && !hideOthers && (
         <div className="bottom-banner-container">
           <div className="bottom-banner">
             <div className="banner-image">
@@ -846,27 +880,29 @@ export default function ThreeScene() {
               <button className="function-button" onClick={() => handlePlayAnimation("behindBoot")}>
                 <img src="/back.png" alt="Icon 1" />
               </button>
-              {/* <button className="function-button" onClick={() =>handlePlayAnimation('FRNT')}>
-                <img src="/Light Indicator.png" alt="Icon 1" />
-              </button> */}
-              {/* <button className="function-button" onClick={() =>handlePlayAnimation('FLap')}>
-                <img src="/Light Indicator.png" alt="Icon 1" />
-              </button> */}
-              {/* <button className="function-button" onClick={() =>handlePlayAnimation('WHEEL')}>
-                <img src="/Light Indicator.png" alt="Icon 1" />
-              </button> */}
-              {/* <button className="function-button">
-            <img src="/path-to-icon2.png" alt="Icon 2" />
-          </button>
-          <button className="function-button">
-            <img src="/path-to-icon3.png" alt="Icon 3" />
-          </button>
-          <button className="function-button">
-            <img src="/path-to-icon4.png" alt="Icon 4" />
-          </button>
-          <button className="function-button">
-            <img src="/path-to-icon5.png" alt="Icon 5" />
-          </button> */}
+              <button className="function-button" onClick={() => switchTointerior("in")}>
+                <img src="/in.png" alt="Icon 1" />
+              </button>
+              <button className="function-button" onClick={() =>  switchTointerior("out")}>
+                <img src="/out.png" alt="Icon 1" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+        {modelLoaded && hideOthers && (
+        <div className="bottom-banner-container">
+          <div className="bottom-banner">
+            <div className="banner-image">
+              <img src="/Functions.png" alt="Functions Banner" />
+            </div>
+            <div className="button-list">              
+              <button className="function-button" onClick={() => switchTointerior("in")}>
+                <img src="/in.png" alt="Icon 1" />
+              </button>
+              <button className="function-button" onClick={() => switchTointerior("out")}>
+                <img src="/out.png" alt="Icon 1" />
+              </button>
             </div>
           </div>
         </div>
@@ -893,8 +929,8 @@ export default function ThreeScene() {
         // camera={{ position: [-5, 3, -8], fov: 50 }}
         gl={{
           antialias: true,
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.2,
+          toneMapping: toneMap,
+          toneMappingExposure: toneMapexp,
         }}
       >
       <PerspectiveCamera
@@ -908,61 +944,75 @@ export default function ThreeScene() {
         <PerspectiveCamera
           makeDefault={activeCamera === "interior"} // Activate this camera when it's active
           ref={interiorCameraRef}
-          position={[0, 1.5, 0.0]} // Position for interior view
-          fov={80}
+          position={(activeCamera === "interior")?[0, 1.5, 0.0]:[0,0,0]} // Position for interior view
+          fov={60}
           target={[0,50,0]}
         />
         <Suspense fallback={null}>
           {/* Load HDR Environment */}
-          <RotatingEnvironment path="/studio_small.hdr" rotationValue={180} />
-          {/* Add the 3D Model */}
-          <CarModel
-            ref={carModelRef}
-            color={carColor}
-            selColor={selColor}
-            onLoad={handleModelLoad}
-            lightsOn={lightsOn}
-            setPlayAnimation={setPlayAnimation}
-            selectedAnimation={selectedAnimation}
-          />
-          {spriteClicked
-  ? sprites.map((sprite) =>
-      sprite.id === selectedSpriteId ? (
-        <SpriteWithSVG
-          key={sprite.id}
-          id={sprite.id}
-          svgString={svgString}
-          position={sprite.position}
-          onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
-        />
-      ) : null // Hide other sprites
-    )
-  : sprites.map((sprite) => (
-      <SpriteWithSVG
-        key={sprite.id}
-        id={sprite.id}
-        svgString={svgString}
-        position={sprite.position}
-        onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
-      />
-))}
+          {/* <Image360Sphere imageUrl="/360.jpg" /> */}
+
+          {activeCamera === 'default' && (
+            <group>
+              <RotatingEnvironment path="/studio_small.hdr" rotationValue={180} />
+              <SkyDome onClick={handleCanvasClick} />
+              
+              <CarShadow />
+              {/* Add the 3D Model */}
+              <CarModel
+                ref={carModelRef}
+                color={carColor}
+                selColor={selColor}
+                onLoad={handleModelLoad}
+                lightsOn={lightsOn}
+                setPlayAnimation={setPlayAnimation}
+                selectedAnimation={selectedAnimation}
+              />
+              <RotatingEnvironment path="/360.jpg" rotationValue={Math.PI/2} />
+
+            </group>)}
+            {activeCamera === 'interior' && (
+            <group>
+              {/* <IntDome></IntDome> */}
+              <RotatingEnvironment path="/360.jpg" rotationValue={Math.PI/2} />
+
+            </group>)} 
+          {!hideOthers?(spriteClicked
+          ? sprites.map((sprite) =>
+              sprite.id === selectedSpriteId ? (
+                <SpriteWithSVG
+                  key={sprite.id}
+                  id={sprite.id}
+                  svgString={svgString}
+                  position={sprite.position}
+                  onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
+                />
+              ) : null // Hide other sprites
+            )
+          : sprites.map((sprite) => (
+              <SpriteWithSVG
+                key={sprite.id}
+                id={sprite.id}
+                svgString={svgString}
+                position={sprite.position}
+                onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
+              />
+          ))):null}
 
 
-          {/* <CameraMover targetPosition={target} spriteClicked={spriteClicked} /> */}
+          {/* <CameraMover targetPosition={[0,0,0]} targetRotation={[Math.PI2,0,0]} spriteClicked={activeCamera === 'interior'} /> */}
 
-          <SkyDome onClick={handleCanvasClick} />
-          <CarShadow />
         </Suspense>
         {modelLoaded && <RaycasterHandler />}
 
         {/* Add Camera Controls */}
         <OrbitControls
-          target={activeCamera === "default" ? [-0, 0, -0] : [0, 1.5, 0.0]}
+          target={activeCamera === "default" ? [-0, 0, -0] : [2, 1.5, 0.0]}
           enablePan={activeCamera === "default" ?enablePan:false}
           enableZoom={activeCamera === "default" ?enableZoom:false}
           enableRotate={true}
-          minPolarAngle={activeCamera === "default" ?minPolarAngle : Math.PI/4} // Limit looking up/down
-          maxPolarAngle={activeCamera === "default" ?maxPolarAngle : Math.PI/2.9}
+          minPolarAngle={activeCamera === "default" ?minPolarAngle : Math.PI/6} // Limit looking up/down
+          maxPolarAngle={activeCamera === "default" ?maxPolarAngle : Math.PI}
           minDistance={activeCamera === "default" ?minDistance:-20} // Minimum zoom distance
           maxDistance={activeCamera === "default" ?maxDistance:20} // Maximum zoom distance
         ></OrbitControls>        
@@ -983,7 +1033,7 @@ export default function ThreeScene() {
         </button>
       )} */}
       <SidePanel id={selectedSpriteId} show={spriteClicked} heading={'test'} description ={'testkndsknfnfdnkjfkjd'} imgsrc={''} onClose={handleClosePanel} />
-      {modelLoaded && !spriteClicked && (
+      {modelLoaded && !spriteClicked && !hideOthers && (
         <div
           className={
             showColors ? "color-picker-container" : "color-picker-container-new"
