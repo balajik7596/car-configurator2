@@ -41,7 +41,17 @@
   }
   
   .panel-image img {
-    max-width: 100%;
+    max-width: 95%;
+    height: auto;
+    border: 1px solid #ccc;
+  }
+  .back-image {
+    margin: 10px 0;
+    text-align: center;
+  }
+  
+  .back-image img {
+    max-width: 50%;
     height: auto;
     border: 1px solid #ccc;
   }
@@ -99,7 +109,26 @@
       font-size: 12px;
       padding: 5px;
     }
-  
+    .panel-image {
+      margin: 10px 0;
+      text-align: center;
+    }
+    
+    .panel-image img {
+      max-width: 75%;
+      height: auto;
+      border: 1px solid #ccc;
+    }
+    .back-image {
+      margin: 10px 0;
+      text-align: center;
+    }
+    
+    .back-image img {
+      max-width: 50%;
+      height: auto;
+      border: 1px solid #ccc;
+    }
     .back-btn {
       padding: 8px 15px;
       font-size: 12px;

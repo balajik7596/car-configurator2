@@ -66,9 +66,7 @@ const SidePanel = ({ show,id, onClose }) => {
     let description ='';
     let imgSrc = '';
     if(id !== '' ){
-        const selectedhotspot = hotspotDescriptions.filter(h => h.id === id)[0];
-        console.log(selectedhotspot);
-        
+        const selectedhotspot = hotspotDescriptions.filter(h => h.id === id)[0];        
         heading = selectedhotspot.heading;
         description = selectedhotspot.message;
         imgSrc = selectedhotspot.imgsrc;
@@ -84,8 +82,8 @@ const SidePanel = ({ show,id, onClose }) => {
       <div className="panel-description">
         <p>{description}</p>
       </div>
-      <button className="back-btn" onClick={onClose}>
-        &lt; Back
+      <button className="back-image" onClick={onClose}>
+      <img src={'./backbtn.png'} alt={heading} />
       </button>
     </div>
   );

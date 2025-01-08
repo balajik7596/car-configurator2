@@ -63,7 +63,6 @@ function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlay
       };
 
       const playToggle = (action, isReversed) => {
-        console.log("hit",action,isReversed);
         
         if (!action) return;
         action.paused = false;
@@ -111,35 +110,6 @@ function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlay
         mixer.update(clock.getDelta());
       }
     });
-  
-    // Play the selected animation when it changes
-    // useEffect(() => {
-    //   if (mixer && selectedAnimation && animations) {
-    //     const animationClip = animations.filter(
-    //       (clip) => clip.name.includes(selectedAnimation)
-    //     );
-    //     // const door = 
-    //     mixer.stopAllAction();
-
-    //     if (animationClip) {
-          
-    //       animationClip.forEach((clip) => {
-    //         // mixer.stopAllAction();
-
-    //         const action = mixer.clipAction(clip);
-    //         action.setEffectiveTimeScale(isReversed ? -1 : 1); // Reverse or forward playback
-    //         action.setEffectiveWeight(1);
-    //         action.reset().play(); 
-    //         action.setLoop(THREE.LoopOnce, 1);  // LoopOnce plays the animation once
-    //         action.clampWhenFinished = true; // Ensures it doesn't loop back to the beginning
-    //       });
-          
-    //     }
-    //     // setIsReversed(!isReversed);
-
-    //   }
-    // }, [selectedAnimation, animations, mixer]);
-    
 
   useEffect(() => {
     if (onLoad) onLoad();
@@ -380,10 +350,18 @@ function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlay
   );
 }
 
-function SkyDome() {
+function SkyDome({onClick}) {
   const { scene } = useGLTF("/skydome.glb"); // Replace with the path to your GLB file
+  const handleClick = (event) => {
+    // console.log(event.object.name);
+        
+    // Call the parent handler when clicked
+    if (onClick && typeof onClick === 'function') {
+      onClick(event.object.name); // Pass event if needed or modify the handler
+    }
+  };
   return (
-    <group rotation={[0, (3 * Math.PI) / 2, 0]}>
+    <group rotation={[0, (3 * Math.PI) / 2, 0]} onClick = {handleClick}>
       <primitive object={scene} />
     </group>
   );
@@ -681,7 +659,21 @@ export default function ThreeScene() {
       path: "/colors/Ocean Blue Metallic with black roof.png",
     },
   ];
-  
+  const sprites = [
+    { id: 'charger', event: 'handleSpriteClick', position: [0.026, 0.8, -2.65] },
+    { id: 'airflaps', event: 'handleSpriteClick', position: [-0.257, 0.46, -2.7] },
+    { id: 'bumper', event: 'handleSpriteClick', position: [-0.16973610994713895, 0.600119960444232, 2.7082867790909097] },
+    { id: 'wheel', event: 'handleSpriteClick', position: [1.166633102010636, 0.6027375218705294, -1.6985152476025873] },
+    { id: 'interior', event: 'switchTointerior', position: [1.1206609966479046, 1.1603088054062152, 0.2972193984778875] },
+    { id: 'exterior', event: 'switchTointerior', position: [0.6864094940674355, 1.0438238091050263, 0.16418587917159022] },
+    { id: 'steering', event: 'handleSpriteClick', position: [0.42432859476185947, 1.2086424446862685, -0.3089562841676877] },
+    { id: 'display', event: 'handleSpriteClick', position: [0.17507262595172307, 1.3055110190586945, -0.5184277591798003] },
+    { id: 'seat', event: 'handleSpriteClick', position: [-0.6472811047481658, 0.8115163349545533, -0.3406045298454772] },
+    { id: 'console', event: 'handleSpriteClick', position: [0.018167740087783865, 1.0581931975720994, -0.32555558189381917] },
+    { id: 'v2l', event: 'handleSpriteClick', position: [-0.0661013940479657, 1.1417463582073824, 0.31539398673229235] }
+  ];
+
+    
   const handleColorChange = (hex, id) => {
     setCarColor(hex);
     setSelColor(id);
@@ -763,6 +755,14 @@ export default function ThreeScene() {
       return newStates;
     });
   };
+  const eventHandlers = {
+    handleSpriteClick: handleSpriteClick,
+    switchTointerior: switchTointerior
+  };
+  const handleCanvasClick = (event) => {    
+    if(spriteClicked)
+      setSpriteClicked(false);
+  };
   useEffect(() => {
     if (lightRef.current && !helperRef.current) {
       // Add DirectionalLightHelper after light is added
@@ -815,7 +815,7 @@ export default function ThreeScene() {
     <div className="viewer-container no-select">
       {" "}
       {/* Full-screen canvas */}
-      {modelLoaded && (
+      {modelLoaded && !spriteClicked && (
         <div className="bottom-banner-container">
           <div className="bottom-banner">
             <div className="banner-image">
@@ -925,23 +925,32 @@ export default function ThreeScene() {
             setPlayAnimation={setPlayAnimation}
             selectedAnimation={selectedAnimation}
           />
-          {!spriteClicked && (<group>
-          <SpriteWithSVG id ='charger' svgString={svgString} position={[0.026, 0.8, -2.65]} onClick={handleSpriteClick} />
-          <SpriteWithSVG id ='airflaps' svgString={svgString} position={[-0.257, 0.46, -2.7]} onClick={handleSpriteClick} />
-          {/* <SpriteWithSVG id ='bumper' svgString={svgString} position={[-0.55, 0.79, -2.65]} onClick={handleSpriteClick} /> */}
-          <SpriteWithSVG id ='bumper' svgString={svgString} position={[ -0.16973610994713895,  0.600119960444232,  2.7082867790909097]} onClick={handleSpriteClick} />
-          <SpriteWithSVG id ='wheel' svgString={svgString} position={[  1.166633102010636,  0.6027375218705294,  -1.6985152476025873]} onClick={handleSpriteClick} />
-          <SpriteWithSVG id ='interior' svgString={svgString} position={[ 1.1206609966479046, 1.1603088054062152,0.2972193984778875]} onClick={switchTointerior} />
-          <SpriteWithSVG id ='exterior' svgString={svgString} position={[ 0.6864094940674355,  1.0438238091050263,  0.16418587917159022]} onClick={switchTointerior} />
-          <SpriteWithSVG id ='steering' svgString={svgString} position={[ 0.42432859476185947,  1.2086424446862685,  -0.3089562841676877]} onClick={handleSpriteClick} />
-          <SpriteWithSVG id ='display' svgString={svgString} position={[ 0.17507262595172307,  1.3055110190586945,  -0.5184277591798003]} onClick={handleSpriteClick} />
-          <SpriteWithSVG id ='seat' svgString={svgString} position={[ -0.6472811047481658,  0.8115163349545533,   -0.3406045298454772]} onClick={handleSpriteClick} />
-          <SpriteWithSVG id ='console' svgString={svgString} position={[ 0.018167740087783865, 1.0581931975720994,  -0.32555558189381917]} onClick={handleSpriteClick} />
-          <SpriteWithSVG id ='v2l' svgString={svgString} position={[-0.0661013940479657,  1.1417463582073824,  0.31539398673229235]} onClick={handleSpriteClick} />
-          </group>)}
+          {spriteClicked
+  ? sprites.map((sprite) =>
+      sprite.id === selectedSpriteId ? (
+        <SpriteWithSVG
+          key={sprite.id}
+          id={sprite.id}
+          svgString={svgString}
+          position={sprite.position}
+          onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
+        />
+      ) : null // Hide other sprites
+    )
+  : sprites.map((sprite) => (
+      <SpriteWithSVG
+        key={sprite.id}
+        id={sprite.id}
+        svgString={svgString}
+        position={sprite.position}
+        onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
+      />
+))}
+
+
           {/* <CameraMover targetPosition={target} spriteClicked={spriteClicked} /> */}
 
-          <SkyDome />
+          <SkyDome onClick={handleCanvasClick} />
           <CarShadow />
         </Suspense>
         {modelLoaded && <RaycasterHandler />}
@@ -974,7 +983,7 @@ export default function ThreeScene() {
         </button>
       )} */}
       <SidePanel id={selectedSpriteId} show={spriteClicked} heading={'test'} description ={'testkndsknfnfdnkjfkjd'} imgsrc={''} onClose={handleClosePanel} />
-      {modelLoaded && (
+      {modelLoaded && !spriteClicked && (
         <div
           className={
             showColors ? "color-picker-container" : "color-picker-container-new"
