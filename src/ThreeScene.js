@@ -1,5 +1,5 @@
 import React, { Suspense, useRef, useEffect, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame,useThree } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import {
   Environment,
@@ -7,17 +7,74 @@ import {
   useGLTF,
   useTexture,
   useProgress,
+  PerspectiveCamera
 } from "@react-three/drei";
 import { DirectionalLightHelper, ACESFilmicToneMapping } from "three"; // Import from 'three'
 import * as THREE from "three";
+import { Raycaster, Vector2 } from "three";
+import { useLoader } from '@react-three/fiber';
+import SidePanel from './SidePanel'; // Import the side panel component
+
 import "./app.css";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
-function CarModel({ color, lightsOn, selColor, onLoad }) {
+function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation}) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
+  const { scene, animations } = useGLTF("/main-car.glb");
+  const [mixer, setMixer] = useState(null);
   const ambientLightRef = useRef();
+  const clock = new THREE.Clock(); // to manage the animation time
+  const [isReversed, setIsReversed] = useState(true); // Track if animation should play in reverse
 
-  const { scene } = useGLTF("/main-car.glb");
+    // Setup the animation mixer when the GLTF model is loaded
+    useEffect(() => {
+      if (animations && animations.length > 0) {
+        const animationMixer = new THREE.AnimationMixer(scene);
+        animations.forEach((clip) => {
+          animationMixer.clipAction(clip).paused = true; // Start paused
+        });
+        setMixer(animationMixer);
+      }
+  
+      if (onLoad) onLoad();
+    }, [animations, scene, onLoad]);
+  
+    // Update the animation mixer on each frame
+    useFrame(() => {
+      if (mixer) {
+        mixer.update(clock.getDelta());
+      }
+    });
+  
+    // Play the selected animation when it changes
+    useEffect(() => {
+      if (mixer && selectedAnimation && animations) {
+        const animationClip = animations.filter(
+          (clip) => clip.name.includes(selectedAnimation)
+        );
+        const door = 
+        mixer.stopAllAction();
+
+        if (animationClip) {
+          
+          animationClip.forEach((clip) => {
+            // mixer.stopAllAction();
+
+            const action = mixer.clipAction(clip);
+            action.setEffectiveTimeScale(isReversed ? -1 : 1); // Reverse or forward playback
+            action.setEffectiveWeight(1);
+            action.reset().play(); 
+            action.setLoop(THREE.LoopOnce, 1);  // LoopOnce plays the animation once
+            action.clampWhenFinished = true; // Ensures it doesn't loop back to the beginning
+          });
+          
+        }
+        setIsReversed(!isReversed);
+
+      }
+    }, [selectedAnimation, animations, mixer]);
+    
+
   useEffect(() => {
     if (onLoad) onLoad();
   }, [onLoad]);
@@ -27,6 +84,14 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
 
   scene.traverse((child) => {
     if (child.isMesh) {
+      if(child.material.name === 'BLACK GLASS'){
+        child.material.opacity = 0.7;
+        child.material.aoMap = null;        
+      }
+            if(child.material.name === "E_xogRUo007_Default_Rubber_BlackTireSidewall17"){
+              child.material.color.set('#000000');
+            }
+
       //lights
       if (child.material.name === "M_xogGLo001_Glass_WhiteClr.002") {
         if (lightsOn) {
@@ -117,7 +182,7 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
           child.material.color.set("#000000");
         }
       }
-      if (child.name === "Top-SIDE-SILVER") {
+      if (child.name === "Top-SIDE-SILVER" || child.name ==='TOP-silver002' ) {
         child.material.roughness = 0.12;
       }
       if (
@@ -135,16 +200,16 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
       }
 
       if (
-        child.name === "Top-SIDE-SILVER" &&
+        (child.name === "Top-SIDE-SILVER"|| child.name ==='TOP-silver002' ) &&
         !selColor.includes("black roof")
       ) {
         child.material.color.set("#8F8F8F");
       }
-      if (child.name === "Top-SIDE-SILVER" && selColor.includes("black roof")) {
+      if ((child.name === "Top-SIDE-SILVER" || child.name ==='TOP-silver002' ) && selColor.includes("black roof")) {
         child.material.color.set("#1A1B23");
       }
       if (
-        child.name === "Top-SIDE-SILVER" &&
+        (child.name === "Top-SIDE-SILVER"|| child.name ==='TOP-silver002' ) &&
         selColor.includes("Atlas White with black roof")
       ) {
         child.material.color.set("#000000");
@@ -164,9 +229,8 @@ function CarModel({ color, lightsOn, selColor, onLoad }) {
         selColor.includes("Atlas White with black roof")
       ) {
         child.material.color.set("#000000");
-        console.log(child.material.name);
       }
-      if (child.material.name === "CAR_PAINT_BODY-white") {
+      if (child.material.name.includes("CAR_PAINT_BODY-white") || child.material.name.includes("White-side-panel-bake")) {
         if (selColor.includes("Ocean Blue")) {
           child.material.color.set(color);
           child.material.emissive.setHex("#000000");
@@ -289,6 +353,174 @@ function RotatingEnvironment({ path, rotationValue = 180 }) {
     </group>
   );
 }
+const createSpriteWithSvg = (svgString, position,scene) => {
+  // Create a canvas to render the SVG
+  const canvas = document.createElement('canvas');
+  canvas.width = 128; // Adjust size as needed
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+
+  // Create an Image element for the SVG
+  const img = new Image();
+  const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(svgBlob);
+
+  img.onload = () => {
+    // Draw the SVG onto the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    // Create a texture from the canvas
+    const texture = new THREE.CanvasTexture(canvas);
+
+    // Create the sprite material and sprite
+    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(spriteMaterial);
+
+    // Set sprite position
+    sprite.position.copy(position);
+
+    // Scale the sprite (optional)
+    sprite.scale.set(0.5, 0.5, 0.5); // Adjust size as needed
+    sprite.position.set(position.x, position.y, position.z - 0.01); // Adjust Z as needed
+
+    sprite.renderOrder = 13; // This ensures it's rendered above other objects
+
+    // Add the sprite to the scene
+    scene.add(sprite);
+
+    // Clean up the URL object
+    URL.revokeObjectURL(url);
+  };
+
+  // Set the image source to the generated URL
+  img.src = url;
+};
+
+function RaycasterHandler() {
+  const { camera, scene, gl } = useThree(); // Access Three.js objects
+  const raycaster = useRef(new Raycaster());
+  const pointer = useRef(new Vector2());
+
+  const handleClick = (event) => {
+    const { clientX, clientY } = event;
+    const rect = gl.domElement.getBoundingClientRect();
+  
+    // Calculate normalized device coordinates
+    pointer.current.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.current.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  
+    // Update the raycaster
+    raycaster.current.setFromCamera(pointer.current, camera);
+  
+    // Perform raycasting
+    const intersects = raycaster.current.intersectObjects(scene.children, true);
+    if (intersects.length > 0) {
+      const intersectionPoint = intersects[0].point;
+      // console.log("Intersection point:", intersectionPoint);
+  
+      const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12px" height="12px">
+        <!-- Outer Circle (more transparent) -->
+        <circle cx="6" cy="6" r="2.5" fill="white" fill-opacity="0.4" />
+        
+        <!-- Inner Circle (less transparent) -->
+        <circle cx="6" cy="6" r="1.25" fill="white" fill-opacity="1" />
+      </svg>
+    `;
+    
+    
+  
+      // Call the function to create the sprite with the SVG
+      // createSpriteWithSvg(svgString, intersectionPoint,scene);
+    }
+  };
+  
+
+  useEffect(() => {
+    // Attach event listener to canvas
+    const canvas = gl.domElement;
+    canvas.addEventListener("click", handleClick);
+
+    // Cleanup event listener on unmount
+    return () => {
+      canvas.removeEventListener("click", handleClick);
+    };
+  }, [gl, camera, scene]);
+
+  return null; // No visible component needed
+}
+
+// CameraMover Component
+const CameraMover = ({ targetPosition, spriteClicked }) => {
+  const { camera } = useThree(); // Access the camera object
+
+  useEffect(() => {
+    if (spriteClicked) {
+      // Smoothly move the camera to the target position
+      const duration = 1000; // Animation duration in ms
+      const startPosition = { ...camera.position };
+      const startTime = performance.now();
+
+      const animate = () => {
+        // console.log(camera.position);
+        
+        const elapsed = performance.now() - startTime;
+        const t = Math.min(elapsed / duration, 1); // Ensure t is between 0 and 1
+
+        // Linear interpolation (you can use easing functions here)
+        camera.position.lerpVectors(
+          startPosition,
+          new THREE.Vector3(...targetPosition),
+          t
+        );
+
+        // Update the camera
+        camera.updateProjectionMatrix();
+
+        if (t < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      animate();
+    }
+  }, [spriteClicked, targetPosition, camera]);
+
+  return null; // No visual output
+};
+
+// Create a function component that adds a sprite with a given SVG string at a given position
+const SpriteWithSVG = ({ id, svgString, position = [0, 0, 0] , onClick}) => {
+  
+  // Create a texture from the SVG string using a loader
+  const texture = useLoader(THREE.TextureLoader, `data:image/svg+xml;base64,${btoa(svgString)}`);
+
+
+  const spriteRef = useRef();
+
+  useEffect(() => {
+    if (spriteRef.current) {
+      // If we have a reference to the sprite, set the position
+      spriteRef.current.position.set(...position);
+    }
+  }, [position]);
+
+  const handleClick = (event) => {
+    // console.log(event.object.name);
+        
+    // Call the parent handler when clicked
+    if (onClick && typeof onClick === 'function') {
+      onClick(event.object.name); // Pass event if needed or modify the handler
+    }
+  };
+  return (
+    <sprite name={id} ref={spriteRef} scale={[0.25,0.25,0.25]} onClick={handleClick}>
+      <spriteMaterial attach="material" map={texture} transparent={true} />
+    </sprite>
+  );
+};
+
 
 export default function ThreeScene() {
   const lightRef = useRef(); // Reference for the directional light
@@ -304,12 +536,32 @@ export default function ThreeScene() {
   const [carColor, setCarColor] = useState("#7BCCF4");
   const [lightsOn, setlightsOn] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
-  const carRef = useRef();
+  const carModelRef = useRef();
   const handleModelLoad = () => setModelLoaded(true);
   const { active, progress } = useProgress(); // Use progress from drei
-  const [maxDistance, setMaxDistance] = useState(8); // Default maxDistance
   const [currentBox, setCurrentBox] = useState(0);
-  
+  const [spriteClicked, setSpriteClicked] = useState(false);
+  const [target, setTarget] = useState([-5, 3, -8]);
+  const [minDistance, setMinDistance] = useState(5);
+  const [maxDistance, setMaxDistance] = useState(8); // Default maxDistance
+  const [enablePan, setEnablePan] = useState(false); 
+  const [enableZoom, setEnableZoom] = useState(true); 
+  const [minPolarAngle, setMinPolarAngle] = useState(Math.PI / 5); 
+  const [maxPolarAngle, setMaxPolarAngle] = useState(Math.PI / 2.3); 
+  const [selectedSpriteId, setselectedSpriteId] = useState("");
+  const [activeCamera, setActiveCamera] = useState("default"); // State to manage the active camera
+  const [selectedAnimation, setselectedAnimation] = useState(""); // State to manage the active camera
+  const defaultCameraRef = useRef();
+  const interiorCameraRef = useRef();
+  const svgString = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="100px" height="100px">
+    <!-- Outer Circle (more transparent) -->
+    <circle cx="6" cy="6" r="2.5" fill="white" fill-opacity="0.4" />
+    
+    <!-- Inner Circle (less transparent) -->
+    <circle cx="6" cy="6" r="1.25" fill="white" fill-opacity="1" />
+  </svg>
+`;
   const colors = [
     {
       id: "Abyss Black Pearl",
@@ -366,6 +618,28 @@ export default function ThreeScene() {
   };
   const handleBrushClick = () => {
     setShowColors((prev) => !prev); // Toggle visibility
+  };
+  const handleClosePanel = () => {
+    setSpriteClicked(!spriteClicked); // Hide the side panel
+  };
+  const handleSpriteClick = (id) => {
+    // Handle the click event here and update the state
+    setSpriteClicked(!spriteClicked);
+    setselectedSpriteId(id);
+    // console.log("Sprite clicked! Current state:", spriteClicked);
+  }
+  const switchTointerior = (id) => {
+    if(activeCamera === 'default')
+      setActiveCamera("interior");
+    else
+      setActiveCamera("default");
+  }
+  const handlePlayAnimation = (name) => {
+    setselectedAnimation(name); // Replace with your animation name
+  };
+
+  const handleStopAnimation = () => {
+    carModelRef.current?.stopAnimation("YourAnimationName"); // Replace with your animation name
   };
   useEffect(() => {
     if (lightRef.current && !helperRef.current) {
@@ -429,6 +703,36 @@ export default function ThreeScene() {
               <button className="function-button" onClick={handleLightChange}>
                 <img src="/Light Indicator.png" alt="Icon 1" />
               </button>
+              <button className="function-button" onClick={() =>handlePlayAnimation('DOOR RIGHT FRONT')}>
+                <img src="/doorrf.png" alt="Icon 1" />
+              </button>
+              <button className="function-button" onClick={() =>handlePlayAnimation('DOOR LEFT  FRONT')}>
+                <img src="/doorlf.png" alt="Icon 1" />
+              </button>
+              <button className="function-button" onClick={() =>handlePlayAnimation('DOOR RIGHT BACK')}>
+                <img src="/doorbr.png" alt="Icon 1" />
+              </button>
+              <button className="function-button" onClick={() =>handlePlayAnimation('DOOR LEFT BACK')}>
+                <img src="/doorbl.png" alt="Icon 1" />
+              </button>
+              <button className="function-button" onClick={() =>handlePlayAnimation('DOOR')}>
+                <img src="/door.png" alt="Icon 1" />
+              </button>
+              {/* <button className="function-button" onClick={() =>handlePlayAnimation('SUN')}>
+                <img src="/Light Indicator.png" alt="Icon 1" />
+              </button> */}
+              <button className="function-button" onClick={() =>handlePlayAnimation('GATE')}>
+                <img src="/back.png" alt="Icon 1" />
+              </button>
+              {/* <button className="function-button" onClick={() =>handlePlayAnimation('FRNT')}>
+                <img src="/Light Indicator.png" alt="Icon 1" />
+              </button> */}
+              {/* <button className="function-button" onClick={() =>handlePlayAnimation('FLap')}>
+                <img src="/Light Indicator.png" alt="Icon 1" />
+              </button> */}
+              {/* <button className="function-button" onClick={() =>handlePlayAnimation('WHEEL')}>
+                <img src="/Light Indicator.png" alt="Icon 1" />
+              </button> */}
               {/* <button className="function-button">
             <img src="/path-to-icon2.png" alt="Icon 2" />
           </button>
@@ -451,15 +755,6 @@ export default function ThreeScene() {
           <img src="/banner.png" alt="Brand Logo" className="brand-logo" />
         </div>
       )}
-      {/* Loading Bar */}
-      {/* {!modelLoaded && (
-        <div className="loading-bar-container">
-          <div
-            className="loading-bar"
-            style={{ width: `${progress}%` }} // Update width based on progress
-          ></div>
-        </div>
-      )} */}
       {!modelLoaded && (
         <div className="loading-box-container">
           {Array(4)
@@ -473,48 +768,72 @@ export default function ThreeScene() {
         </div>
       )}
       <Canvas
-        camera={{ position: [-5, 3, -8], fov: 50 }}
+        // camera={{ position: [-5, 3, -8], fov: 50 }}
         gl={{
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.2,
-          // toneMapping: ACESFilmicToneMapping ,
         }}
-        // onCreated={({ gl, camera }) => {
-        //   gl.physicallyCorrectLights = true;
-        //   gl.outputEncoding = THREE.SRGBColorSpace;
-
-        // }}
       >
-        {/* <Perf /> */}
+      <PerspectiveCamera
+          makeDefault={activeCamera === "default"} // Activate this camera when it's active
+          ref={defaultCameraRef}
+          position={[-5, 3, -8]}
+          fov={50}
+        />
+
+        {/* Interior Camera */}
+        <PerspectiveCamera
+          makeDefault={activeCamera === "interior"} // Activate this camera when it's active
+          ref={interiorCameraRef}
+          position={[0, 1.5, 0.0]} // Position for interior view
+          fov={80}
+          target={[0,50,0]}
+        />
         <Suspense fallback={null}>
           {/* Load HDR Environment */}
           <RotatingEnvironment path="/studio_small.hdr" rotationValue={180} />
           {/* Add the 3D Model */}
           <CarModel
-            ref={carRef}
+            ref={carModelRef}
             color={carColor}
             selColor={selColor}
             onLoad={handleModelLoad}
             lightsOn={lightsOn}
+            selectedAnimation={selectedAnimation}
           />
+          {!spriteClicked && (<group>
+          <SpriteWithSVG id ='charger' svgString={svgString} position={[0.026, 0.8, -2.65]} onClick={handleSpriteClick} />
+          <SpriteWithSVG id ='airflaps' svgString={svgString} position={[-0.257, 0.46, -2.7]} onClick={handleSpriteClick} />
+          {/* <SpriteWithSVG id ='bumper' svgString={svgString} position={[-0.55, 0.79, -2.65]} onClick={handleSpriteClick} /> */}
+          <SpriteWithSVG id ='bumper' svgString={svgString} position={[ -0.16973610994713895,  0.600119960444232,  2.7082867790909097]} onClick={handleSpriteClick} />
+          <SpriteWithSVG id ='wheel' svgString={svgString} position={[  1.166633102010636,  0.6027375218705294,  -1.6985152476025873]} onClick={handleSpriteClick} />
+          <SpriteWithSVG id ='interior' svgString={svgString} position={[ 1.1206609966479046, 1.1603088054062152,0.2972193984778875]} onClick={switchTointerior} />
+          <SpriteWithSVG id ='exterior' svgString={svgString} position={[ 0.6864094940674355,  1.0438238091050263,  0.16418587917159022]} onClick={switchTointerior} />
+          <SpriteWithSVG id ='steering' svgString={svgString} position={[ 0.42432859476185947,  1.2086424446862685,  -0.3089562841676877]} onClick={handleSpriteClick} />
+          <SpriteWithSVG id ='display' svgString={svgString} position={[ 0.17507262595172307,  1.3055110190586945,  -0.5184277591798003]} onClick={handleSpriteClick} />
+          <SpriteWithSVG id ='seat' svgString={svgString} position={[ -0.6472811047481658,  0.8115163349545533,   -0.3406045298454772]} onClick={handleSpriteClick} />
+          <SpriteWithSVG id ='console' svgString={svgString} position={[ 0.018167740087783865, 1.0581931975720994,  -0.32555558189381917]} onClick={handleSpriteClick} />
+          <SpriteWithSVG id ='v2l' svgString={svgString} position={[-0.0661013940479657,  1.1417463582073824,  0.31539398673229235]} onClick={handleSpriteClick} />
+          </group>)}
+          {/* <CameraMover targetPosition={target} spriteClicked={spriteClicked} /> */}
+
           <SkyDome />
           <CarShadow />
         </Suspense>
+        {modelLoaded && <RaycasterHandler />}
+
         {/* Add Camera Controls */}
         <OrbitControls
-          enablePan={false}
-          enableZoom={true}
+          target={activeCamera === "default" ? [-0, 0, -0] : [0, 1.5, 0.0]}
+          enablePan={activeCamera === "default" ?enablePan:false}
+          enableZoom={activeCamera === "default" ?enableZoom:false}
           enableRotate={true}
-          minPolarAngle={Math.PI / 5} // Limit looking up/down
-          maxPolarAngle={Math.PI / 2.3}
-          minDistance={5} // Minimum zoom distance
-          maxDistance={maxDistance} // Maximum zoom distance
-        ></OrbitControls>
-        {/* <pointLight position={[20, 0, 2]} intensity={300}></pointLight>
-        <pointLight position={[-20, 0, 2]} intensity={300}></pointLight>
-        <pointLight position={[0, 5, -5]} intensity={300}></pointLight>
-        <pointLight position={[0, 5, 5]} intensity={300}></pointLight> */}
+          minPolarAngle={activeCamera === "default" ?minPolarAngle : Math.PI/4} // Limit looking up/down
+          maxPolarAngle={activeCamera === "default" ?maxPolarAngle : Math.PI/2.9}
+          minDistance={activeCamera === "default" ?minDistance:-20} // Minimum zoom distance
+          maxDistance={activeCamera === "default" ?maxDistance:20} // Maximum zoom distance
+        ></OrbitControls>        
         <hemisphereLight
           skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
           groundColor={0x000000} // Color of the light from the ground (bottom hemisphere)
@@ -522,40 +841,16 @@ export default function ThreeScene() {
           rotation={[0, 0, 0]}
           position={[0, 5, -5]} // Light intensity
         />
-        {/* <hemisphereLight
-          skyColor={0x005075} // Color of the light from the sky (top hemisphere)
-          groundColor={0x000000} // Color of the light from the ground (bottom hemisphere)
-          intensity={0.5}
-          rotation={[0,0,0]}
-          position={[0,5,-12]} // Light intensity
-        /> */}
-        {/* Directional Light with Shadow Settings */}
-        {/* <directionalLight
-          // ref={lightRef} // Attach the reference to the light
-          position={[5, 14.2, -7]}
-          target={carRef.current}
-          intensity={1}
-        />
-        <directionalLight
-          // ref={lightRef} // Attach the reference to the light
-          position={[0, 3, 10]}
-          target={carRef.current}
-          intensity={1}
-        />
-        //right left
-        <directionalLight
-          // ref={lightRef} // Attach the reference to the light
-          position={[5, 5, 0]}
-          target={carRef.current}
-          intensity={0.8}
-        />
-        <directionalLight
-          // ref={lightRef} // Attach the reference to the light
-          position={[-5, 5, 0]}
-          target={carRef.current}
-          intensity={4}
-        /> */}
       </Canvas>
+      {/* {activeCamera === "interior" && (
+        <button
+          style={{ position: "absolute", top: 20, right: 20 }}
+          onClick={switchToDefaultView}
+        >
+          Switch to Exterior
+        </button>
+      )} */}
+      <SidePanel id={selectedSpriteId} show={spriteClicked} heading={'test'} description ={'testkndsknfnfdnkjfkjd'} imgsrc={''} onClose={handleClosePanel} />
       {modelLoaded && (
         <div
           className={

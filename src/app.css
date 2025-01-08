@@ -21,7 +21,8 @@ body {
 }
 
 .viewer-container {
-  position: fixed;
+  position: relative;
+  flex-direction: row;
   top: 0;
   left: 0;
   width: 100dvw;
@@ -32,6 +33,49 @@ body {
   align-items: center;
   overflow: hidden;
 }
+/* Main layout that holds canvas and side panel */
+.main-layout {
+  display: flex;
+  position: relative;
+  height: 100vh; /* Full height */
+}
+
+/* Canvas takes up most of the space */
+.canvas-container {
+  flex: 1; /* Takes up available width */
+  height: 100%; /* Full height */
+}
+
+.sprite-panel {
+  position: fixed; /* Makes the panel fixed on the side */
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 300px; /* You can adjust the width */
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10; /* To ensure it's on top of the canvas */
+  transition: transform 0.3s ease-in-out; /* Smooth transition for side panel */
+}
+
+.sprite-panel h3 {
+  margin-top: 0;
+}
+
+.sprite-panel p {
+  font-size: 14px;
+}
+
+/* Optional: Add media query for responsiveness */
+@media (max-width: 768px) {
+  .sprite-panel {
+    width: 250px;
+  }
+}
+
 .bottom-banner-container {
   position: fixed;
   bottom: 1dvh; /* Margin from the bottom */
@@ -453,7 +497,7 @@ body {
   transition: visibility 0s, opacity 0.5s ease-in-out;
 
   /* Use the custom font */
-  font-family: "MyCustomFont", sans-serif;
+  font-family: "HyundaiFont", sans-serif;
   font-size: 14px; /* Adjust size as needed */
 }
 
