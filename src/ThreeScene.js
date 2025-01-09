@@ -18,7 +18,7 @@ import SidePanel from './SidePanel'; // Import the side panel component
 import "./app.css";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
-function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlayAnimation}) {
+function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation,setPlayAnimation}) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
   const { scene, animations } = useGLTF("/main-car.glb");
   const [mixer, setMixer] = useState(new THREE.AnimationMixer(scene));
@@ -91,20 +91,7 @@ function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlay
     }
     
   }, [animations, scene, setPlayAnimation]);
-    // Setup the animation mixer when the GLTF model is loaded
-    // useEffect(() => {
-    //   if (animations && animations.length > 0) {
-    //     const animationMixer = new THREE.AnimationMixer(scene);
-    //     animations.forEach((clip) => {
-    //       animationMixer.clipAction(clip).paused = true; // Start paused
-    //     });
-    //     setMixer(animationMixer);
-    //   }
-  
-    //   if (onLoad) onLoad();
-    // }, [animations, scene, onLoad]);
-  
-    // Update the animation mixer on each frame
+    
     useFrame(() => {
       if (mixer) {
         mixer.update(clock.getDelta());
@@ -124,9 +111,9 @@ function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlay
         child.material.opacity = 0.7;
         child.material.aoMap = null;        
       }
-            if(child.material.name === "E_xogRUo007_Default_Rubber_BlackTireSidewall17"){
+      if(child.material.name === "E_xogRUo007_Default_Rubber_BlackTireSidewall17"){
               child.material.color.set('#000000');
-            }
+      }
 
       //lights
       if (child.material.name === "M_xogGLo001_Glass_WhiteClr.002") {
@@ -154,11 +141,11 @@ function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlay
         if (lightsOn) child.material.opacity = 1.0;
         else child.material.opacity = 0;
       }
-      if (child.material.name === "Front-Headlight-White") {
+      if (child.material.name === "Front-Headlight-White.005") {
         if (lightsOn){
           child.material.emissive = new THREE.Color(255,255,255);      
-          child.material.emissiveIntensity = 15.0;
-                }
+          child.material.emissiveIntensity = 4.36;
+        }
         else child.material.emissiveIntensity = 0;
       }
       if(child.name === 'SPOT-LIGHT'){
@@ -266,7 +253,7 @@ function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlay
       ) {
         child.material.color.set("#000000");
       }
-      if (child.material.name.includes("CAR_PAINT_BODY-white") || child.material.name.includes("White-side-panel-bake")) {
+      if (child.material.name.includes("CAR_PAINT_BODY-white") || child.material.name.includes("White-side-panel-bake")|| child.material.name.includes("BODY")) {
         if (selColor.includes("Ocean Blue")) {
           child.material.color.set(color);
           child.material.emissive.setHex("#000000");
@@ -337,6 +324,7 @@ function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlay
   });
   return (
     <group
+      visible={visible}
       scale={[1.2, 1.2, 1.2]}
       position={[0, 0.03, -1.5]}
       rotation={[0, (3 * Math.PI) / 2, 0]}
@@ -350,7 +338,7 @@ function CarModel({ color, lightsOn, selColor, onLoad ,selectedAnimation,setPlay
   );
 }
 
-function SkyDome({onClick}) {
+function SkyDome({visible, onClick}) {
   const { scene } = useGLTF("/skydome.glb"); // Replace with the path to your GLB file
   const handleClick = (event) => {
     // console.log(event.object.name);
@@ -361,12 +349,12 @@ function SkyDome({onClick}) {
     }
   };
   return (
-    <group rotation={[0, (3 * Math.PI) / 2, 0]} onClick = {handleClick}>
+    <group visible = {visible} rotation={[0, (3 * Math.PI) / 2, 0]} onClick = {handleClick}>
       <primitive object={scene} />
     </group>
   );
 }
-function IntDome({onClick}) {
+function IntDome({visible}) {
   const { scene } = useGLTF("/pano.glb"); // Replace with the path to your GLB file
   const handleClick = (event) => {
     // console.log(event.object.name);
@@ -377,7 +365,7 @@ function IntDome({onClick}) {
     }
   };
   return (
-    <group rotation={[0, (3 * Math.PI) / 2, 0]} onClick = {handleClick}>
+    <group visible = {visible} position={[2,0, 3]} scale = {[0.125,0.125,0.125]}>
       <primitive object={scene} />
     </group>
   );
@@ -403,11 +391,11 @@ function CarShadow() {
     </mesh>
   );
 }
-function RotatingEnvironment({ path, rotationValue = 180 }) {
+function RotatingEnvironment({visible, path, rotationValue = 180 }) {
   const group = useRef();
 
   return (
-    <group ref={group}>
+    <group visible = {visible} ref={group}>
       <Environment files={path} background />
     </group>
   );
@@ -693,6 +681,13 @@ export default function ThreeScene() {
     { id: 'console', event: 'handleSpriteClick', position: [0.018167740087783865, 1.0581931975720994, -0.32555558189381917] },
     { id: 'v2l', event: 'handleSpriteClick', position: [-0.0661013940479657, 1.1417463582073824, 0.31539398673229235] }
   ];
+  const intsprites = [
+    { id: 'steering', event: 'handleSpriteClick', position: [1.15,0.8,-2] },
+    { id: 'display', event: 'handleSpriteClick', position: [0.5,1.05,-2] },
+    { id: 'seat', event: 'handleSpriteClick', position: [-0.5,0,-1.5] },
+    { id: 'console', event: 'handleSpriteClick', position: [0.2,0,-1.95] },
+    { id: 'v2l', event: 'handleSpriteClick', position: [-0.35,0,-0.95] }
+  ];
 
     
   const handleColorChange = (hex, id) => {
@@ -719,19 +714,19 @@ export default function ThreeScene() {
   const switchTointerior = (id) => {
     // setSpriteClicked(!spriteClicked);
     // setselectedSpriteId('new');
-    console.log(activeCamera,id);
+    // console.log(activeCamera,id);
     
     if(activeCamera === 'default' && id === 'in'){
       setActiveCamera("interior");
       sethideOthers(true);
-      settoneMap(THREE.LinearToneMapping);
+      // settoneMap(THREE.LinearToneMapping);
       settoneMapexp(1);
 
     }
     else if (activeCamera === 'interior' && id === 'out'){
       setActiveCamera("default");
       sethideOthers(false);
-      settoneMap(THREE.ACESFilmicToneMapping);
+      // settoneMap(THREE.ACESFilmicToneMapping);
       settoneMapexp(1.2);
     }
   }
@@ -951,15 +946,13 @@ export default function ThreeScene() {
         <Suspense fallback={null}>
           {/* Load HDR Environment */}
           {/* <Image360Sphere imageUrl="/360.jpg" /> */}
-
-          {activeCamera === 'default' && (
-            <group>
-              <RotatingEnvironment path="/studio_small.hdr" rotationValue={180} />
-              <SkyDome onClick={handleCanvasClick} />
+          <RotatingEnvironment visible={activeCamera === 'default'} path="/studio_small.hdr" rotationValue={180} />
+              <SkyDome visible={activeCamera === 'default'} onClick={handleCanvasClick} />
               
-              <CarShadow />
+              <CarShadow visible={activeCamera === 'default'} />
               {/* Add the 3D Model */}
               <CarModel
+                visible={activeCamera === 'default'}
                 ref={carModelRef}
                 color={carColor}
                 selColor={selColor}
@@ -968,15 +961,8 @@ export default function ThreeScene() {
                 setPlayAnimation={setPlayAnimation}
                 selectedAnimation={selectedAnimation}
               />
-              <RotatingEnvironment path="/360.jpg" rotationValue={Math.PI/2} />
-
-            </group>)}
-            {activeCamera === 'interior' && (
-            <group>
-              {/* <IntDome></IntDome> */}
-              <RotatingEnvironment path="/360.jpg" rotationValue={Math.PI/2} />
-
-            </group>)} 
+              <IntDome visible={activeCamera === 'interior'}/>
+          
           {!hideOthers?(spriteClicked
           ? sprites.map((sprite) =>
               sprite.id === selectedSpriteId ? (
@@ -999,6 +985,28 @@ export default function ThreeScene() {
               />
           ))):null}
 
+          {hideOthers?(spriteClicked
+          ? intsprites.map((sprite) =>
+              sprite.id === selectedSpriteId ? (
+                <SpriteWithSVG
+                  key={sprite.id}
+                  id={sprite.id}
+                  svgString={svgString}
+                  position={sprite.position}
+                  onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
+                />
+              ) : null // Hide other sprites
+            )
+          : intsprites.map((sprite) => (
+              <SpriteWithSVG
+                key={sprite.id}
+                id={sprite.id}
+                svgString={svgString}
+                position={sprite.position}
+                onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
+              />
+          ))):null}
+
 
           {/* <CameraMover targetPosition={[0,0,0]} targetRotation={[Math.PI2,0,0]} spriteClicked={activeCamera === 'interior'} /> */}
 
@@ -1007,12 +1015,12 @@ export default function ThreeScene() {
 
         {/* Add Camera Controls */}
         <OrbitControls
-          target={activeCamera === "default" ? [-0, 0, -0] : [2, 1.5, 0.0]}
+          target={activeCamera === "default" ? [-0, 0, -0] : [0, 1.5, 0.0]}
           enablePan={activeCamera === "default" ?enablePan:false}
           enableZoom={activeCamera === "default" ?enableZoom:false}
           enableRotate={true}
           minPolarAngle={activeCamera === "default" ?minPolarAngle : Math.PI/6} // Limit looking up/down
-          maxPolarAngle={activeCamera === "default" ?maxPolarAngle : Math.PI}
+          maxPolarAngle={activeCamera === "default" ?maxPolarAngle : Math.PI/1.3}
           minDistance={activeCamera === "default" ?minDistance:-20} // Minimum zoom distance
           maxDistance={activeCamera === "default" ?maxDistance:20} // Maximum zoom distance
         ></OrbitControls>        
