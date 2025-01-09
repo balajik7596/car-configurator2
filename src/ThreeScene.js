@@ -7,14 +7,16 @@ import {
   useGLTF,
   useTexture,
   useProgress,
-  PerspectiveCamera
+  PerspectiveCamera,
+  useAnimations 
 } from "@react-three/drei";
 import { DirectionalLightHelper, ACESFilmicToneMapping } from "three"; // Import from 'three'
 import * as THREE from "three";
 import { Raycaster, Vector2 } from "three";
 import { useLoader } from '@react-three/fiber';
 import SidePanel from './SidePanel'; // Import the side panel component
-
+import { shaderMaterial } from '@react-three/drei';
+import { extend } from '@react-three/fiber';
 import "./app.css";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
@@ -338,8 +340,25 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
   );
 }
 
-function SkyDome({visible, onClick}) {
-  const { scene } = useGLTF("/skydome.glb"); // Replace with the path to your GLB file
+function SkyDomeSunLit({visible}) {
+  const { scene } = useGLTF("/skydomesunlit.glb"); // Replace with the path to your GLB file
+  return (
+    <group rotation={[0, (3 * Math.PI) / 2, 0]} visible={visible}>
+      <primitive object={scene} />
+    </group>
+  );
+}
+function SkyDomeMoonLit({visible}) {
+  const { scene } = useGLTF("/skydomemoonlit.glb"); // Replace with the path to your GLB file
+  return (
+    <group rotation={[0, (3 * Math.PI) / 2, 0]} visible={visible}>
+      <primitive object={scene} />
+    </group>
+  );
+}
+
+function IntDomeNight({visible}) {
+  const { scene } = useGLTF("/panonight.glb"); // Replace with the path to your GLB file
   const handleClick = (event) => {
     // console.log(event.object.name);
         
@@ -349,13 +368,13 @@ function SkyDome({visible, onClick}) {
     }
   };
   return (
-    <group visible = {visible} rotation={[0, (3 * Math.PI) / 2, 0]} onClick = {handleClick}>
+    <group visible = {visible} position={[2,0, 3]} scale = {[0.125,0.125,0.125]}>
       <primitive object={scene} />
     </group>
   );
 }
 function IntDome({visible}) {
-  const { scene } = useGLTF("/pano.glb"); // Replace with the path to your GLB file
+  const { scene } = useGLTF("/panoday.glb"); // Replace with the path to your GLB file
   const handleClick = (event) => {
     // console.log(event.object.name);
         
@@ -400,174 +419,56 @@ function RotatingEnvironment({visible, path, rotationValue = 180 }) {
     </group>
   );
 }
-const createSpriteWithSvg = (svgString, position,scene) => {
-  // Create a canvas to render the SVG
-  const canvas = document.createElement('canvas');
-  canvas.width = 128; // Adjust size as needed
-  canvas.height = 128;
-  const ctx = canvas.getContext('2d');
 
-  // Create an Image element for the SVG
-  const img = new Image();
-  const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
-  const url = URL.createObjectURL(svgBlob);
+const HotSpot = ({ id, position, url = '/dot.glb', onClick }) => {
+  const { scene, animations } = useGLTF(url);
+  const meshRef = useRef();
+  const [mixer] = useState(() => new THREE.AnimationMixer());
+  const [clonedScene] = useState(() => scene.clone(true)); // Deep clone the scene
 
-  img.onload = () => {
-    // Draw the SVG onto the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-    // Create a texture from the canvas
-    const texture = new THREE.CanvasTexture(canvas);
-
-    // Create the sprite material and sprite
-    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-    const sprite = new THREE.Sprite(spriteMaterial);
-
-    // Set sprite position
-    sprite.position.copy(position);
-
-    // Scale the sprite (optional)
-    sprite.scale.set(0.5, 0.5, 0.5); // Adjust size as needed
-    sprite.position.set(position.x, position.y, position.z - 0.01); // Adjust Z as needed
-
-    sprite.renderOrder = 13; // This ensures it's rendered above other objects
-
-    // Add the sprite to the scene
-    scene.add(sprite);
-
-    // Clean up the URL object
-    URL.revokeObjectURL(url);
-  };
-
-  // Set the image source to the generated URL
-  img.src = url;
-};
-
-function RaycasterHandler() {
-  const { camera, scene, gl } = useThree(); // Access Three.js objects
-  const raycaster = useRef(new Raycaster());
-  const pointer = useRef(new Vector2());
-
-  const handleClick = (event) => {
-    const { clientX, clientY } = event;
-    const rect = gl.domElement.getBoundingClientRect();
-  
-    // Calculate normalized device coordinates
-    pointer.current.x = ((clientX - rect.left) / rect.width) * 2 - 1;
-    pointer.current.y = -((clientY - rect.top) / rect.height) * 2 + 1;
-  
-    // Update the raycaster
-    raycaster.current.setFromCamera(pointer.current, camera);
-  
-    // Perform raycasting
-    const intersects = raycaster.current.intersectObjects(scene.children, true);
-    if (intersects.length > 0) {
-      const intersectionPoint = intersects[0].point;
-      // console.log("Intersection point:", intersectionPoint);
-  
-      const svgString = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12px" height="12px">
-        <!-- Outer Circle (more transparent) -->
-        <circle cx="6" cy="6" r="2.5" fill="white" fill-opacity="0.4" />
-        
-        <!-- Inner Circle (less transparent) -->
-        <circle cx="6" cy="6" r="1.25" fill="white" fill-opacity="1" />
-      </svg>
-    `;
-    
-    
-  
-      // Call the function to create the sprite with the SVG
-      // createSpriteWithSvg(svgString, intersectionPoint,scene);
+  // Bind animations to the cloned scene
+  useEffect(() => {
+    if (animations.length > 0 && clonedScene) {
+      animations.forEach((clip) => {
+        mixer.clipAction(clip, clonedScene).play();
+      });
     }
-  };
-  
+  }, [animations, mixer, clonedScene]);
 
-  useEffect(() => {
-    // Attach event listener to canvas
-    const canvas = gl.domElement;
-    canvas.addEventListener("click", handleClick);
+  // Update the mixer in every frame for animations
+  useFrame((state, delta) => {
+    mixer.update(delta);
 
-    // Cleanup event listener on unmount
-    return () => {
-      canvas.removeEventListener("click", handleClick);
-    };
-  }, [gl, camera, scene]);
-
-  return null; // No visible component needed
-}
-
-// CameraMover Component
-const CameraMover = ({ targetPosition, spriteClicked }) => {
-  const { camera } = useThree(); // Access the camera object
-
-  useEffect(() => {
-    if (spriteClicked) {
-      // Smoothly move the camera to the target position
-      const duration = 1000; // Animation duration in ms
-      const startPosition = { ...camera.position };
-      const startTime = performance.now();
-
-      const animate = () => {
-        // console.log(camera.position);
-        
-        const elapsed = performance.now() - startTime;
-        const t = Math.min(elapsed / duration, 1); // Ensure t is between 0 and 1
-
-        // Linear interpolation (you can use easing functions here)
-        camera.position.lerpVectors(
-          startPosition,
-          new THREE.Vector3(...targetPosition),
-          t
-        );
-
-        // Update the camera
-        camera.updateProjectionMatrix();
-
-        if (t < 1) {
-          requestAnimationFrame(animate);
-        }
-      };
-
-      animate();
+    if (meshRef.current) {
+      meshRef.current.lookAt(state.camera.position); // Make it face the camera
     }
-  }, [spriteClicked, targetPosition, camera]);
+  });
 
-  return null; // No visual output
-};
-
-// Create a function component that adds a sprite with a given SVG string at a given position
-const SpriteWithSVG = ({ id, svgString, position = [0, 0, 0] , onClick}) => {
-  
-  // Create a texture from the SVG string using a loader
-  const texture = useLoader(THREE.TextureLoader, `data:image/svg+xml;base64,${btoa(svgString)}`);
-
-
-  const spriteRef = useRef();
-
+  // Set the position of the cloned object
   useEffect(() => {
-    if (spriteRef.current) {
-      // If we have a reference to the sprite, set the position
-      spriteRef.current.position.set(...position);
+    if (meshRef.current) {
+      meshRef.current.position.set(...position);
     }
   }, [position]);
 
   const handleClick = (event) => {
-    // console.log(event.object.name);
-        
-    // Call the parent handler when clicked
-    if (onClick && typeof onClick === 'function') {
-      onClick(event.object.name); // Pass event if needed or modify the handler
+    console.log(event);
+
+    if (onClick && typeof onClick === 'function' && event.object.parent.name !=='Scene') {
+      onClick(event.object.parent.name); // Pass the name of the object that was clicked
     }
   };
+
   return (
-    <sprite name={id} ref={spriteRef} scale={[0.25,0.25,0.25]} onClick={handleClick}>
-      <spriteMaterial attach="material" map={texture} transparent={true} />
-    </sprite>
+    <primitive
+      name={id}
+      ref={meshRef}
+      object={clonedScene}
+      scale={0.0405}
+      onClick={handleClick}
+    />
   );
 };
-
 
 export default function ThreeScene() {
   const lightRef = useRef(); // Reference for the directional light
@@ -604,6 +505,7 @@ export default function ThreeScene() {
   const interiorCameraRef = useRef();
   const [toneMapexp, settoneMapexp] = useState(1.2);
   const [toneMap, settoneMap] = useState(THREE.ACESFilmicToneMapping);
+  const [selectedEnvMode, setSelectedEnvMode] = useState("sunlit"); // Track selected mode
 
 
   const [sunroofState, setSunroofState] = useState(false);
@@ -686,7 +588,7 @@ export default function ThreeScene() {
     { id: 'display', event: 'handleSpriteClick', position: [0.5,1.05,-2] },
     { id: 'seat', event: 'handleSpriteClick', position: [-0.5,0,-1.5] },
     { id: 'console', event: 'handleSpriteClick', position: [0.2,0,-1.95] },
-    { id: 'v2l', event: 'handleSpriteClick', position: [-0.35,0,-0.95] }
+    { id: 'v2l', event: 'handleSpriteClick', position: [0.2,0,0.19] }
   ];
 
     
@@ -706,11 +608,16 @@ export default function ThreeScene() {
     setSpriteClicked(!spriteClicked); // Hide the side panel
   };
   const handleSpriteClick = (id) => {
+    console.log(id);
+    
     // Handle the click event here and update the state
     setSpriteClicked(!spriteClicked);
     setselectedSpriteId(id);
     // console.log("Sprite clicked! Current state:", spriteClicked);
   }
+  const handleModeChange = (mode) => {
+    setSelectedEnvMode(mode);
+  };
   const switchTointerior = (id) => {
     // setSpriteClicked(!spriteClicked);
     // setselectedSpriteId('new');
@@ -719,14 +626,14 @@ export default function ThreeScene() {
     if(activeCamera === 'default' && id === 'in'){
       setActiveCamera("interior");
       sethideOthers(true);
-      // settoneMap(THREE.LinearToneMapping);
+      settoneMap(THREE.LinearToneMapping);
       settoneMapexp(1);
 
     }
     else if (activeCamera === 'interior' && id === 'out'){
       setActiveCamera("default");
       sethideOthers(false);
-      // settoneMap(THREE.ACESFilmicToneMapping);
+      settoneMap(THREE.ACESFilmicToneMapping);
       settoneMapexp(1.2);
     }
   }
@@ -842,6 +749,9 @@ export default function ThreeScene() {
 
   return (
     <div className="viewer-container no-select">
+        {hideOthers&& (<div class="disclaimer-container">
+        < img src="/disclaimer.png" alt="Disclaimer" class="disclaimer-image" />
+      </div>)}
       {" "}
       {/* Full-screen canvas */}
       {modelLoaded && !spriteClicked && !hideOthers && (
@@ -869,11 +779,11 @@ export default function ThreeScene() {
               <button className="function-button" onClick={handlePlayAllDoors}>
                 <img src="/door.png" alt="Icon 1" />
               </button>
-              {/* <button className="function-button" onClick={handleToggleSunroof}>
-                <img src="/Light Indicator.png" alt="Icon 1" />
-              </button> */}
               <button className="function-button" onClick={() => handlePlayAnimation("behindBoot")}>
                 <img src="/back.png" alt="Icon 1" />
+              </button>
+              <button className="function-button" onClick={handleToggleSunroof}>
+                <img src="/sun.png" alt="Icon 1" />
               </button>
               <button className="function-button" onClick={() => switchTointerior("in")}>
                 <img src="/in.png" alt="Icon 1" />
@@ -885,7 +795,7 @@ export default function ThreeScene() {
           </div>
         </div>
       )}
-        {modelLoaded && hideOthers && (
+      {modelLoaded && hideOthers && (
         <div className="bottom-banner-container">
           <div className="bottom-banner">
             <div className="banner-image">
@@ -902,6 +812,57 @@ export default function ThreeScene() {
           </div>
         </div>
       )}
+      {modelLoaded &&!hideOthers && (<div className="mode-toggle">
+          <button
+            className={`toggle-button ${selectedEnvMode === "sunlit" ? "selected" : ""}`}
+            onClick={() => handleModeChange('sunlit')}
+          >
+            Sunlit
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon sun-icon"
+            >
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <button
+            className={`toggle-button ${
+              selectedEnvMode === "moonlit" ? "selected" : ""}`}
+            onClick={() => handleModeChange('moonlit')}
+          >
+            Moonlit
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon moon-icon"
+            >
+              <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"></path>
+            </svg>
+          </button>
+      </div>)}
       {/* Brand Banner */}
       {!modelLoaded && (
         <div className={`brand-banner `}>
@@ -947,8 +908,27 @@ export default function ThreeScene() {
           {/* Load HDR Environment */}
           {/* <Image360Sphere imageUrl="/360.jpg" /> */}
           <RotatingEnvironment visible={activeCamera === 'default'} path="/studio_small.hdr" rotationValue={180} />
-              <SkyDome visible={activeCamera === 'default'} onClick={handleCanvasClick} />
-              
+          <SkyDomeSunLit visible={activeCamera === 'default' && selectedEnvMode === 'sunlit'}/>
+          <SkyDomeMoonLit visible={activeCamera === 'default' && selectedEnvMode === 'moonlit'}/>
+          {!hideOthers?(spriteClicked
+          ? sprites.map((sprite) =>
+              sprite.id === selectedSpriteId ? (
+                <HotSpot
+            key={sprite.id}
+            id={sprite.id}
+            position={sprite.position}
+            onClick={eventHandlers[sprite.event]}
+          />
+              ) : null // Hide other sprites
+            )
+          : sprites.map((sprite) => (
+              <HotSpot
+              key={sprite.id}
+              id={sprite.id}
+              position={sprite.position}
+              onClick={eventHandlers[sprite.event]}
+            />
+          ))):null}
               <CarShadow visible={activeCamera === 'default'} />
               {/* Add the 3D Model */}
               <CarModel
@@ -961,57 +941,35 @@ export default function ThreeScene() {
                 setPlayAnimation={setPlayAnimation}
                 selectedAnimation={selectedAnimation}
               />
-              <IntDome visible={activeCamera === 'interior'}/>
-          
-          {!hideOthers?(spriteClicked
-          ? sprites.map((sprite) =>
-              sprite.id === selectedSpriteId ? (
-                <SpriteWithSVG
-                  key={sprite.id}
-                  id={sprite.id}
-                  svgString={svgString}
-                  position={sprite.position}
-                  onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
-                />
-              ) : null // Hide other sprites
-            )
-          : sprites.map((sprite) => (
-              <SpriteWithSVG
-                key={sprite.id}
-                id={sprite.id}
-                svgString={svgString}
-                position={sprite.position}
-                onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
-              />
-          ))):null}
+              <IntDome visible={activeCamera === 'interior' && selectedEnvMode === 'sunlit'}/>
+              <IntDomeNight visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/>
+
 
           {hideOthers?(spriteClicked
           ? intsprites.map((sprite) =>
               sprite.id === selectedSpriteId ? (
-                <SpriteWithSVG
-                  key={sprite.id}
-                  id={sprite.id}
-                  svgString={svgString}
-                  position={sprite.position}
-                  onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
-                />
+                <HotSpot
+              key={sprite.id}
+              id={sprite.id}
+              position={sprite.position}
+              onClick={eventHandlers[sprite.event]}
+            />
               ) : null // Hide other sprites
             )
           : intsprites.map((sprite) => (
-              <SpriteWithSVG
-                key={sprite.id}
-                id={sprite.id}
-                svgString={svgString}
-                position={sprite.position}
-                onClick={eventHandlers[sprite.event]}  // Dynamically assign the correct event handler
-              />
+            <HotSpot
+            key={sprite.id}
+            id={sprite.id}
+            position={sprite.position}
+            onClick={eventHandlers[sprite.event]}
+          />
           ))):null}
 
 
           {/* <CameraMover targetPosition={[0,0,0]} targetRotation={[Math.PI2,0,0]} spriteClicked={activeCamera === 'interior'} /> */}
 
         </Suspense>
-        {modelLoaded && <RaycasterHandler />}
+        {/* {modelLoaded && <RaycasterHandler />} */}
 
         {/* Add Camera Controls */}
         <OrbitControls
@@ -1032,14 +990,7 @@ export default function ThreeScene() {
           position={[0, 5, -5]} // Light intensity
         />
       </Canvas>
-      {/* {activeCamera === "interior" && (
-        <button
-          style={{ position: "absolute", top: 20, right: 20 }}
-          onClick={switchToDefaultView}
-        >
-          Switch to Exterior
-        </button>
-      )} */}
+
       <SidePanel id={selectedSpriteId} show={spriteClicked} heading={'test'} description ={'testkndsknfnfdnkjfkjd'} imgsrc={''} onClose={handleClosePanel} />
       {modelLoaded && !spriteClicked && !hideOthers && (
         <div
@@ -1089,3 +1040,325 @@ export default function ThreeScene() {
     </div>
   );
 }
+//old
+// const createSpriteWithSvg = (svgString, position,scene) => {
+//   // Create a canvas to render the SVG
+//   const canvas = document.createElement('canvas');
+//   canvas.width = 128; // Adjust size as needed
+//   canvas.height = 128;
+//   const ctx = canvas.getContext('2d');
+
+//   // Create an Image element for the SVG
+//   const img = new Image();
+//   const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
+//   const url = URL.createObjectURL(svgBlob);
+
+//   img.onload = () => {
+//     // Draw the SVG onto the canvas
+//     ctx.clearRect(0, 0, canvas.width, canvas.height);
+//     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+//     // Create a texture from the canvas
+//     const texture = new THREE.CanvasTexture(canvas);
+
+//     // Create the sprite material and sprite
+//     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+//     const sprite = new THREE.Sprite(spriteMaterial);
+
+//     // Set sprite position
+//     sprite.position.copy(position);
+
+//     // Scale the sprite (optional)
+//     sprite.scale.set(0.5, 0.5, 0.5); // Adjust size as needed
+//     sprite.position.set(position.x, position.y, position.z - 0.01); // Adjust Z as needed
+
+//     sprite.renderOrder = 13; // This ensures it's rendered above other objects
+
+//     // Add the sprite to the scene
+//     scene.add(sprite);
+
+//     // Clean up the URL object
+//     URL.revokeObjectURL(url);
+//   };
+
+//   // Set the image source to the generated URL
+//   img.src = url;
+// };
+
+// function RaycasterHandler() {
+//   const { camera, scene, gl } = useThree(); // Access Three.js objects
+//   const raycaster = useRef(new Raycaster());
+//   const pointer = useRef(new Vector2());
+
+//   const handleClick = (event) => {
+//     const { clientX, clientY } = event;
+//     const rect = gl.domElement.getBoundingClientRect();
+  
+//     // Calculate normalized device coordinates
+//     pointer.current.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+//     pointer.current.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  
+//     // Update the raycaster
+//     raycaster.current.setFromCamera(pointer.current, camera);
+  
+//     // Perform raycasting
+//     const intersects = raycaster.current.intersectObjects(scene.children, true);
+//     if (intersects.length > 0) {
+//       const intersectionPoint = intersects[0].point;
+//       // console.log("Intersection point:", intersectionPoint);
+  
+//       const svgString = `
+//       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12px" height="12px">
+//         <!-- Outer Circle (more transparent) -->
+//         <circle cx="6" cy="6" r="2.5" fill="white" fill-opacity="0.4" />
+        
+//         <!-- Inner Circle (less transparent) -->
+//         <circle cx="6" cy="6" r="1.25" fill="white" fill-opacity="1" />
+//       </svg>
+//     `;
+    
+    
+  
+//       // Call the function to create the sprite with the SVG
+//       // createSpriteWithSvg(svgString, intersectionPoint,scene);
+//     }
+//   };
+  
+
+//   useEffect(() => {
+//     // Attach event listener to canvas
+//     const canvas = gl.domElement;
+//     canvas.addEventListener("click", handleClick);
+
+//     // Cleanup event listener on unmount
+//     return () => {
+//       canvas.removeEventListener("click", handleClick);
+//     };
+//   }, [gl, camera, scene]);
+
+//   return null; // No visible component needed
+// }
+
+// // CameraMover Component
+// const CameraMover = ({ targetPosition, spriteClicked }) => {
+//   const { camera } = useThree(); // Access the camera object
+
+//   useEffect(() => {
+//     if (spriteClicked) {
+//       // Smoothly move the camera to the target position
+//       const duration = 1000; // Animation duration in ms
+//       const startPosition = { ...camera.position };
+//       const startTime = performance.now();
+
+//       const animate = () => {
+//         // console.log(camera.position);
+        
+//         const elapsed = performance.now() - startTime;
+//         const t = Math.min(elapsed / duration, 1); // Ensure t is between 0 and 1
+
+//         // Linear interpolation (you can use easing functions here)
+//         camera.position.lerpVectors(
+//           startPosition,
+//           new THREE.Vector3(...targetPosition),
+//           t
+//         );
+
+//         // Update the camera
+//         camera.updateProjectionMatrix();
+
+//         if (t < 1) {
+//           requestAnimationFrame(animate);
+//         }
+//       };
+
+//       animate();
+//     }
+//   }, [spriteClicked, targetPosition, camera]);
+
+//   return null; // No visual output
+// };
+
+// // Create a function component that adds a sprite with a given SVG string at a given position
+// const SpriteWithSVG = ({ id, svgString, position = [0, 0, 0] , onClick}) => {
+  
+//   // Create a texture from the SVG string using a loader
+//   const texture = useLoader(THREE.TextureLoader, `data:image/svg+xml;base64,${btoa(svgString)}`);
+
+
+//   const spriteRef = useRef();
+
+//   useEffect(() => {
+//     if (spriteRef.current) {
+//       // If we have a reference to the sprite, set the position
+//       spriteRef.current.position.set(...position);
+//     }
+//   }, [position]);
+
+//   const handleClick = (event) => {
+//     // console.log(event.object.name);
+        
+//     // Call the parent handler when clicked
+//     if (onClick && typeof onClick === 'function') {
+//       onClick(event.object.name); // Pass event if needed or modify the handler
+//     }
+//   };
+//   return (
+//     <sprite name={id} ref={spriteRef} scale={[0.25,0.25,0.25]} onClick={handleClick}>
+//       <spriteMaterial attach="material" map={texture} transparent={true} />
+//     </sprite>
+//   );
+// };
+
+// // GLSL shader for ripple circle effect with color and intensity
+// const RippleShaderMaterial = shaderMaterial(
+//   // Uniforms
+//   {
+//     iTime: 0,
+//     iResolution: new THREE.Vector3(1, 1, 1),
+//     iMouse: new THREE.Vector2(0.5, 0.5),
+//   },
+//   // Vertex shader
+//   `
+//   varying vec2 vUv;
+//   void main() {
+//     vUv = uv;
+//     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+//   }
+//   `,
+//   // Fragment shader
+//   `
+//   uniform float iTime;
+//   uniform vec3 iResolution;
+//   uniform vec2 iMouse;
+//   varying vec2 vUv;
+
+//   vec3 drawCircle(vec2 pos, float radius, float width, float power, vec4 color) {
+//     vec2 mousePos = iMouse.xy - vec2(0.5);
+//     float dist1 = length(pos);
+//     dist1 = fract((dist1 * 5.0) - fract(iTime));
+//     float dist2 = dist1 - radius;
+//     float intensity = pow(radius / abs(dist2), width); 
+//     vec3 col = color.rgb * intensity * power * max((0.8 - abs(dist2)), 0.0);
+//     return col;
+//   }
+
+//   vec3 hsv2rgb(float h, float s, float v) {
+//     vec4 t = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+//     vec3 p = abs(fract(vec3(h) + t.xyz) * 6.0 - vec3(t.w));
+//     return v * mix(vec3(t.x), clamp(p - vec3(t.x), 0.0, 1.0), s);
+//   }
+
+//   void main() {
+//     vec2 pos = (vUv * 2.0 - 1.0) / min(iResolution.x, iResolution.y);
+//     float h = mix(0.5, 0.65, length(pos));
+//     vec4 color = vec4(hsv2rgb(h, 1.0, 1.0), 1.0);
+//     float radius = 0.5;
+//     float width = 0.8;
+//     float power = 0.1;
+//     vec3 finalColor = drawCircle(pos, radius, width, power, color);
+//     gl_FragColor = vec4(finalColor, max(0.0, max(finalColor.r, max(finalColor.g, finalColor.b)))); // Make non-colored regions transparent
+//   }
+//   `
+// );
+
+
+// // Extend Drei's shader material
+// extend({ RippleShaderMaterial });
+
+// function RippleSprite({position}) {
+//   const materialRef = useRef();
+//   const spriteRef = useRef();
+
+//   useEffect(() => {
+//     if (spriteRef.current) {
+//       // If we have a reference to the sprite, set the position
+//       spriteRef.current.position.set(...position);
+//     }
+//   }, [position]);
+//   useFrame(({ clock }) => {
+//     if (materialRef.current) {
+//       materialRef.current.iTime = clock.getElapsedTime();
+      
+//     }
+//   });
+
+//   return (
+//     <sprite ref={spriteRef}>
+//             <rippleShaderMaterial ref={materialRef} />
+//     </sprite>
+    
+//   );
+// }
+
+// function VideoSprite({ position = [0, 0, 0], videoUrl }) {
+//   const meshRef = useRef();
+//   const videoRef = useRef(document.createElement('video'));
+
+//   useEffect(() => {
+//     const video = videoRef.current;
+//     video.src = videoUrl;
+//     video.loop = true;
+//     video.muted = true;
+//     video.play();
+
+//     const texture = new THREE.VideoTexture(video);
+//     if (meshRef.current) {
+//       meshRef.current.material.map = texture;
+//       meshRef.current.material.needsUpdate = true;
+//     }
+//   }, [videoUrl]);
+
+//   return (
+//     <mesh ref={meshRef} position={position}>
+//       <planeGeometry args={[1, 1]} />
+//       <meshBasicMaterial />
+//     </mesh>
+//   );
+// }
+
+// // const HotSpot = ({ id, position, url, onClick }) => {
+// //   const { scene, animations } = useGLTF(url);
+// //   const { actions } = useAnimations(animations, scene);
+// //     const meshRef = useRef();
+
+// //   useEffect(() => {
+// //     const handleCameraUpdate = () => {
+// //       if (meshRef.current && meshRef.current.lookAt) {
+// //         // Make the mesh face the camera
+// //         meshRef.current.lookAt(0, 0, 0); // Or, set to camera's position
+// //       }
+// //     };
+
+// //     // You can use requestAnimationFrame for smoother updates if necessary
+// //     const animate = () => {
+// //       handleCameraUpdate();
+// //       requestAnimationFrame(animate);
+// //     };
+
+// //     animate();
+// //   }, []);
+// //     useFrame(({ camera }) => {
+// //     if (meshRef.current) {
+// //       // Make the mesh look at the camera's position
+// //       meshRef.current.lookAt(camera.position);
+// //     }
+// //   });
+// //   React.useEffect(() => {
+// //     // Play the first animation in the GLB file
+// //     if (animations.length > 0) {
+// //       actions[animations[0].name]?.play();
+// //     }
+// //   }, [actions, animations]);
+// //     const handleClick = (event) => {
+// //     // console.log(event.object.name);
+        
+// //     // Call the parent handler when clicked
+// //     if (onClick && typeof onClick === 'function') {
+// //       onClick(event.object.name); // Pass event if needed or modify the handler
+// //     }
+// //   };
+
+// //   return (
+// //   <primitive name={id} onClick={handleClick}ref ={meshRef} position={position} object={scene} scale={0.0305}  />);
+// // };
+
