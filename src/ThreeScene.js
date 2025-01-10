@@ -340,18 +340,34 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
   );
 }
 
-function SkyDomeSunLit({visible}) {
+function SkyDomeSunLit({visible,onClick}) {
   const { scene } = useGLTF("/skydomesunlit.glb"); // Replace with the path to your GLB file
+  const handleClick = (event) => {
+    // console.log(event.object.name);
+        
+    // Call the parent handler when clicked
+    if (onClick && typeof onClick === 'function') {
+      onClick(event.object.name); // Pass event if needed or modify the handler
+    }
+  };
   return (
-    <group rotation={[0, (3 * Math.PI) / 2, 0]} visible={visible}>
+    <group rotation={[0, (3 * Math.PI) / 2, 0]} visible={visible} onClick = {handleClick}>
       <primitive object={scene} />
     </group>
   );
 }
-function SkyDomeMoonLit({visible}) {
+function SkyDomeMoonLit({visible, onClick}) {
   const { scene } = useGLTF("/skydomemoonlit.glb"); // Replace with the path to your GLB file
+  const handleClick = (event) => {
+    // console.log(event.object.name);
+        
+    // Call the parent handler when clicked
+    if (onClick && typeof onClick === 'function') {
+      onClick(event.object.name); // Pass event if needed or modify the handler
+    }
+  };
   return (
-    <group rotation={[0, (3 * Math.PI) / 2, 0]} visible={visible}>
+    <group rotation={[0, (3 * Math.PI) / 2, 0]} visible={visible} onClick = {handleClick}>
       <primitive object={scene} />
     </group>
   );
@@ -577,11 +593,11 @@ export default function ThreeScene() {
     { id: 'wheel', event: 'handleSpriteClick', position: [1.166633102010636, 0.6027375218705294, -1.6985152476025873] },
     // { id: 'interior', event: 'switchTointerior', position: [1.1206609966479046, 1.1603088054062152, 0.2972193984778875] },
     // { id: 'exterior', event: 'switchTointerior', position: [0.6864094940674355, 1.0438238091050263, 0.16418587917159022] },
-    { id: 'steering', event: 'handleSpriteClick', position: [0.42432859476185947, 1.2086424446862685, -0.3089562841676877] },
-    { id: 'display', event: 'handleSpriteClick', position: [0.17507262595172307, 1.3055110190586945, -0.5184277591798003] },
-    { id: 'seat', event: 'handleSpriteClick', position: [-0.6472811047481658, 0.8115163349545533, -0.3406045298454772] },
-    { id: 'console', event: 'handleSpriteClick', position: [0.018167740087783865, 1.0581931975720994, -0.32555558189381917] },
-    { id: 'v2l', event: 'handleSpriteClick', position: [-0.0661013940479657, 1.1417463582073824, 0.31539398673229235] }
+    // { id: 'steering', event: 'handleSpriteClick', position: [0.42432859476185947, 1.2086424446862685, -0.3089562841676877] },
+    // { id: 'display', event: 'handleSpriteClick', position: [0.17507262595172307, 1.3055110190586945, -0.5184277591798003] },
+    // { id: 'seat', event: 'handleSpriteClick', position: [-0.6472811047481658, 0.8115163349545533, -0.3406045298454772] },
+    // { id: 'console', event: 'handleSpriteClick', position: [0.018167740087783865, 1.0581931975720994, -0.32555558189381917] },
+    // { id: 'v2l', event: 'handleSpriteClick', position: [-0.0661013940479657, 1.1417463582073824, 0.31539398673229235] }
   ];
   const intsprites = [
     { id: 'steering', event: 'handleSpriteClick', position: [1.15,0.8,-2] },
@@ -908,8 +924,8 @@ export default function ThreeScene() {
           {/* Load HDR Environment */}
           {/* <Image360Sphere imageUrl="/360.jpg" /> */}
           <RotatingEnvironment visible={activeCamera === 'default'} path="/studio_small.hdr" rotationValue={180} />
-          <SkyDomeSunLit visible={activeCamera === 'default' && selectedEnvMode === 'sunlit'}/>
-          <SkyDomeMoonLit visible={activeCamera === 'default' && selectedEnvMode === 'moonlit'}/>
+          <SkyDomeSunLit visible={activeCamera === 'default' && selectedEnvMode === 'sunlit'} onClick={handleCanvasClick}/>
+          <SkyDomeMoonLit visible={activeCamera === 'default' && selectedEnvMode === 'moonlit'} onClick={handleCanvasClick}/>
           {!hideOthers?(spriteClicked
           ? sprites.map((sprite) =>
               sprite.id === selectedSpriteId ? (
