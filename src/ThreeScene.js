@@ -647,8 +647,8 @@ export default function ThreeScene() {
   };
   const handleSpriteClick = (id) => {    
     // Handle the click event here and update the state
-    setSpriteClicked(!spriteClicked);
     setselectedSpriteId(id);
+    setSpriteClicked(!spriteClicked);
     // console.log("Sprite clicked! Current state:", spriteClicked);
   }
   const handleModeChange = (mode) => {
