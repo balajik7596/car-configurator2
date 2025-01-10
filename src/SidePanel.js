@@ -80,6 +80,10 @@ const SidePanel = ({ show, id, onClose }) => {
       setHeading(selectedhotspot.heading);
       setDescription(selectedhotspot.message);
       setImgSrc(selectedhotspot.imgsrc);
+    } else {
+      setHeading("");
+      setDescription("");
+      setImgSrc("");
     }
   }, [id]);
 
@@ -89,7 +93,7 @@ const SidePanel = ({ show, id, onClose }) => {
         <h3>{heading}</h3>
       </div>
       <div className="panel-image">
-        <img src={imgSrc} alt={heading} />
+        {imgSrc !== "" && <img src={imgSrc} alt={heading} />}
       </div>
       <div className="panel-description">
         <p>{description}</p>
