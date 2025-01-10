@@ -20,11 +20,19 @@ import { extend } from '@react-three/fiber';
 import "./app.css";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
-function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation,setPlayAnimation}) {
+function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation,setPlayAnimation,activeCamera}) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
   const { scene, animations } = useGLTF("/main-car.glb");
   const [mixer, setMixer] = useState(new THREE.AnimationMixer(scene));
   const ambientLightRef = useRef();
+  const controlRef = useRef();
+  const [target, setTarget] = useState([-5, 3, -8]);
+  const [minDistance, setMinDistance] = useState(5);
+  const [maxDistance, setMaxDistance] = useState(8); // Default maxDistance
+  const [enablePan, setEnablePan] = useState(false); 
+  const [enableZoom, setEnableZoom] = useState(true); 
+  const [minPolarAngle, setMinPolarAngle] = useState(Math.PI / 5); 
+  const [maxPolarAngle, setMaxPolarAngle] = useState(Math.PI / 2.3); 
   const clock = new THREE.Clock(); // to manage the animation time
   // const [isReversed, setIsReversed] = useState(true); // Track if animation should play in reverse
 // console.log(animations);
@@ -103,6 +111,9 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
   useEffect(() => {
     if (onLoad) onLoad();
   }, [onLoad]);
+  useFrame(() =>
+    {
+      if(controlRef.current) controlRef.current.update()});
 
   // Define the roof meshes to exclude for specific colors
   const roofMeshes = ["Retopo_shell_0017", "Retopo_shell_0021", "Roof"];
@@ -332,7 +343,19 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
       rotation={[0, (3 * Math.PI) / 2, 0]}
     >
     <ambientLight ref ={ambientLightRef} intensity={2} color="#ffffff" />
-
+    <OrbitControls
+          ref={controlRef}
+          target={activeCamera === "default" ? [-0, 0, -0] : [0, 1.5, 0.0]}
+          enablePan={activeCamera === "default" ?enablePan:false}
+          enableZoom={activeCamera === "default" ?enableZoom:false}
+          enableRotate={true}
+          enableDamping = {activeCamera === "default" ?false:true}
+          dampingFactor = {activeCamera === "default" ?0:0.21}
+          minPolarAngle = {activeCamera === "default" ?minPolarAngle : Math.PI/6} // Limit looking up/down
+          maxPolarAngle={activeCamera === "default" ?maxPolarAngle : Math.PI/1.3}
+          minDistance={activeCamera === "default" ?minDistance:-20} // Minimum zoom distance
+          maxDistance={activeCamera === "default" ?maxDistance:20} // Maximum zoom distance
+        ></OrbitControls>
       {" "}
       {/* Scale up by 20% */}
       <primitive object={scene} />
@@ -953,6 +976,7 @@ export default function ThreeScene() {
                 lightsOn={lightsOn}
                 setPlayAnimation={setPlayAnimation}
                 selectedAnimation={selectedAnimation}
+                activeCamera={activeCamera}
               />
               <IntDome visible={activeCamera === 'interior' && selectedEnvMode === 'sunlit'}/>
               <IntDomeNight visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/>
@@ -985,16 +1009,7 @@ export default function ThreeScene() {
         {/* {modelLoaded && <RaycasterHandler />} */}
 
         {/* Add Camera Controls */}
-        <OrbitControls
-          target={activeCamera === "default" ? [-0, 0, -0] : [0, 1.5, 0.0]}
-          enablePan={activeCamera === "default" ?enablePan:false}
-          enableZoom={activeCamera === "default" ?enableZoom:false}
-          enableRotate={true}
-          minPolarAngle={activeCamera === "default" ?minPolarAngle : Math.PI/6} // Limit looking up/down
-          maxPolarAngle={activeCamera === "default" ?maxPolarAngle : Math.PI/1.3}
-          minDistance={activeCamera === "default" ?minDistance:-20} // Minimum zoom distance
-          maxDistance={activeCamera === "default" ?maxDistance:20} // Maximum zoom distance
-        ></OrbitControls>        
+         
         <hemisphereLight
           skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
           groundColor={0x000000} // Color of the light from the ground (bottom hemisphere)
