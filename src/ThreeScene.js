@@ -468,7 +468,6 @@ const HotSpot = ({ id, position, url = '/dot.glb', onClick }) => {
   }, [position]);
 
   const handleClick = (event) => {
-    console.log(event);
 
     if (onClick && typeof onClick === 'function' && event.object.parent.name !=='Scene') {
       onClick(event.object.parent.name); // Pass the name of the object that was clicked
@@ -623,9 +622,7 @@ export default function ThreeScene() {
   const handleClosePanel = () => {
     setSpriteClicked(!spriteClicked); // Hide the side panel
   };
-  const handleSpriteClick = (id) => {
-    console.log(id);
-    
+  const handleSpriteClick = (id) => {    
     // Handle the click event here and update the state
     setSpriteClicked(!spriteClicked);
     setselectedSpriteId(id);
