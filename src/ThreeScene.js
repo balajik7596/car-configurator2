@@ -21,7 +21,7 @@ import { extend } from '@react-three/fiber';
 import "./app.css";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
-function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation,setPlayAnimation,activeCamera}) {
+function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,selectedAnimation,setPlayAnimation,activeCamera}) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
   const { scene, animations } = useGLTF("/main-car.glb");
   const [mixer, setMixer] = useState(new THREE.AnimationMixer(scene));
@@ -121,6 +121,23 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
 
   scene.traverse((child) => {
     if (child.isMesh) {
+      //licenseplate
+      if(child.material.name === 'E_xoxox_LicensePlate_Trim_Trimcolor.001' || child.material.name === 'E_xoxox_LicensePlate_Trim_Trimcolor.002'){
+        
+        // child.material.color = new THREE.Color(125,125,125);
+        child.material.map = licensePlateMap;
+        child.material.specularIntensity=0;
+        child.material.ior=0;
+        child.material.opacity = 1;
+        child.material.color.isColor = false;
+
+        child.material.roughness = 1;
+        child.material.reflectivity=0;
+        child.material.emissiveIntensity =0;
+        child.material.envMapIntensity = 0;        
+        return;        
+
+      }
       if(child.material.name === 'BLACK GLASS'){
         child.material.opacity = 0.7;
         child.material.aoMap = null;        
@@ -524,7 +541,62 @@ const AudioComponent = React.forwardRef((props, ref) => {
     </>
   );
 });
-
+const DoorAudioComponentOpen = React.forwardRef((props, ref) => {
+  return (
+    <>
+      <PositionalAudio
+      ref={ref}
+        url="./audio/dooropen.mp3" 
+        distance={0}                     // Set distance for spatial effects (can be omitted if not needed)
+        loop= {true}                             // Enable looping
+        autoplay ={false}                         // Start playing immediately
+        volume={0.5}                      // Adjust volume
+      />
+    </>
+  );
+});
+const DoorAudioComponentClose = React.forwardRef((props, ref) => {
+  return (
+    <>
+      <PositionalAudio
+      ref={ref}
+        url="./audio/doorclose.mp3" 
+        distance={0}                     // Set distance for spatial effects (can be omitted if not needed)
+        loop= {true}                             // Enable looping
+        autoplay ={false}                         // Start playing immediately
+        volume={0.5}                      // Adjust volume
+      />
+    </>
+  );
+});
+const SunRoofAudioComponentClose = React.forwardRef((props, ref) => {
+  return (
+    <>
+      <PositionalAudio
+      ref={ref}
+        url="./audio/doorclose.mp3" 
+        distance={0}                     // Set distance for spatial effects (can be omitted if not needed)
+        loop= {true}                             // Enable looping
+        autoplay ={false}                         // Start playing immediately
+        volume={0.5}                      // Adjust volume
+      />
+    </>
+  );
+});
+const SunRoofAudioComponentOpen = React.forwardRef((props, ref) => {
+  return (
+    <>
+      <PositionalAudio
+      ref={ref}
+        url="./audio/dooropen.mp3" 
+        distance={0}                     // Set distance for spatial effects (can be omitted if not needed)
+        loop= {true}                             // Enable looping
+        autoplay ={false}                         // Start playing immediately
+        volume={0.5}                      // Adjust volume
+      />
+    </>
+  );
+});
 export default function ThreeScene() {
   const lightRef = useRef(); // Reference for the directional light
   const helperRef = useRef(); // Reference for the light helper
@@ -562,7 +634,10 @@ export default function ThreeScene() {
   const [toneMap, settoneMap] = useState(THREE.ACESFilmicToneMapping);
   const [selectedEnvMode, setSelectedEnvMode] = useState("sunlit"); // Track selected mode
   const ambientaudioRef = useRef();
-
+  const dooropenaudioRef = useRef();
+  const doorcloseaudioRef = useRef();
+  const sunroofopenaudioRef = useRef();
+  const sunroofcloseaudioRef = useRef();
 
   const [sunroofState, setSunroofState] = useState(false);
   const [playAnimation, setPlayAnimation] = useState({
@@ -698,6 +773,10 @@ export default function ThreeScene() {
       if (playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]) {
         playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`](isReversed);
       }
+      if(isReversed)
+        playDoorCloseAudio();
+      else
+        playDoorOpenAudio();
       return { ...prev, [door]: !prev[door] }; // Toggle the door state
     });
   };
@@ -709,6 +788,10 @@ export default function ThreeScene() {
   const handleToggleSunroof = () => {
     setSunroofState((prev) => {
       playAnimation.toggleSunroof(prev); // Play or reverse the sunroof animation
+      if(prev)
+        playSunRoofOpenAudio();
+      else
+        playSunRoofCloseAudio();
       return !prev; // Toggle the state
     });
   };
@@ -751,10 +834,29 @@ export default function ThreeScene() {
     switchTointerior: switchTointerior
   };
   const [isAudioPlaying, setIsAudioPlaying] = useState(false); // Track if audio is playing
+  // const textureLoader = new THREE.TextureLoader();
+  const [textures, setTextures] = useState({}); // State to hold textures
+  const textureLoader = new THREE.TextureLoader();
 
+  useEffect(() => {
+    // Load textures once and update state
+    const textureMap = {
+      "Ocean Blue with Abyss Black roof": textureLoader.load('./nameplate/blue matte.png'),
+      "Atlas White with Abyss Black roof": textureLoader.load('./nameplate/white dual tone.png'),
+      "Fiery Red": textureLoader.load('./nameplate/red.png'),
+      "Abyss Black": textureLoader.load('./nameplate/black.png'),
+      "Starry Night": textureLoader.load('./nameplate/starry night.png'),
+      "Ocean Blue": textureLoader.load('./nameplate/blue monotone.png'),
+      "Atlas White": textureLoader.load('./nameplate/white dual tone.png'),
+      "Titan Grey Matte": textureLoader.load('./nameplate/titan grey.png'),
+      "Ocean Blue Matte": textureLoader.load('./nameplate/blue matte.png'),
+      "Robust Emerald Matte": textureLoader.load('./nameplate/green.png'),
+    };
+    
+    setTextures(textureMap); // Set loaded textures in state
+  }, []);
   const playAudio = () => {
     if (ambientaudioRef.current) {
-      console.log("hit");
       if (!isAudioPlaying) {
 
       ambientaudioRef.current.context.resume().then(() => {
@@ -763,8 +865,42 @@ export default function ThreeScene() {
       }
     }
   };
+  const playDoorOpenAudio = () => {
+    if (dooropenaudioRef.current) {
+        dooropenaudioRef.current.context.resume().then(() => {
+          dooropenaudioRef.current.play();});
+        // setIsAudioPlaying(true);
+      
+    }
+  };
+  const playDoorCloseAudio = () => {
+    if (doorcloseaudioRef.current) {
+      
+      doorcloseaudioRef.current.context.resume().then(() => {
+        doorcloseaudioRef.current.play();});
+        // setIsAudioPlaying(true);
+      
+    }
+  };
+  const playSunRoofCloseAudio = () => {
+    if (sunroofcloseaudioRef.current) {
+      
+      sunroofcloseaudioRef.current.context.resume().then(() => {
+        sunroofcloseaudioRef.current.play();});
+        // setIsAudioPlaying(true);
+      
+    }
+  };
+  const playSunRoofOpenAudio = () => {
+    if (sunroofopenaudioRef.current) {
+      
+      sunroofopenaudioRef.current.context.resume().then(() => {
+        sunroofopenaudioRef.current.play();});
+        // setIsAudioPlaying(true);
+      
+    }
+  };
   const handleCanvasClick = (event) => {  
-    console.log("ht");
     
     playAudio();  
     if(spriteClicked)
@@ -978,7 +1114,10 @@ export default function ThreeScene() {
         />
         <Suspense fallback={null}>
         <AudioComponent ref = {ambientaudioRef} />
-
+        <DoorAudioComponentOpen ref={dooropenaudioRef}/>
+        <DoorAudioComponentClose ref={doorcloseaudioRef}/>
+        <SunRoofAudioComponentOpen ref={sunroofopenaudioRef}/>
+        <SunRoofAudioComponentClose ref={sunroofcloseaudioRef}/>
           {/* Load HDR Environment */}
           {/* <Image360Sphere imageUrl="/360.jpg" /> */}
           <RotatingEnvironment visible={activeCamera === 'default'} path="/studio_small.hdr" rotationValue={180} />
@@ -1010,6 +1149,7 @@ export default function ThreeScene() {
                 ref={carModelRef}
                 color={carColor}
                 selColor={selColor}
+                licensePlateMap = {textures[selColor]}
                 onLoad={handleModelLoad}
                 lightsOn={lightsOn}
                 setPlayAnimation={setPlayAnimation}
