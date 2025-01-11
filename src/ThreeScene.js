@@ -515,7 +515,7 @@ export default function ThreeScene() {
   //const [selectedColor, setSelectedColor] = useState("#bbe9ff"); // 71b1cf
   const [selectedColor, setSelectedColor] = useState("#EBF9FF"); // 71b1cf
   const [selColor, setSelColor] = useState(
-    "Ocean Blue Metallic with Abyss Black roof"
+    "Ocean Blue with Abyss Black roof"
   ); // 71b1cf
 
   const [showColors, setShowColors] = useState(true);
