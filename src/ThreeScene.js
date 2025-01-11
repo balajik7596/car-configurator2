@@ -8,8 +8,9 @@ import {
   useTexture,
   useProgress,
   PerspectiveCamera,
-  useAnimations 
+  useAnimations  
 } from "@react-three/drei";
+import { PositionalAudio } from "@react-three/drei";
 import { DirectionalLightHelper, ACESFilmicToneMapping } from "three"; // Import from 'three'
 import * as THREE from "three";
 import { Raycaster, Vector2 } from "three";
@@ -508,6 +509,21 @@ const HotSpot = ({ id, position, url = '/dot.glb', onClick }) => {
   );
 };
 
+
+const AudioComponent = () => {
+  return (
+    <>
+      <PositionalAudio
+        url="./audio/ambient.mp3" 
+        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
+        loop= {true}                             // Enable looping
+        autoplay                          // Start playing immediately
+        volume={0.5}                      // Adjust volume
+      />
+    </>
+  );
+};
+
 export default function ThreeScene() {
   const lightRef = useRef(); // Reference for the directional light
   const helperRef = useRef(); // Reference for the light helper
@@ -926,6 +942,7 @@ export default function ThreeScene() {
           toneMappingExposure: toneMapexp,
         }}
       >
+
       <PerspectiveCamera
           makeDefault={activeCamera === "default"} // Activate this camera when it's active
           ref={defaultCameraRef}
@@ -942,6 +959,8 @@ export default function ThreeScene() {
           target={[0,50,0]}
         />
         <Suspense fallback={null}>
+        {modelLoaded && (<AudioComponent />)}
+
           {/* Load HDR Environment */}
           {/* <Image360Sphere imageUrl="/360.jpg" /> */}
           <RotatingEnvironment visible={activeCamera === 'default'} path="/studio_small.hdr" rotationValue={180} />
