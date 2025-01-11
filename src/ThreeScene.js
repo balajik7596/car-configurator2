@@ -196,7 +196,7 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
         child.material.metalness = 1;
       }
       if (roofMeshes.includes(child.name)) {
-        if (!selColor.includes("black roof")) {
+        if (!selColor.includes("Black roof")) {
           child.material.color.set(color);
         } else {
           child.material.color.set("#000000");
@@ -212,7 +212,7 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
         return;
       }
       if(child.material.name === 'UPPER-ROOF-BACK'){
-        if (!selColor.includes("black roof")) {
+        if (!selColor.includes("Black roof")) {
           child.material.color.set('#141414');
         } else {
           child.material.color.set("#000000");
@@ -237,21 +237,21 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
 
       if (
         (child.name === "Top-SIDE-SILVER"|| child.name ==='TOP-silver002' ) &&
-        !selColor.includes("black roof")
+        !selColor.includes("Black roof")
       ) {
         child.material.color.set("#8F8F8F");
       }
-      if ((child.name === "Top-SIDE-SILVER" || child.name ==='TOP-silver002' ) && selColor.includes("black roof")) {
+      if ((child.name === "Top-SIDE-SILVER" || child.name ==='TOP-silver002' ) && selColor.includes("Black roof")) {
         child.material.color.set("#1A1B23");
       }
       if (
         (child.name === "Top-SIDE-SILVER"|| child.name ==='TOP-silver002' ) &&
-        selColor.includes("Atlas White with black roof")
+        selColor.includes("Atlas White with Abyss Black roof")
       ) {
         child.material.color.set("#000000");
       }
       if (child.material.name.includes("ROOF-RAIL")) {
-        if (!selColor.includes("black roof")) {
+        if (!selColor.includes("Black roof")) {
           child.material.color.set("#C4C4C4");
           child.material.roughness = 0.15;
           child.material.IOR = 1.5;
@@ -262,7 +262,7 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
       }
       if (
         child.material.name === "UPPER_ALL" &&
-        selColor.includes("Atlas White with black roof")
+        selColor.includes("Atlas White with Abyss Black roof")
       ) {
         child.material.color.set("#000000");
       }
@@ -290,7 +290,7 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
           child.material.roughness = 0.2;
           child.material.IOR = 1.778;
           child.material.reflectivity = 0.71;
-        } else if (selColor === "Fiery Red Pearl") {
+        } else if (selColor === "Fiery Red") {
           child.material.color.set(color);
           child.material.emissive.setHex("#000000"); // Set emissive color to red
           child.material.emissiveIntensity = 1; // Increase the intensity
@@ -308,7 +308,7 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
           child.material.emissiveIntensity = 1;
           child.material.IOR = 1.0;
           child.material.reflectivity = 0.5;
-        } else if (selColor.includes("Abyss Black Pearl")) {
+        } else if (selColor.includes("Abyss Black")) {
           child.material.color.set(color);
           child.material.emissive.setHex("#050505");
           child.material.emissiveIntensity = 1.2;
@@ -317,7 +317,7 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
         }
         //ambient light
         if (ambientLightRef.current){
-          if(selColor.includes("Atlas White") || selColor === "Fiery Red Pearl" || selColor === "Starry Night" ) {
+          if(selColor.includes("Atlas White") || selColor === "Fiery Red" || selColor === "Starry Night" ) {
             ambientLightRef.current.intensity = 3;
           }else{
             ambientLightRef.current.intensity = 2;
@@ -349,8 +349,8 @@ function CarModel({ visible,color, lightsOn, selColor, onLoad ,selectedAnimation
           enablePan={activeCamera === "default" ?enablePan:false}
           enableZoom={activeCamera === "default" ?enableZoom:false}
           enableRotate={true}
-          enableDamping = {activeCamera === "default" ?false:true}
-          dampingFactor = {activeCamera === "default" ?0:0.21}
+          // enableDamping = {activeCamera === "default" ?false:true}
+          // dampingFactor = {activeCamera === "default" ?0:0.21}
           minPolarAngle = {activeCamera === "default" ?minPolarAngle : Math.PI/6} // Limit looking up/down
           maxPolarAngle={activeCamera === "default" ?maxPolarAngle : Math.PI/1.3}
           minDistance={activeCamera === "default" ?minDistance:-20} // Minimum zoom distance
@@ -515,7 +515,7 @@ export default function ThreeScene() {
   //const [selectedColor, setSelectedColor] = useState("#bbe9ff"); // 71b1cf
   const [selectedColor, setSelectedColor] = useState("#EBF9FF"); // 71b1cf
   const [selColor, setSelColor] = useState(
-    "Ocean Blue Metallic with black roof"
+    "Ocean Blue Metallic with Abyss Black roof"
   ); // 71b1cf
 
   const [showColors, setShowColors] = useState(true);
@@ -566,21 +566,37 @@ export default function ThreeScene() {
 `;
   const colors = [
     {
-      id: "Abyss Black Pearl",
+      id: "Ocean Blue with Abyss Black roof",
+      hex: "#7BCCF4",
+      path: "/colors/Ocean Blue Metallic with Black roof.png",
+    },
+    {
+      id: "Atlas White with Abyss Black roof",
+      hex: "#efefef",
+      path: "./colors/Atlas White with Black roof.png",
+    },
+    {
+      id: "Fiery Red",
+      hex: "#8D0C07",
+      path: "./colors/Fiery Red Pearl.png",
+    },
+    {
+      id: "Abyss Black",
       hex: "#020202",
       path: "/colors/Abyss Black Pearl.png",
     },
-    { id: "Atlas White", hex: "#f0f0f0", path: "./colors/Atlas White.png" },
-    {
-      id: "Fiery Red Pearl",
-      hex: "#8D0C07",
-      path: "./colors/Fiery Red Pearl.png",
-    }, //#930302
     { id: "Starry Night", hex: "#122544", path: "./colors/Starry Night.png" }, //#3a496b
     {
-      id: "Ocean Blue Metallic",
+      id: "Ocean Blue",
       hex: "#7BCCF4",
       path: "./colors/Ocean Blue Metallic.png",
+    },
+    { id: "Atlas White", hex: "#f0f0f0", path: "./colors/Atlas White.png" },
+
+    {
+      id: "Titan Grey Matte",
+      hex: "#474747",
+      path: "./colors/Titan Grey Matte.png",
     },
     {
       id: "Ocean Blue Matte",
@@ -588,28 +604,13 @@ export default function ThreeScene() {
       path: "./colors/Ocean Blue Matte.png",
     },
     {
-      id: "Titan Grey Matte",
-      hex: "#474747",
-      path: "./colors/Titan Grey Matte.png",
-    },
-    {
       id: "Robust Emerald Matte",
       hex: "#014638",
       path: "./colors/Robust Emeraid Matte.png",
     }, //#172f2b
-    {
-      id: "Atlas White with black roof",
-      hex: "#efefef",
-      path: "./colors/Atlas White with black roof.png",
-    },
-    {
-      id: "Ocean Blue Metallic with black roof",
-      hex: "#7BCCF4",
-      path: "/colors/Ocean Blue Metallic with black roof.png",
-    },
   ];
   const sprites = [
-    { id: 'charger', event: 'handleSpriteClick', position: [0.026, 0.8, -2.65] },
+    { id: 'charger', event: 'handleSpriteClick', position: [0.22, 0.83, -2.65] },
     { id: 'airflaps', event: 'handleSpriteClick', position: [-0.257, 0.46, -2.7] },
     { id: 'bumper', event: 'handleSpriteClick', position: [-0.16973610994713895, 0.600119960444232, 2.7082867790909097] },
     { id: 'wheel', event: 'handleSpriteClick', position: [1.166633102010636, 0.6027375218705294, -1.6985152476025873] },
@@ -622,7 +623,7 @@ export default function ThreeScene() {
     // { id: 'v2l', event: 'handleSpriteClick', position: [-0.0661013940479657, 1.1417463582073824, 0.31539398673229235] }
   ];
   const intsprites = [
-    { id: 'steering', event: 'handleSpriteClick', position: [1.15,0.8,-2] },
+    { id: 'steering', event: 'handleSpriteClick', position: [1.38,1.1,-2] },
     { id: 'display', event: 'handleSpriteClick', position: [0.5,1.05,-2] },
     { id: 'seat', event: 'handleSpriteClick', position: [-0.5,0,-1.5] },
     { id: 'console', event: 'handleSpriteClick', position: [0.2,0,-1.95] },
@@ -793,9 +794,9 @@ export default function ThreeScene() {
       {modelLoaded && !spriteClicked && !hideOthers && (
         <div className="bottom-banner-container">
           <div className="bottom-banner">
-            <div className="banner-image">
+            {/* <div className="banner-image">
               <img src="/Functions.png" alt="Functions Banner" />
-            </div>
+            </div> */}
             <div className="button-list">
               <button className="function-button" onClick={handleLightChange}>
                 <img src="/Light Indicator.png" alt="Icon 1" />
@@ -834,9 +835,9 @@ export default function ThreeScene() {
       {modelLoaded && hideOthers && (
         <div className="bottom-banner-container">
           <div className="bottom-banner">
-            <div className="banner-image">
+            {/* <div className="banner-image">
               <img src="/Functions.png" alt="Functions Banner" />
-            </div>
+            </div> */}
             <div className="button-list">              
               <button className="function-button" onClick={() => switchTointerior("in")}>
                 <img src="/in.png" alt="Icon 1" />
