@@ -510,19 +510,20 @@ const HotSpot = ({ id, position, url = '/dot.glb', onClick }) => {
 };
 
 
-const AudioComponent = () => {
+const AudioComponent = React.forwardRef((props, ref) => {
   return (
     <>
       <PositionalAudio
+      ref={ref}
         url="./audio/ambient.mp3" 
-        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
+        distance={0}                     // Set distance for spatial effects (can be omitted if not needed)
         loop= {true}                             // Enable looping
-        autoplay                          // Start playing immediately
+        autoplay ={false}                         // Start playing immediately
         volume={0.5}                      // Adjust volume
       />
     </>
   );
-};
+});
 
 export default function ThreeScene() {
   const lightRef = useRef(); // Reference for the directional light
@@ -560,6 +561,7 @@ export default function ThreeScene() {
   const [toneMapexp, settoneMapexp] = useState(1.2);
   const [toneMap, settoneMap] = useState(THREE.ACESFilmicToneMapping);
   const [selectedEnvMode, setSelectedEnvMode] = useState("sunlit"); // Track selected mode
+  const ambientaudioRef = useRef();
 
 
   const [sunroofState, setSunroofState] = useState(false);
@@ -748,7 +750,23 @@ export default function ThreeScene() {
     handleSpriteClick: handleSpriteClick,
     switchTointerior: switchTointerior
   };
-  const handleCanvasClick = (event) => {    
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false); // Track if audio is playing
+
+  const playAudio = () => {
+    if (ambientaudioRef.current) {
+      console.log("hit");
+      if (!isAudioPlaying) {
+
+      ambientaudioRef.current.context.resume().then(() => {
+        ambientaudioRef.current.play();});
+        setIsAudioPlaying(true);
+      }
+    }
+  };
+  const handleCanvasClick = (event) => {  
+    console.log("ht");
+    
+    playAudio();  
     if(spriteClicked)
       setSpriteClicked(false);
   };
@@ -959,7 +977,7 @@ export default function ThreeScene() {
           target={[0,50,0]}
         />
         <Suspense fallback={null}>
-        {modelLoaded && (<AudioComponent />)}
+        <AudioComponent ref = {ambientaudioRef} />
 
           {/* Load HDR Environment */}
           {/* <Image360Sphere imageUrl="/360.jpg" /> */}
