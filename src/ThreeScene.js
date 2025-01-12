@@ -21,7 +21,7 @@ import { extend } from '@react-three/fiber';
 import "./app.css";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
-function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,selectedAnimation,setPlayAnimation,activeCamera}) {
+function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,selectedAnimation,setPlayAnimation,activeCamera, onDoorAnimend}) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
   const { scene, animations } = useGLTF("/main-car.glb");
   const [mixer, setMixer] = useState(new THREE.AnimationMixer(scene));
@@ -73,30 +73,54 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
         chargerFlap: createAction(frontChargerFlap), // Charger Flap Action
       };
 
-      const playToggle = (action, isReversed) => {
+      const playToggle = (action, isReversed,onEndCallback,isSunRoof = false) => {
         
         if (!action) return;
+        const speedFactor = isSunRoof?(isReversed?0.25:0.22):1;
+        const duration = action.getClip().duration;
+  const thresholdTime = 0.1; // Time threshold near the end of the animation
+  let animationEnded = false;
         action.paused = false;
-        action.setEffectiveTimeScale(isReversed ? -1 : 1); // Reverse or forward playback
+        action.setEffectiveTimeScale(isReversed ? -speedFactor : speedFactor); // Reverse or forward playback
         action.setEffectiveWeight(1); // Ensure the action is fully active
         if (isReversed) {
           action.time = action.getClip().duration; // Start from the end of the clip
         } else {
           action.time = 0; // Start from the beginning of the clip
         }
-        action.play(); // Play the animation
+          // Use an interval or RAF to monitor progress
+  const monitorAnimation = () => {
+    if(!isReversed)
+      return;
+    const remainingTime = isReversed ? action.time : duration - action.time;
+
+    // Check if animation is near the end
+    if (!animationEnded && remainingTime <= thresholdTime) {
+      animationEnded = true;
+      if (typeof onEndCallback === 'function') {
+        onEndCallback(); // Trigger the callback
+      }
+      // Clear any monitoring mechanism if needed
+      clearInterval(interval); // If using setInterval
+      // cancelAnimationFrame if using requestAnimationFrame
+    }
+  };
+
+  const interval = setInterval(monitorAnimation, 50); // Check every 50ms
+
+  action.play(); // Play the animation
       };
 
       // Set play functions with toggle
       setPlayAnimation({
-        openFrontLeftDoor: (isReversed) => playToggle(actions.frontLeft, isReversed),
-        openFrontRightDoor: (isReversed) => playToggle(actions.frontRight, isReversed),
-        openRearLeftDoor: (isReversed) => playToggle(actions.rearLeft, isReversed),
-        openRearRightDoor: (isReversed) => playToggle(actions.rearRight, isReversed),
-        openBehindBootDoor: (isReversed) => playToggle(actions.behindBoot, isReversed),
-        playLeftWheel: (isReversed) => playToggle(actions.leftWheel, isReversed),
-        playRightWheel: (isReversed) => playToggle(actions.rightWheel, isReversed),
-        toggleSunroof: (isReversed) => playToggle(actions.sunroof, isReversed),
+        openFrontLeftDoor: (isReversed) => playToggle(actions.frontLeft, isReversed,onDoorAnimend),
+        openFrontRightDoor: (isReversed) => playToggle(actions.frontRight, isReversed,onDoorAnimend),
+        openRearLeftDoor: (isReversed) => playToggle(actions.rearLeft, isReversed,onDoorAnimend),
+        openRearRightDoor: (isReversed) => playToggle(actions.rearRight, isReversed,onDoorAnimend),
+        openBehindBootDoor: (isReversed) => playToggle(actions.behindBoot, isReversed,onDoorAnimend),
+        playLeftWheel: (isReversed) => playToggle(actions.leftWheel, isReversed,onDoorAnimend),
+        playRightWheel: (isReversed) => playToggle(actions.rightWheel, isReversed,onDoorAnimend),
+        toggleSunroof: (isReversed) => playToggle(actions.sunroof, isReversed,onDoorAnimend,true),
         toggleChargerFlap: (isReversed) => playToggle(actions.chargerFlap, isReversed), // Charger Flap Toggle
       });
     }
@@ -533,7 +557,7 @@ const AudioComponent = React.forwardRef((props, ref) => {
       <PositionalAudio
       ref={ref}
         url="./audio/ambient.mp3" 
-        distance={0}                     // Set distance for spatial effects (can be omitted if not needed)
+        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
         loop= {true}                             // Enable looping
         autoplay ={false}                         // Start playing immediately
         volume={0.5}                      // Adjust volume
@@ -547,8 +571,8 @@ const DoorAudioComponentOpen = React.forwardRef((props, ref) => {
       <PositionalAudio
       ref={ref}
         url="./audio/dooropen.mp3" 
-        distance={0}                     // Set distance for spatial effects (can be omitted if not needed)
-        loop= {true}                             // Enable looping
+        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
+        loop= {false}                             // Enable looping
         autoplay ={false}                         // Start playing immediately
         volume={0.5}                      // Adjust volume
       />
@@ -561,8 +585,8 @@ const DoorAudioComponentClose = React.forwardRef((props, ref) => {
       <PositionalAudio
       ref={ref}
         url="./audio/doorclose.mp3" 
-        distance={0}                     // Set distance for spatial effects (can be omitted if not needed)
-        loop= {true}                             // Enable looping
+        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
+        loop= {false}                             // Enable looping
         autoplay ={false}                         // Start playing immediately
         volume={0.5}                      // Adjust volume
       />
@@ -574,9 +598,9 @@ const SunRoofAudioComponentClose = React.forwardRef((props, ref) => {
     <>
       <PositionalAudio
       ref={ref}
-        url="./audio/doorclose.mp3" 
-        distance={0}                     // Set distance for spatial effects (can be omitted if not needed)
-        loop= {true}                             // Enable looping
+        url="./audio/SunRoofClose.mp3" 
+        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
+        loop= {false}                             // Enable looping
         autoplay ={false}                         // Start playing immediately
         volume={0.5}                      // Adjust volume
       />
@@ -588,9 +612,9 @@ const SunRoofAudioComponentOpen = React.forwardRef((props, ref) => {
     <>
       <PositionalAudio
       ref={ref}
-        url="./audio/dooropen.mp3" 
-        distance={0}                     // Set distance for spatial effects (can be omitted if not needed)
-        loop= {true}                             // Enable looping
+        url="./audio/SunRoofOpen.mp3" 
+        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
+        loop= {false}                             // Enable looping
         autoplay ={false}                         // Start playing immediately
         volume={0.5}                      // Adjust volume
       />
@@ -773,9 +797,7 @@ export default function ThreeScene() {
       if (playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]) {
         playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`](isReversed);
       }
-      if(isReversed)
-        playDoorCloseAudio();
-      else
+      if(!isReversed)
         playDoorOpenAudio();
       return { ...prev, [door]: !prev[door] }; // Toggle the door state
     });
@@ -814,18 +836,23 @@ export default function ThreeScene() {
           if (playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]) {
             playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`](isReversed);
           }
+          if(!isReversed)
+            playDoorOpenAudio();
           newStates[door] = true; // Mark door as open
         } else if (allDoorsOpen && prev[door] === true) {
           // Only play animation to close doors that are open
           if (playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]) {
             playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`](isReversed);
           }
+          if(!isReversed)
+            playDoorOpenAudio();
           newStates[door] = false; // Mark door as closed
         } else {
           // Keep state unchanged for already open/closed doors
           newStates[door] = prev[door];
         }
       }
+      
       return newStates;
     });
   };
@@ -853,7 +880,7 @@ export default function ThreeScene() {
       "Robust Emerald Matte": textureLoader.load('./nameplate/green.png'),
     };
     
-    setTextures(textureMap); // Set loaded textures in state
+    setTextures(textureMap);
   }, []);
   const playAudio = () => {
     if (ambientaudioRef.current) {
@@ -902,7 +929,7 @@ export default function ThreeScene() {
   };
   const handleCanvasClick = (event) => {  
     
-    playAudio();  
+    // playAudio();  
     if(spriteClicked)
       setSpriteClicked(false);
   };
@@ -952,7 +979,36 @@ export default function ThreeScene() {
       window.removeEventListener("resize", updateMaxDistance);
     };
   }, [modelLoaded]);
-  
+  const [audioState, setAudioState] = useState({
+    ambientPlaying: false,
+    doorOpenPlaying: false,
+    doorClosePlaying: false,
+    sunroofOpenPlaying: false,
+    sunroofClosePlaying: false,
+  });
+
+  const handleCanvasnClick = () => {
+    // Example: Toggle ambient audio on click
+    if (ambientaudioRef.current) {
+      const isPlaying = ambientaudioRef.current.isPlaying;//audioState.ambientPlaying;
+
+      if (isPlaying) {        
+        ambientaudioRef.current.stop();
+        setAudioState((prevState) => ({
+          ...prevState,
+          ambientPlaying: false,
+        }));
+      } else {
+        ambientaudioRef.current.context.resume().then(() => {
+          ambientaudioRef.current.play();
+          setAudioState((prevState) => ({
+            ...prevState,
+            ambientPlaying: true,
+          }));
+        });
+      }
+    }
+  };
 
   return (
     <div className="viewer-container no-select">
@@ -1095,6 +1151,7 @@ export default function ThreeScene() {
           toneMapping: toneMap,
           toneMappingExposure: toneMapexp,
         }}
+        onClick={handleCanvasnClick} 
       >
 
       <PerspectiveCamera
@@ -1155,6 +1212,7 @@ export default function ThreeScene() {
                 setPlayAnimation={setPlayAnimation}
                 selectedAnimation={selectedAnimation}
                 activeCamera={activeCamera}
+                onDoorAnimend={playDoorCloseAudio}
               />
               <IntDome visible={activeCamera === 'interior' && selectedEnvMode === 'sunlit'}/>
               <IntDomeNight visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/>
