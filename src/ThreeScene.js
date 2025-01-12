@@ -773,7 +773,8 @@ export default function ThreeScene() {
   const handleSpriteClick = (id) => {    
     // Handle the click event here and update the state
     setselectedSpriteId(id);
-    setSpriteClicked(!spriteClicked);
+    // setSpriteClicked(!spriteClicked);
+    setSpriteClicked(true);
     // console.log("Sprite clicked! Current state:", spriteClicked);
   }
   const handleModeChange = (mode) => {
@@ -937,8 +938,8 @@ export default function ThreeScene() {
   const handleCanvasClick = (event) => {  
     
     // playAudio();  
-    if(spriteClicked)
-      setSpriteClicked(false);
+    // if(spriteClicked)
+    //   setSpriteClicked(false);
   };
   useEffect(() => {
     if (lightRef.current && !helperRef.current) {
@@ -1187,7 +1188,7 @@ export default function ThreeScene() {
           <RotatingEnvironment visible={activeCamera === 'default'} path="/studio_small.hdr" rotationValue={180} />
           <SkyDomeSunLit visible={activeCamera === 'default' && selectedEnvMode === 'sunlit'} onClick={handleCanvasClick}/>
           <SkyDomeMoonLit visible={activeCamera === 'default' && selectedEnvMode === 'moonlit'} onClick={handleCanvasClick}/>
-          {!hideOthers?(spriteClicked
+          {!hideOthers?(false
           ? sprites.map((sprite) =>
               sprite.id === selectedSpriteId ? (
                 <HotSpot
@@ -1225,7 +1226,7 @@ export default function ThreeScene() {
               <IntDomeNight visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/>
 
 
-          {hideOthers?(spriteClicked
+          {hideOthers?(false
           ? intsprites.map((sprite) =>
               sprite.id === selectedSpriteId ? (
                 <HotSpot
