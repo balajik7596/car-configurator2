@@ -557,10 +557,10 @@ const AudioComponent = React.forwardRef((props, ref) => {
       <PositionalAudio
       ref={ref}
         url="./audio/ambient.mp3" 
-        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
+        distance={100}                     // Set distance for spatial effects (can be omitted if not needed)
         loop= {true}                             // Enable looping
         autoplay ={false}                         // Start playing immediately
-        volume={0.5}                      // Adjust volume
+        volume={0.1}                      // Adjust volume
       />
     </>
   );
@@ -993,11 +993,11 @@ export default function ThreeScene() {
       const isPlaying = ambientaudioRef.current.isPlaying;//audioState.ambientPlaying;
 
       if (isPlaying) {        
-        ambientaudioRef.current.stop();
-        setAudioState((prevState) => ({
-          ...prevState,
-          ambientPlaying: false,
-        }));
+        // ambientaudioRef.current.stop();
+        // setAudioState((prevState) => ({
+        //   ...prevState,
+        //   ambientPlaying: false,
+        // }));
       } else {
         ambientaudioRef.current.context.resume().then(() => {
           ambientaudioRef.current.play();
