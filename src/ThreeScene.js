@@ -19,6 +19,7 @@ import SidePanel from './SidePanel'; // Import the side panel component
 import { shaderMaterial } from '@react-three/drei';
 import { extend } from '@react-three/fiber';
 import "./app.css";
+import PopupBox from "./PopupBox";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
 function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,selectedAnimation,setPlayAnimation,activeCamera, onDoorAnimend}) {
@@ -204,6 +205,11 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
         else child.material.emissiveIntensity = 0;
       }
       if(child.name === 'SPOT-LIGHT'){
+        if(lightsOn)child.material.opacity = 1.0;
+        else child.material.opacity = 0;
+
+      }
+      if(child.material.name.includes('SPOT-LIGHT') ){
         if(lightsOn)child.material.opacity = 1.0;
         else child.material.opacity = 0;
 
@@ -761,7 +767,8 @@ export default function ThreeScene() {
     setShowColors((prev) => !prev); // Toggle visibility
   };
   const handleClosePanel = () => {
-    setSpriteClicked(!spriteClicked); // Hide the side panel
+    setSpriteClicked(!spriteClicked);
+    setselectedSpriteId(''); // Hide the side panel
   };
   const handleSpriteClick = (id) => {    
     // Handle the click event here and update the state
@@ -1255,7 +1262,8 @@ export default function ThreeScene() {
         />
       </Canvas>
 
-      <SidePanel id={selectedSpriteId} show={spriteClicked} heading={'test'} description ={'testkndsknfnfdnkjfkjd'} imgsrc={''} onClose={handleClosePanel} />
+      {/* <SidePanel id={selectedSpriteId} show={spriteClicked} heading={'test'} description ={'testkndsknfnfdnkjfkjd'} imgsrc={''} onClose={handleClosePanel} /> */}
+      {modelLoaded && (<PopupBox show={spriteClicked} id={selectedSpriteId} onClose={handleClosePanel} />)}
       {modelLoaded && !spriteClicked && !hideOthers && (
         <div
           className={
