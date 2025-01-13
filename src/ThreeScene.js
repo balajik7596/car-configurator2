@@ -395,14 +395,16 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
     <ambientLight ref ={ambientLightRef} intensity={2} color="#ffffff" />
     <OrbitControls
           ref={controlRef}
-          target={activeCamera === "default" ? [-0, 0, -0] : [0, 1.5, 0.0]}
+          target={activeCamera === "default" ? [-0, 0, -0] : (activeCamera === 'interior'?[0, 1.5, 0.0]:[0, 1.5, -2.5])}
           enablePan={activeCamera === "default" ?enablePan:false}
           enableZoom={activeCamera === "default" ?enableZoom:false}
           enableRotate={true}
           // enableDamping = {activeCamera === "default" ?false:true}
           // dampingFactor = {activeCamera === "default" ?0:0.21}
-          minPolarAngle = {activeCamera === "default" ?minPolarAngle : Math.PI/6} // Limit looking up/down
-          maxPolarAngle={activeCamera === "default" ?maxPolarAngle : Math.PI/1.3}
+          minPolarAngle = {activeCamera === "default" ?minPolarAngle : (activeCamera === 'interior'? Math.PI/6:Math.PI/6)} // Limit looking up/down
+          maxPolarAngle={activeCamera === "default" ?maxPolarAngle : (activeCamera === 'interior'? Math.PI/1.3:Math.PI/1.8)}
+          minAzimuthAngle={activeCamera === 'interior2'?-Math.PI / 2.4:-Infinity}
+          maxAzimuthAngle={activeCamera === 'interior2'?Math.PI / 2.4:Infinity}
           minDistance={activeCamera === "default" ?minDistance:-20} // Minimum zoom distance
           maxDistance={activeCamera === "default" ?maxDistance:20} // Maximum zoom distance
         ></OrbitControls>
@@ -489,7 +491,7 @@ function IntDomeNight2({visible}) {
     }
   };
   return (
-    <group visible = {visible} position={[2,0, 3]} scale = {[0.125,0.125,0.125]}>
+    <group rotation = {[0,-Math.PI/2,0]} visible = {visible} position={[2,0, 3]} scale = {[1,1,1]}>
       <primitive object={scene} />
     </group>
   );
@@ -505,18 +507,18 @@ function IntDome2({visible}) {
     }
   };
   return (
-    <group visible = {visible} position={[2,0, 3]} scale = {[0.125,0.125,0.125]}>
+    <group rotation = {[0,-Math.PI/2,0]} visible = {visible} position={[2,0, 3]} scale = {[1,1,1]}>
       <primitive object={scene} />
     </group>
   );
 }
 
-function CarShadow() {
+function CarShadow(visible) {
   // Load the texture (replace with your actual .webp file path)
   const texture = useTexture("/carshadow.webp"); // Replace with your actual .webp path
 
   return (
-    <mesh
+    <mesh visible = {visible}
       scale={[0.8, 0.8, 0.8]}
       position={[0, 0, 0]}
       rotation={[Math.PI / 2, 0, 0]}
@@ -542,7 +544,7 @@ function RotatingEnvironment({visible, path, rotationValue = 180 }) {
   );
 }
 
-const HotSpot = ({ id, position, url = '/dot.glb', onClick }) => {
+const HotSpot = ({ id, position,scale=0.0405, url = '/dot.glb', onClick }) => {
   const { scene, animations } = useGLTF(url);
   const meshRef = useRef();
   const [mixer] = useState(() => new THREE.AnimationMixer());
@@ -585,7 +587,56 @@ const HotSpot = ({ id, position, url = '/dot.glb', onClick }) => {
       name={id}
       ref={meshRef}
       object={clonedScene}
-      scale={0.0405}
+      scale={scale}
+      onClick={handleClick}
+    />
+  );
+};
+const CamHotSpot = ({ id, position,scale, url = '/cambutton.glb', onClick }) => {
+  const { scene, animations } = useGLTF(url);
+  const meshRef = useRef();
+  const [mixer] = useState(() => new THREE.AnimationMixer());
+  const [clonedScene] = useState(() => scene.clone(true)); // Deep clone the scene
+
+  // Bind animations to the cloned scene
+  useEffect(() => {
+    if (animations.length > 0 && clonedScene) {
+      animations.forEach((clip) => {
+        mixer.clipAction(clip, clonedScene).play();
+      });
+    }
+  }, [animations, mixer, clonedScene]);
+
+  // Update the mixer in every frame for animations
+  useFrame((state, delta) => {
+    mixer.update(delta);
+
+    if (meshRef.current) {
+      // meshRef.current.lookAt(state.camera.position); // Make it face the camera
+    }
+  });
+
+  // Set the position of the cloned object
+  useEffect(() => {
+    if (meshRef.current) {
+      meshRef.current.position.set(...position);
+    }
+  }, [position]);
+
+  const handleClick = (event) => {
+
+    if (onClick && typeof onClick === 'function' && event.object.parent.name !=='Scene') {
+      onClick(event.object.parent.name); // Pass the name of the object that was clicked
+    }
+  };
+
+  return (
+    <primitive
+      name={id}
+      ref={meshRef}
+      rotation ={[0,Math.PI/2,0]}
+      object={clonedScene}
+      scale={scale}
       onClick={handleClick}
     />
   );
@@ -786,8 +837,10 @@ export default function ThreeScene() {
     { id: 'seat', event: 'handleSpriteClick', position: [-0.5,0,-1.5] },
     { id: 'console', event: 'handleSpriteClick', position: [0.2,0,-1.95] },
     { id: 'v2l', event: 'handleSpriteClick', position: [0.2,0,0.19] },
-    { id: 'cam2', event: 'handleintCameraChange', position: [0.1,1.25,-2] },
-
+  ];
+  const intspritesnewview = [
+    { id: 'seat', event: 'handleSpriteClick', position: [-0.5,0,-1.5] },
+    { id: 'v2l', event: 'handleSpriteClick', position: [0.2,0,0.19] },
   ];
 
     
@@ -814,12 +867,11 @@ export default function ThreeScene() {
     setSpriteClicked(true);
     // console.log("Sprite clicked! Current state:", spriteClicked);
   }
-  const handleintCameraChange = (id) => {    
-    // Handle the click event here and update the state
-    setselectedSpriteId(id);
-    // setSpriteClicked(!spriteClicked);
-    setSpriteClicked(true);
-    // console.log("Sprite clicked! Current state:", spriteClicked);
+  const handleintCameraChange = (id) => { 
+    if(activeCamera === 'interior')
+      setActiveCamera("interior2");
+    else
+      setActiveCamera("interior");
   }
   const handleModeChange = (mode) => {
     setSelectedEnvMode(mode);
@@ -836,7 +888,7 @@ export default function ThreeScene() {
       settoneMapexp(1);
 
     }
-    else if (activeCamera === 'interior' && id === 'out'){
+    else if (activeCamera.includes('interior') && id === 'out'){
       setActiveCamera("default");
       sethideOthers(false);
       settoneMap(THREE.ACESFilmicToneMapping);
@@ -910,6 +962,7 @@ export default function ThreeScene() {
   };
   const eventHandlers = {
     handleSpriteClick: handleSpriteClick,
+    handleintCameraChange: handleintCameraChange,
     switchTointerior: switchTointerior
   };
   const [isAudioPlaying, setIsAudioPlaying] = useState(false); // Track if audio is playing
@@ -1221,6 +1274,14 @@ export default function ThreeScene() {
           fov={60}
           target={[0,50,0]}
         />
+        {/* Interior Camera 2 */}
+        <PerspectiveCamera
+          makeDefault={activeCamera === "interior2"} // Activate this camera when it's active
+          ref={interiorCameraRef}
+          position={(activeCamera === "interior2")?[0,1.5,8]:[0,0,0]} // Position for interior view
+          fov={50}
+          target={[2,50,0]}
+        />
         <Suspense fallback={null}>
         <AudioComponent ref = {ambientaudioRef} />
         <DoorAudioComponentOpen ref={dooropenaudioRef}/>
@@ -1251,10 +1312,9 @@ export default function ThreeScene() {
               onClick={eventHandlers[sprite.event]}
             />
           ))):null}
-              <CarShadow visible={activeCamera === 'default'} />
               {/* Add the 3D Model */}
               <CarModel
-                visible={activeCamera === 'default'}
+                visible={!activeCamera.includes('interior')}
                 ref={carModelRef}
                 color={carColor}
                 selColor={selColor}
@@ -1266,12 +1326,15 @@ export default function ThreeScene() {
                 activeCamera={activeCamera}
                 onDoorAnimend={playDoorCloseAudio}
               />
-              {/* <IntDome visible={activeCamera === 'interior' && selectedEnvMode === 'sunlit'}/>
-              <IntDomeNight visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/> */}
-              <IntDome2 visible={activeCamera === 'interior' && selectedEnvMode === 'sunlit'}/>
-              <IntDomeNight2 visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/>
-
-          {hideOthers?(false
+              <IntDome visible={activeCamera === 'interior' && selectedEnvMode === 'sunlit'}/>
+              <IntDomeNight visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/>
+              <IntDome2 visible={activeCamera === 'interior2' && selectedEnvMode === 'sunlit'}/>
+              <IntDomeNight2 visible={activeCamera === 'interior2' && selectedEnvMode === 'moonlit'}/>
+              {(hideOthers&&activeCamera==='interior')&& (<CamHotSpot key={"k"} id={'k'} position={[0.2,1.25,-2]} scale={0.015} onClick={eventHandlers['handleintCameraChange']}/>)}
+              {(hideOthers&&activeCamera==='interior2')&& (<CamHotSpot key={"ke"} id={'ke'} position={[2.0,1.95,-41]} scale={0.20} onClick={eventHandlers['handleintCameraChange']}/>)}
+              {(hideOthers&&activeCamera==='interior2')&&(<HotSpot key={'seat'} id={'seat'} position={[-7,-7,-41]} scale={0.80} onClick={eventHandlers['handleSpriteClick']}/>)}
+              {(hideOthers&&activeCamera==='interior2')&&(<HotSpot key={'v2l'} id={'v2l'} position={[7.0,-17,-30]} scale={0.80} onClick={eventHandlers['handleSpriteClick']}/>)}
+          {(hideOthers&&activeCamera==='interior')?(false
           ? intsprites.map((sprite) =>
               sprite.id === selectedSpriteId ? (
                 <HotSpot
@@ -1290,7 +1353,6 @@ export default function ThreeScene() {
             onClick={eventHandlers[sprite.event]}
           />
           ))):null}
-
 
           {/* <CameraMover targetPosition={[0,0,0]} targetRotation={[Math.PI2,0,0]} spriteClicked={activeCamera === 'interior'} /> */}
 
