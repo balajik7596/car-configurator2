@@ -6,6 +6,7 @@
     font-style: normal; /* Optional: Specify style */
   }
   .side-panel {
+    display: none;
     position: fixed;
     top: 0;
     right: -400px; /* Initially hidden offscreen */
@@ -21,6 +22,8 @@
     overflow-y: auto; /* Enable scrolling for overflow content */
   }
   .side-panel.show {
+    display: none;
+
     right: 0; /* Slide in when visible */
   }
   .panel-header {
@@ -84,51 +87,44 @@
   /* Adjust for mobile screens */
   @media (max-width: 768px) {
     .side-panel {
+      width: 100%;
+      height: 300px;
       position: fixed;
       top: auto;
       bottom: -300px; /* Initially hidden offscreen */
-      width: 100%;
-      height: 300px;
-      background-color: #fff;
-      box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.3);
-      transition: bottom 0.3s ease-in-out; /* Add opacity transition */
+      transition: bottom 0.3s ease-in-out;
       opacity: 0; /* Hidden state */
-      z-index: 10;
       display: flex;
       flex-direction: column;
-      font-family: 'HyundaiFont', sans-serif;
-      overflow-y: auto; /* Enable scrolling for overflow content */
     }
   
     .side-panel.show {
-      bottom: 0; /* Slide in when visible */
-      opacity: 1; /* Fully visible */
-    }  
+      bottom: 0;
+      opacity: 1;
+    }
+  
+    .panel-content {
+      flex-direction: row; /* Make image and heading side by side */
+      padding: 10px;
+      align-items: center; /* Center vertically */
+    }
+  
+    .panel-image {
+      width: 80px; /* Adjust image size for mobile */
+      margin-right: 10px;
+    }
+  
+    .panel-header h3 {
+      font-size: 16px;
+      margin: 0;
+    }
   
     .panel-description {
       font-size: 12px;
       padding: 5px;
+      margin-top: 10px; /* Add space between heading and description */
     }
-    .panel-image {
-      margin: 10px 0;
-      text-align: center;
-    }
-    
-    .panel-image img {
-      max-width: 75%;
-      height: auto;
-      border: 1px solid #ccc;
-    }
-    .back-image {
-      margin: 10px 0;
-      text-align: center;
-    }
-    
-    .back-image img {
-      max-width: 50%;
-      height: auto;
-      border: 1px solid #ccc;
-    }
+  
     .back-btn {
       padding: 8px 15px;
       font-size: 12px;

@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./SidePanel.css"; // Import the CSS for the panel
-import { useState } from "react";
 
 const hotspotDescriptions = [
   {
@@ -68,18 +67,20 @@ const hotspotDescriptions = [
       "The unique floating console with surround ocean blue ambient light is a standout design, which offers the passengers the future of driving experience. Designed with both style and functionality in mind, the console also offers smart open storage space, enhancing driver’s experience and utility. ",
   },
 ];
+
 const SidePanel = ({ show, id, onClose }) => {
-  if (id === "interior") return;
   const [heading, setHeading] = useState("");
   const [description, setDescription] = useState("");
   const [imgSrc, setImgSrc] = useState("");
 
   useEffect(() => {
     if (id !== "") {
-      const selectedhotspot = hotspotDescriptions.filter((h) => h.id === id)[0];
-      setHeading(selectedhotspot.heading);
-      setDescription(selectedhotspot.message);
-      setImgSrc(selectedhotspot.imgsrc);
+      const selectedHotspot = hotspotDescriptions.find((h) => h.id === id);
+      if (selectedHotspot) {
+        setHeading(selectedHotspot.heading);
+        setDescription(selectedHotspot.message);
+        setImgSrc(selectedHotspot.imgsrc);
+      }
     } else {
       setHeading("");
       setDescription("");
@@ -92,17 +93,20 @@ const SidePanel = ({ show, id, onClose }) => {
       <div className="panel-header">
         <h3>{heading}</h3>
       </div>
-      <div className="panel-image">
-        {imgSrc !== "" && <img src={imgSrc} alt={heading} />}
-      </div>
-      <div className="panel-description">
-        <p>{description}</p>
+      <div className="panel-content">
+        <div className="panel-image">
+          {imgSrc && <img src={imgSrc} alt={heading} />}
+        </div>
+        <div className="panel-description">
+          <p>{description}</p>
+        </div>
       </div>
       <button className="back-image" onClick={onClose}>
-        <img src={"./backbtn.png"} alt={heading} />
+        <img src={"./backbtn.png"} alt="Back" />
       </button>
     </div>
   );
 };
 
 export default SidePanel;
+

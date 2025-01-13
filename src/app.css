@@ -12,11 +12,22 @@ body {
   font-weight: normal; /* Optional: Specify weight */
   font-style: normal; /* Optional: Specify style */
 }
-@media only screen and (max-width: 768px) {
-  /* Lock orientation on mobile devices */
+
+/* Prevent layout changes when rotating to landscape */
+@media (orientation: landscape) {
+  /* Add styles to prevent layout changes in landscape mode */
   body {
-    transform: rotate(0deg); /* Prevent rotation for mobile */
-    overflow: hidden; /* Prevent scrolling */
+    overflow: hidden; /* Prevent body from adjusting to new screen width */
+    /* Other styles to maintain layout */
+  }
+}
+
+/* Prevent layout changes when rotating to portrait */
+@media (orientation: portrait) {
+  /* Add styles to prevent layout changes in portrait mode */
+  body {
+    overflow: hidden; /* Prevent body from adjusting to new screen height */
+    /* Other styles to maintain layout */
   }
 }
 

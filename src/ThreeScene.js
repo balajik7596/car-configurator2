@@ -20,6 +20,7 @@ import { shaderMaterial } from '@react-three/drei';
 import { extend } from '@react-three/fiber';
 import "./app.css";
 import PopupBox from "./PopupBox";
+import PopoutBoxM from "./PopoutBoxM";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
 function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,selectedAnimation,setPlayAnimation,activeCamera, onDoorAnimend}) {
@@ -1265,6 +1266,8 @@ export default function ThreeScene() {
 
       {/* <SidePanel id={selectedSpriteId} show={spriteClicked} heading={'test'} description ={'testkndsknfnfdnkjfkjd'} imgsrc={''} onClose={handleClosePanel} /> */}
       {modelLoaded && (<PopupBox show={spriteClicked} id={selectedSpriteId} onClose={handleClosePanel} />)}
+      {modelLoaded && (<PopoutBoxM show={spriteClicked} id={selectedSpriteId} onClose={handleClosePanel} />)}
+
       {modelLoaded && !spriteClicked && !hideOthers && (
         <div
           className={

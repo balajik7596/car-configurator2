@@ -4,6 +4,11 @@
     font-weight: normal; /* Optional: Specify weight */
     font-style: normal; /* Optional: Specify style */
   }
+  @media only screen and (max-width: 768px) {
+    .popup-container {
+      display: none; /* Hides the component on screens smaller than 768px */
+    }
+  }
 .popup-container {
     position: absolute;
     top: 50%;
