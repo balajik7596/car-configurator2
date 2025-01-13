@@ -877,13 +877,13 @@ export default function ThreeScene() {
   useEffect(() => {
     // Load textures once and update state
     const textureMap = {
-      "Ocean Blue with Abyss Black roof": textureLoader.load('./nameplate/blue matte.png'),
+      "Ocean Blue with Abyss Black roof": textureLoader.load('./nameplate/blue duotones.png'),
       "Atlas White with Abyss Black roof": textureLoader.load('./nameplate/white dual tone.png'),
       "Fiery Red": textureLoader.load('./nameplate/red.png'),
       "Abyss Black": textureLoader.load('./nameplate/black.png'),
       "Starry Night": textureLoader.load('./nameplate/starry night.png'),
       "Ocean Blue": textureLoader.load('./nameplate/blue monotone.png'),
-      "Atlas White": textureLoader.load('./nameplate/white dual tone.png'),
+      "Atlas White": textureLoader.load('./nameplate/white monotone.png'),
       "Titan Grey Matte": textureLoader.load('./nameplate/titan grey.png'),
       "Ocean Blue Matte": textureLoader.load('./nameplate/blue matte.png'),
       "Robust Emerald Matte": textureLoader.load('./nameplate/green.png'),

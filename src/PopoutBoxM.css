@@ -25,15 +25,15 @@
   
   .popout-toggle {
     position: absolute;
-    top: -20px; /* Place it above the container */
+    top: -30px; /* Place it above the container */
     left: 50%;
     transform: translateX(-50%);
     background: #fff;
     color: #0b0b0b;
-    border: 1px solid #ccc;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    border: none; /* Remove any default border */
+    outline: none; /* Remove focus outline */
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,8 +42,9 @@
     z-index: 1001;
   }
   
+  
   .popout-content {
-    padding: 15px;
+    padding: 0px;
   }
   
   .popout-row {
@@ -57,7 +58,7 @@
   }
   .popout-image {
     display: inline-block; /* Ensure the div wraps tightly around the image */
-    margin: 0; /* Remove any default margins */
+    margin-left: 2px; /* Remove any default margins */
     padding: 0; /* Remove any default padding */
     width: auto; /* Allow the width to adjust based on the image size */
     height: auto; /* Allow the height to adjust automatically */
@@ -73,7 +74,7 @@
     font-family: Arial, sans-serif;
     font-size: 16px;
     line-height: 1.2; /* Tighten line spacing */
-    color: #333;
+    color: #000000;
     margin: 0; /* Remove any default margin */
     padding: 0; /* Remove any default padding */
   }
@@ -89,9 +90,9 @@
   .popout-description p {
     font-family: Arial, sans-serif;
     font-size: 14px;
-    color: #666;
+    color: #000000;
     line-height: 1.5;
-    margin: 0;
+    margin-left: 5px;
   }
   
   /* Adjust for smaller screens */
@@ -106,7 +107,7 @@
     .popout-image {
         display: inline-block; /* Ensure the div wraps tightly around the image */
         margin: 0; /* Remove any default margins */
-        padding: 0; /* Remove any default padding */
+        margin-left: 2px; /* Remove any default margins */
         width: auto; /* Allow the width to adjust based on the image size */
         height: auto; /* Allow the height to adjust automatically */
       }
@@ -118,12 +119,12 @@
       }
   
     .popout-title h2 {
-        font-family: Arial, sans-serif;
-        font-size: 16px;
+      font-family: 'HyundaiFont', sans-serif;
+      font-size: 16px;
     }
   
     .popout-description p {
-        font-family: Arial, sans-serif;
+      font-family: 'HyundaiFont', sans-serif;
 
       font-size: 14px;
     }

@@ -1,149 +1,170 @@
 @font-face {
-    font-family: "HyundaiFont"; /* Replace with your font name */
-    src: url("./fonts/HyundaiSansHead-Regular.otf") format("opentype");
-    font-weight: normal; /* Optional: Specify weight */
-    font-style: normal; /* Optional: Specify style */
-  }
-  @media only screen and (max-width: 768px) {
-    .popup-container {
-      display: none; /* Hides the component on screens smaller than 768px */
-    }
-  }
-.popup-container {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
-    width: 300px;
-    transition: all 0.3s ease-in-out;
-    z-index: 1000;
-  }
-  
-  .popup-container.closed {
-    right: 10px; /* Hide off-screen */
-  }
-  
-  .popup-container.open {
-    right: 10px; /* Fully visible */
-  }
-  
-  .popup-toggle.closed {
-    position: fixed;
-    top: -2%;
-    right: 5px;
-    transform: translateY(-50%);
-    background: #fff;
-    color: #0b0b0b;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 30px;
-    text-align: center;
-    cursor: pointer;
-    z-index: 1100;
-  }
-
-  .popup-toggle.open {
-    position: fixed;
-    top: -3%;
-    right: 5px;
-    transform: translateY(-50%);
-    background: #fff;
-    color: #0b0b0b;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 30px;
-    text-align: center;
-    cursor: pointer;
-    z-index: 1100;
-  }
-
-  .popup-toggle.closed, 
-.popup-toggle.open {
-    margin-bottom: 0px;
-  border-radius: 50%; /* Ensures round shape */
+  font-family: "HyundaiFont"; /* Replace with your font name */
+  src: url("./fonts/HyundaiSansHead-Regular.otf") format("opentype");
+  font-weight: normal; /* Optional: Specify weight */
+  font-style: normal; /* Optional: Specify style */
 }
-  .popup-content {
-    margin-top: 0px;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
-  }
-  
-  .popup-header {
-    text-align: left;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    font-family: 'HyundaiFont', sans-serif;
 
+@media only screen and (max-width: 768px) {
+  .popup-container {
+      display: none; /* Hides the component on screens smaller than 768px */
   }
-  
-  .popup-image {
-    text-align: center;
-    margin-bottom: 12px;
-  }
-  
-  .popup-image img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-  }
-  
-  .popup-message {
-    font-size: 14px;
-    line-height: 1.4;
-    color: #333;
-    text-align: left;
-    font-family: 'HyundaiFont', sans-serif;
-  }
-  .help-tab {
-    text-align: center;
-  }
-  
-  .help-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    gap: 1px;
-  }
-  
-  .help-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-  }
-  
-  .help-item-image {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    margin-right: 12px;
-    object-fit: contain;
+}
 
-  }
-  
-  .help-item-text {
-    text-align: left;
-    font-family: 'HyundaiFont', sans-serif;
-  }
-  
-  .help-item-text h4 {
-    font-size: 16px;
-    margin: 0 0 4px;
-  }
-  
-  .help-item-text p {
-    font-size: 14px;
-    color: #141414;
-  }
+.popup-container {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 300px;
+  transition: all 0.2s ease-in-out;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.2); /* Increased transparency */
+  backdrop-filter: blur(10px); /* Add a frosted glass effect */
+  /* border-radius: 8px; Smooth edges */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Slight shadow for contrast */
+}
+
+.popup-container.closed {
+  right: 10px; /* Hide off-screen */
+}
+
+.popup-container.open {
+  right: 10px; /* Fully visible */
+}
+
+.popup-toggle.closed {
+  position: fixed;
+  top: -2%;
+  right: 5px;
+  transform: translateY(-50%);
+  background: #ede9e6; /* Increased transparency */
+  color: #0b0b0b;
+  border: none;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 30px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 1100;
+  backdrop-filter: blur(10px); /* Match frosted effect */
+}
+
+.popup-toggle.open {
+  position: absolute; /* Relative to the .popup-container */
+  top: 15px; /* Slightly above the container */
+  left: -30px; /* Slightly to the left of the container */
+  transform: translateY(-50%);
+  background:rgba(255, 255, 255, 0.6); /* Increased transparency */
+  color: #0b0b0b;
+  border: none;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 30px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 1100;
+  backdrop-filter: blur(10px); /* Match frosted effect */
+}
+
+.popup-toggle.closed,
+.popup-toggle.open {
+  margin-bottom: 0px;
+}
+
+.popup-content {
+  margin-top: 0px;
+  background: rgba(255, 255, 255, 0.2); /* Increased transparency */
+  padding: 0px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  /* border-radius: 8px; Smooth edges */
+  /* backdrop-filter: blur(10px); Add frosted effect */
+}
+
+.popup-header {
+  padding: 16px;
+  text-align: left;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 0px;
+  font-family: 'HyundaiFont', sans-serif;
+  background-color: #ede9e6; /* Increased transparency */
+  backdrop-filter: blur(10px); /* Match frosted effect */
+}
+
+.popup-image {
+  text-align: center;
+  margin-bottom: 0px;
+}
+
+.popup-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+.popup-message {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #000000;
+  text-align: left;
+  font-family: 'HyundaiFont', sans-serif;
+  background-color: rgba(255, 255, 255, 0.2); /* Increased transparency */
+  backdrop-filter: blur(10px); /* Match frosted effect */
+}
+
+.help-tab {
+  text-align: center;
+}
+
+.help-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 0px;
+}
+
+.help-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0px;
+  background-color: rgba(255, 255, 255, 0.2); /* Increased transparency */
+  backdrop-filter: blur(10px); /* Match frosted effect */
+  /* border-radius: 8px; Optional: Smooth edges */
+}
+
+.help-item-image {
+  width: 50px;
+  height: 50px;
+  margin-right: 12px;
+  object-fit: contain;
+  background-color: rgba(255, 255, 255, 0.2); /* Increased transparency */
+  backdrop-filter: blur(10px); /* Optional frosted effect */
+  /* border-radius: 8px; Optional: Smooth edges */
+}
+
+.help-item-text {
+  text-align: left;
+  font-family: 'HyundaiFont', sans-serif;
+}
+
+.help-item-text h4 {
+  font-size: 16px;
+  margin: 0 0 4px;
+  background-color: rgba(255, 255, 255, 0.2); /* Match translucency */
+  /* padding: 4px; Add padding for better spacing */
+  backdrop-filter: blur(10px); /* Match frosted effect */
+}
+
+.help-item-text p {
+  font-size: 14px;
+  color: #141414;
+  background-color: rgba(255, 255, 255, 0.2); /* Match translucency */
+  /* padding: 4px; Add padding for better spacing */
+  backdrop-filter: blur(10px); /* Match frosted effect */
+}
