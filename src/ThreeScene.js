@@ -1333,7 +1333,7 @@ export default function ThreeScene() {
               {(hideOthers&&activeCamera==='interior')&& (<CamHotSpot key={"k"} id={'k'} position={[0.2,1.25,-2]} scale={0.015} onClick={eventHandlers['handleintCameraChange']}/>)}
               {(hideOthers&&activeCamera==='interior2')&& (<CamHotSpot key={"ke"} id={'ke'} position={[2.0,1.95,-41]} scale={0.20} onClick={eventHandlers['handleintCameraChange']}/>)}
               {(hideOthers&&activeCamera==='interior2')&&(<HotSpot key={'seat'} id={'seat'} position={[-7,-7,-41]} scale={0.80} onClick={eventHandlers['handleSpriteClick']}/>)}
-              {(hideOthers&&activeCamera==='interior2')&&(<HotSpot key={'v2l'} id={'v2l'} position={[7.0,-17,-30]} scale={0.80} onClick={eventHandlers['handleSpriteClick']}/>)}
+              {(hideOthers&&activeCamera==='interior2')&&(<HotSpot key={'v2l'} id={'v2l'} position={[0.8,-29,-30]} scale={0.80} onClick={eventHandlers['handleSpriteClick']}/>)}
           {(hideOthers&&activeCamera==='interior')?(false
           ? intsprites.map((sprite) =>
               sprite.id === selectedSpriteId ? (

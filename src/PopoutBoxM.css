@@ -60,13 +60,13 @@
     display: inline-block; /* Ensure the div wraps tightly around the image */
     margin-left: 2px; /* Remove any default margins */
     padding: 0; /* Remove any default padding */
-    width: auto; /* Allow the width to adjust based on the image size */
+    width: 100%; /* Allow the width to adjust based on the image size */
     height: auto; /* Allow the height to adjust automatically */
   }
   
   .popout-image img {
     display: block; /* Remove inline gaps caused by images in the flow */
-    width: 75%; /* Set the image width to 75% */
+    width: 100%; /* Set the image width to 75% */
     height: auto; /* Maintain aspect ratio */
   }
   
@@ -114,7 +114,7 @@
       
       .popout-image img {
         display: block; /* Remove inline gaps caused by images in the flow */
-        width: 55%; /* Set the image width to 75% */
+        width: 100%; /* Set the image width to 75% */
         height: auto; /* Maintain aspect ratio */
       }
   
