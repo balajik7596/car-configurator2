@@ -159,6 +159,7 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
 
         child.material.roughness = 1;
         child.material.reflectivity=0;
+        child.material.color.set('#c2c2c2')
         child.material.emissiveIntensity =0;
         child.material.envMapIntensity = 0;        
         return;        
@@ -1026,7 +1027,7 @@ export default function ThreeScene() {
       </div>)}
       {" "}
       {/* Full-screen canvas */}
-      {modelLoaded && !spriteClicked && !hideOthers && (
+      {modelLoaded && !hideOthers && (
         <div className="bottom-banner-container">
           <div className="bottom-banner">
             {/* <div className="banner-image">
@@ -1268,7 +1269,7 @@ export default function ThreeScene() {
       {modelLoaded && (<PopupBox show={spriteClicked} id={selectedSpriteId} onClose={handleClosePanel} />)}
       {modelLoaded && (<PopoutBoxM show={spriteClicked} id={selectedSpriteId} onClose={handleClosePanel} />)}
 
-      {modelLoaded && !spriteClicked && !hideOthers && (
+      {modelLoaded && !hideOthers && (
         <div
           className={
             showColors ? "color-picker-container" : "color-picker-container-new"

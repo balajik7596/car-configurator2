@@ -22,7 +22,7 @@
   background-color: rgba(255, 255, 255, 0.2); /* Increased transparency */
   backdrop-filter: blur(10px); /* Add a frosted glass effect */
   /* border-radius: 8px; Smooth edges */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Slight shadow for contrast */
+  /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); Slight shadow for contrast */
 }
 
 .popup-container.closed {
@@ -80,7 +80,7 @@
   margin-top: 0px;
   background: rgba(255, 255, 255, 0.2); /* Increased transparency */
   padding: 0px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   position: relative;
   /* border-radius: 8px; Smooth edges */
   /* backdrop-filter: blur(10px); Add frosted effect */
@@ -98,14 +98,21 @@
 }
 
 .popup-image {
-  text-align: center;
-  margin-bottom: 0px;
+  display: flex; /* Ensure the container shrinks to fit the image */
+  align-items: center; /* Center-align content if needed */
+  justify-content: center; /* Center-align horizontally if needed */
+  padding: 0; /* Remove any padding */
+  margin: 0; /* Remove any margin */
+  width: fit-content; /* Shrink the container to fit the image's width */
+  height: fit-content; /* Shrink the container to fit the image's height */
 }
 
 .popup-image img {
-  max-width: 100%;
-  height: auto;
+  display: block; /* Prevent extra space caused by inline elements */
+  max-width: 100%; /* Ensure it doesn't overflow */
+  height: auto; /* Maintain aspect ratio */
 }
+
 
 .popup-message {
   padding: 16px;
