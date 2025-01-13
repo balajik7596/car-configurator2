@@ -478,6 +478,39 @@ function IntDome({visible}) {
     </group>
   );
 }
+function IntDomeNight2({visible}) {
+  const { scene } = useGLTF("/panonight2.glb"); // Replace with the path to your GLB file
+  const handleClick = (event) => {
+    // console.log(event.object.name);
+        
+    // Call the parent handler when clicked
+    if (onClick && typeof onClick === 'function') {
+      onClick(event.object.name); // Pass event if needed or modify the handler
+    }
+  };
+  return (
+    <group visible = {visible} position={[2,0, 3]} scale = {[0.125,0.125,0.125]}>
+      <primitive object={scene} />
+    </group>
+  );
+}
+function IntDome2({visible}) {
+  const { scene } = useGLTF("/panoday2.glb"); // Replace with the path to your GLB file
+  const handleClick = (event) => {
+    // console.log(event.object.name);
+        
+    // Call the parent handler when clicked
+    if (onClick && typeof onClick === 'function') {
+      onClick(event.object.name); // Pass event if needed or modify the handler
+    }
+  };
+  return (
+    <group visible = {visible} position={[2,0, 3]} scale = {[0.125,0.125,0.125]}>
+      <primitive object={scene} />
+    </group>
+  );
+}
+
 function CarShadow() {
   // Load the texture (replace with your actual .webp file path)
   const texture = useTexture("/carshadow.webp"); // Replace with your actual .webp path
@@ -752,7 +785,9 @@ export default function ThreeScene() {
     { id: 'display', event: 'handleSpriteClick', position: [0.5,1.05,-2] },
     { id: 'seat', event: 'handleSpriteClick', position: [-0.5,0,-1.5] },
     { id: 'console', event: 'handleSpriteClick', position: [0.2,0,-1.95] },
-    { id: 'v2l', event: 'handleSpriteClick', position: [0.2,0,0.19] }
+    { id: 'v2l', event: 'handleSpriteClick', position: [0.2,0,0.19] },
+    { id: 'cam2', event: 'handleintCameraChange', position: [0.1,1.25,-2] },
+
   ];
 
     
@@ -773,6 +808,13 @@ export default function ThreeScene() {
     setselectedSpriteId(''); // Hide the side panel
   };
   const handleSpriteClick = (id) => {    
+    // Handle the click event here and update the state
+    setselectedSpriteId(id);
+    // setSpriteClicked(!spriteClicked);
+    setSpriteClicked(true);
+    // console.log("Sprite clicked! Current state:", spriteClicked);
+  }
+  const handleintCameraChange = (id) => {    
     // Handle the click event here and update the state
     setselectedSpriteId(id);
     // setSpriteClicked(!spriteClicked);
@@ -1224,9 +1266,10 @@ export default function ThreeScene() {
                 activeCamera={activeCamera}
                 onDoorAnimend={playDoorCloseAudio}
               />
-              <IntDome visible={activeCamera === 'interior' && selectedEnvMode === 'sunlit'}/>
-              <IntDomeNight visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/>
-
+              {/* <IntDome visible={activeCamera === 'interior' && selectedEnvMode === 'sunlit'}/>
+              <IntDomeNight visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/> */}
+              <IntDome2 visible={activeCamera === 'interior' && selectedEnvMode === 'sunlit'}/>
+              <IntDomeNight2 visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/>
 
           {hideOthers?(false
           ? intsprites.map((sprite) =>
