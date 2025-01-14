@@ -1011,6 +1011,8 @@ export default function ThreeScene() {
   };
 
   const switchTointerior = (id) => {
+    if(activeCamera.includes(id) ||activeCamera === "default" && id === "out" )
+      return;
     setBlackScreen(true); // Show the black overlay
 
     setTimeout(() => {
