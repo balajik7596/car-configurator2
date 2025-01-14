@@ -31,7 +31,7 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
   const controlRef = useRef();
   const [target, setTarget] = useState([-5, 3, -8]);
   const [minDistance, setMinDistance] = useState(5);
-  const [maxDistance, setMaxDistance] = useState(8); // Default maxDistance
+  const [maxDistance, setMaxDistance] = useState(10); // Default maxDistance
   const [enablePan, setEnablePan] = useState(false); 
   const [enableZoom, setEnableZoom] = useState(true); 
   const [minPolarAngle, setMinPolarAngle] = useState(Math.PI / 5); 
@@ -1131,7 +1131,7 @@ export default function ThreeScene() {
       {" "}
       {/* Full-screen canvas */}
       {modelLoaded && !hideOthers && (
-        <div className={isMob?"bottom-banner-container-new":"bottom-banner-container"}>
+        <div className={false?"bottom-banner-container-new":"bottom-banner-container"}>
           <div className="bottom-banner">
             {/* <div className="banner-image">
               <img src="/Functions.png" alt="Functions Banner" />
@@ -1172,7 +1172,7 @@ export default function ThreeScene() {
         </div>
       )}
       {modelLoaded && hideOthers && (
-        <div className={isMob?"bottom-banner-container-new":"bottom-banner-container"}>
+        <div className={false?"bottom-banner-container-new":"bottom-banner-container"}>
           <div className="bottom-banner">
             {/* <div className="banner-image">
               <img src="/Functions.png" alt="Functions Banner" />
