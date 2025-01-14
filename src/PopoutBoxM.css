@@ -44,8 +44,8 @@
 
   }
   .popup-description .popup-disclaimer {
-  
-    font-size: 8px; /* Smaller font size for the disclaimer */
+    font-weight: normal;
+    font-size: 2px; /* Smaller font size for the disclaimer */
     color: #000000; /* Optional: lighter color to differentiate */
   }
   
@@ -129,10 +129,15 @@
       font-size: 16px;
     }
   
-    .popout-description p {
+    .popout-description  {
       font-family: 'HyundaiFont', sans-serif;
 
       font-size: 14px;
+    }
+    .popout-description .popup-disclaimer {
+      font-weight: normal;
+      font-size: 10px; /* Smaller font size for the disclaimer */
+      color: #000000; /* Optional: lighter color to differentiate */
     }
   }
   
