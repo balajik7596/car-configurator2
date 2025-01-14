@@ -1,5 +1,5 @@
 import React, { Suspense, useRef, useEffect, useState } from "react";
-import { Canvas, useFrame,useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import {
   Environment,
@@ -8,22 +8,33 @@ import {
   useTexture,
   useProgress,
   PerspectiveCamera,
-  useAnimations  
+  useAnimations,
 } from "@react-three/drei";
 import { PositionalAudio } from "@react-three/drei";
 import { DirectionalLightHelper, ACESFilmicToneMapping } from "three"; // Import from 'three'
 import * as THREE from "three";
 import { Raycaster, Vector2 } from "three";
-import { useLoader } from '@react-three/fiber';
-import SidePanel from './SidePanel'; // Import the side panel component
-import { shaderMaterial } from '@react-three/drei';
-import { extend } from '@react-three/fiber';
+import { useLoader } from "@react-three/fiber";
+import SidePanel from "./SidePanel"; // Import the side panel component
+import { shaderMaterial } from "@react-three/drei";
+import { extend } from "@react-three/fiber";
 import "./app.css";
 import PopupBox from "./PopupBox";
 import PopoutBoxM from "./PopoutBoxM";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
-function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,selectedAnimation,setPlayAnimation,activeCamera, onDoorAnimend}) {
+function CarModel({
+  visible,
+  color,
+  lightsOn,
+  selColor,
+  licensePlateMap,
+  onLoad,
+  selectedAnimation,
+  setPlayAnimation,
+  activeCamera,
+  onDoorAnimend,
+}) {
   // const hdrEquirect = useLoader(RGBELoader, '/studio_small.hdr');
   const { scene, animations } = useGLTF("/main-car.glb");
   const [mixer, setMixer] = useState(new THREE.AnimationMixer(scene));
@@ -32,28 +43,46 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
   const [target, setTarget] = useState([-5, 3, -8]);
   const [minDistance, setMinDistance] = useState(5);
   const [maxDistance, setMaxDistance] = useState(10); // Default maxDistance
-  const [enablePan, setEnablePan] = useState(false); 
-  const [enableZoom, setEnableZoom] = useState(true); 
-  const [minPolarAngle, setMinPolarAngle] = useState(Math.PI / 5); 
-  const [maxPolarAngle, setMaxPolarAngle] = useState(Math.PI / 2.3); 
+  const [enablePan, setEnablePan] = useState(false);
+  const [enableZoom, setEnableZoom] = useState(true);
+  const [minPolarAngle, setMinPolarAngle] = useState(Math.PI / 5);
+  const [maxPolarAngle, setMaxPolarAngle] = useState(Math.PI / 2.3);
   const clock = new THREE.Clock(); // to manage the animation time
   // const [isReversed, setIsReversed] = useState(true); // Track if animation should play in reverse
-// console.log(animations);
+  // console.log(animations);
 
   useEffect(() => {
     if (animations && mixer && scene) {
       // mixer = new THREE.AnimationMixer(scene);
 
       // Find animations by name
-      const frontLeftDoor = animations.find((clip) => clip.name === "DOOR LEFT  FRONT CONTROLLERAction");
-      const frontRightDoor = animations.find((clip) => clip.name === "DOOR RIGHT FRONT CONTROLLERAction");
-      const rearLeftDoor = animations.find((clip) => clip.name === "DOOR LEFT BACKAction");
-      const rearRightDoor = animations.find((clip) => clip.name === "DOOR RIGHT BACKAction");
-      const behindBootDoor = animations.find((clip) => clip.name === "BACK GATE CONTROLLERAction");
-      const leftWheelRotation = animations.find((clip) => clip.name === "WHEEL L");
-      const rightWheelRotation = animations.find((clip) => clip.name === "WHEEL R");
-      const sunroofAnimation = animations.find((clip) => clip.name === "SUN ROOF");
-      const frontChargerFlap = animations.find((clip) => clip.name === "FRNT CHARGER FLAPAction"); // Front Charger Flap Animation
+      const frontLeftDoor = animations.find(
+        (clip) => clip.name === "DOOR LEFT  FRONT CONTROLLERAction"
+      );
+      const frontRightDoor = animations.find(
+        (clip) => clip.name === "DOOR RIGHT FRONT CONTROLLERAction"
+      );
+      const rearLeftDoor = animations.find(
+        (clip) => clip.name === "DOOR LEFT BACKAction"
+      );
+      const rearRightDoor = animations.find(
+        (clip) => clip.name === "DOOR RIGHT BACKAction"
+      );
+      const behindBootDoor = animations.find(
+        (clip) => clip.name === "BACK GATE CONTROLLERAction"
+      );
+      const leftWheelRotation = animations.find(
+        (clip) => clip.name === "WHEEL L"
+      );
+      const rightWheelRotation = animations.find(
+        (clip) => clip.name === "WHEEL R"
+      );
+      const sunroofAnimation = animations.find(
+        (clip) => clip.name === "SUN ROOF"
+      );
+      const frontChargerFlap = animations.find(
+        (clip) => clip.name === "FRNT CHARGER FLAPAction"
+      ); // Front Charger Flap Animation
 
       const createAction = (clip) => {
         if (!clip) return null;
@@ -75,13 +104,17 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
         chargerFlap: createAction(frontChargerFlap), // Charger Flap Action
       };
 
-      const playToggle = (action, isReversed,onEndCallback,isSunRoof = false) => {
-        
+      const playToggle = (
+        action,
+        isReversed,
+        onEndCallback,
+        isSunRoof = false
+      ) => {
         if (!action) return;
-        const speedFactor = isSunRoof?(isReversed?0.25:0.22):1;
+        const speedFactor = isSunRoof ? (isReversed ? 0.25 : 0.22) : 1;
         const duration = action.getClip().duration;
-  const thresholdTime = 0.1; // Time threshold near the end of the animation
-  let animationEnded = false;
+        const thresholdTime = 0.1; // Time threshold near the end of the animation
+        let animationEnded = false;
         action.paused = false;
         action.setEffectiveTimeScale(isReversed ? -speedFactor : speedFactor); // Reverse or forward playback
         action.setEffectiveWeight(1); // Ensure the action is fully active
@@ -90,57 +123,66 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
         } else {
           action.time = 0; // Start from the beginning of the clip
         }
-          // Use an interval or RAF to monitor progress
-  const monitorAnimation = () => {
-    if(!isReversed)
-      return;
-    const remainingTime = isReversed ? action.time : duration - action.time;
+        // Use an interval or RAF to monitor progress
+        const monitorAnimation = () => {
+          if (!isReversed) return;
+          const remainingTime = isReversed
+            ? action.time
+            : duration - action.time;
 
-    // Check if animation is near the end
-    if (!animationEnded && remainingTime <= thresholdTime) {
-      animationEnded = true;
-      if (typeof onEndCallback === 'function') {
-        onEndCallback(); // Trigger the callback
-      }
-      // Clear any monitoring mechanism if needed
-      clearInterval(interval); // If using setInterval
-      // cancelAnimationFrame if using requestAnimationFrame
-    }
-  };
+          // Check if animation is near the end
+          if (!animationEnded && remainingTime <= thresholdTime) {
+            animationEnded = true;
+            if (typeof onEndCallback === "function") {
+              onEndCallback(); // Trigger the callback
+            }
+            // Clear any monitoring mechanism if needed
+            clearInterval(interval); // If using setInterval
+            // cancelAnimationFrame if using requestAnimationFrame
+          }
+        };
 
-  const interval = setInterval(monitorAnimation, 50); // Check every 50ms
+        const interval = setInterval(monitorAnimation, 50); // Check every 50ms
 
-  action.play(); // Play the animation
+        action.play(); // Play the animation
       };
 
       // Set play functions with toggle
       setPlayAnimation({
-        openFrontLeftDoor: (isReversed) => playToggle(actions.frontLeft, isReversed,onDoorAnimend),
-        openFrontRightDoor: (isReversed) => playToggle(actions.frontRight, isReversed,onDoorAnimend),
-        openRearLeftDoor: (isReversed) => playToggle(actions.rearLeft, isReversed,onDoorAnimend),
-        openRearRightDoor: (isReversed) => playToggle(actions.rearRight, isReversed,onDoorAnimend),
-        openBehindBootDoor: (isReversed) => playToggle(actions.behindBoot, isReversed,onDoorAnimend),
-        playLeftWheel: (isReversed) => playToggle(actions.leftWheel, isReversed,onDoorAnimend),
-        playRightWheel: (isReversed) => playToggle(actions.rightWheel, isReversed,onDoorAnimend),
-        toggleSunroof: (isReversed) => playToggle(actions.sunroof, isReversed,onDoorAnimend,true),
-        toggleChargerFlap: (isReversed) => playToggle(actions.chargerFlap, isReversed), // Charger Flap Toggle
+        openFrontLeftDoor: (isReversed) =>
+          playToggle(actions.frontLeft, isReversed, onDoorAnimend),
+        openFrontRightDoor: (isReversed) =>
+          playToggle(actions.frontRight, isReversed, onDoorAnimend),
+        openRearLeftDoor: (isReversed) =>
+          playToggle(actions.rearLeft, isReversed, onDoorAnimend),
+        openRearRightDoor: (isReversed) =>
+          playToggle(actions.rearRight, isReversed, onDoorAnimend),
+        openBehindBootDoor: (isReversed) =>
+          playToggle(actions.behindBoot, isReversed, onDoorAnimend),
+        playLeftWheel: (isReversed) =>
+          playToggle(actions.leftWheel, isReversed, onDoorAnimend),
+        playRightWheel: (isReversed) =>
+          playToggle(actions.rightWheel, isReversed, onDoorAnimend),
+        toggleSunroof: (isReversed) =>
+          playToggle(actions.sunroof, isReversed, onDoorAnimend, true),
+        toggleChargerFlap: (isReversed) =>
+          playToggle(actions.chargerFlap, isReversed), // Charger Flap Toggle
       });
     }
-    
   }, [animations, scene, setPlayAnimation]);
-    
-    useFrame(() => {
-      if (mixer) {
-        mixer.update(clock.getDelta());
-      }
-    });
+
+  useFrame(() => {
+    if (mixer) {
+      mixer.update(clock.getDelta());
+    }
+  });
 
   useEffect(() => {
     if (onLoad) onLoad();
   }, [onLoad]);
-  useFrame(() =>
-    {
-      if(controlRef.current) controlRef.current.update()});
+  useFrame(() => {
+    if (controlRef.current) controlRef.current.update();
+  });
 
   // Define the roof meshes to exclude for specific colors
   const roofMeshes = ["Retopo_shell_0017", "Retopo_shell_0021", "Roof"];
@@ -148,29 +190,32 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
   scene.traverse((child) => {
     if (child.isMesh) {
       //licenseplate
-      if(child.material.name === 'E_xoxox_LicensePlate_Trim_Trimcolor.001' || child.material.name === 'E_xoxox_LicensePlate_Trim_Trimcolor.002'){
-        
+      if (
+        child.material.name === "E_xoxox_LicensePlate_Trim_Trimcolor.001" ||
+        child.material.name === "E_xoxox_LicensePlate_Trim_Trimcolor.002"
+      ) {
         // child.material.color = new THREE.Color(125,125,125);
         child.material.map = licensePlateMap;
-        child.material.specularIntensity=0;
-        child.material.ior=0;
+        child.material.specularIntensity = 0;
+        child.material.ior = 0;
         child.material.opacity = 1;
         child.material.color.isColor = false;
 
         child.material.roughness = 1;
-        child.material.reflectivity=0;
-        child.material.color.set('#c2c2c2')
-        child.material.emissiveIntensity =0;
-        child.material.envMapIntensity = 0;        
-        return;        
-
+        child.material.reflectivity = 0;
+        child.material.color.set("#c2c2c2");
+        child.material.emissiveIntensity = 0;
+        child.material.envMapIntensity = 0;
+        return;
       }
-      if(child.material.name === 'BLACK GLASS'){
+      if (child.material.name === "BLACK GLASS") {
         child.material.opacity = 0.7;
-        child.material.aoMap = null;        
+        child.material.aoMap = null;
       }
-      if(child.material.name === "E_xogRUo007_Default_Rubber_BlackTireSidewall17"){
-              child.material.color.set('#000000');
+      if (
+        child.material.name === "E_xogRUo007_Default_Rubber_BlackTireSidewall17"
+      ) {
+        child.material.color.set("#000000");
       }
 
       //lights
@@ -200,38 +245,36 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
         else child.material.opacity = 0;
       }
       if (child.material.name === "Front-Headlight-White.005") {
-        if (lightsOn){
-          child.material.emissive = new THREE.Color(255,255,255);      
+        if (lightsOn) {
+          child.material.emissive = new THREE.Color(255, 255, 255);
           child.material.emissiveIntensity = 4.36;
-        }
-        else child.material.emissiveIntensity = 0;
+        } else child.material.emissiveIntensity = 0;
       }
-      if(child.name === 'SPOT-LIGHT'){
-        if(lightsOn)child.material.opacity = 1.0;
+      if (child.name === "SPOT-LIGHT") {
+        if (lightsOn) child.material.opacity = 1.0;
         else child.material.opacity = 0;
-
       }
-      if(child.material.name.includes('SPOT-LIGHT') ){
-        if(lightsOn)child.material.opacity = 1.0;
+      if (child.material.name.includes("SPOT-LIGHT")) {
+        if (lightsOn) child.material.opacity = 1.0;
         else child.material.opacity = 0;
-
       }
-      if(child.material.name.includes("GLOW") ||
-      child.material.name.includes("WHITE EMIT LIGHT") ||
-      child.material.name.includes("CRETA_GLOW")
-    ) {
-      child.visible = true;
-      // if (lightsOn) child.material.opacity = 1;
-      // else child.material.opacity = 0;
+      if (
+        child.material.name.includes("GLOW") ||
+        child.material.name.includes("WHITE EMIT LIGHT") ||
+        child.material.name.includes("CRETA_GLOW")
+      ) {
+        child.visible = true;
+        // if (lightsOn) child.material.opacity = 1;
+        // else child.material.opacity = 0;
 
-      if (lightsOn) child.material.emissiveIntensity = 100;
-      else child.material.emissiveIntensity = 1;
-    }
-    //back light
-    if(child.material.name.includes("RedClr")){
-      if (lightsOn) child.material.emissiveIntensity = 3;
-      else child.material.emissiveIntensity = 1;
-    }
+        if (lightsOn) child.material.emissiveIntensity = 100;
+        else child.material.emissiveIntensity = 1;
+      }
+      //back light
+      if (child.material.name.includes("RedClr")) {
+        if (lightsOn) child.material.emissiveIntensity = 3;
+        else child.material.emissiveIntensity = 1;
+      }
       //glass
       if (child.material.name === "Glass") {
         child.material.roughness = 0.1;
@@ -261,14 +304,14 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
         else child.material.roughness = 0.13;
         return;
       }
-      if(child.material.name === 'UPPER-ROOF-BACK'){
+      if (child.material.name === "UPPER-ROOF-BACK") {
         if (!selColor.includes("Black roof")) {
-          child.material.color.set('#141414');
+          child.material.color.set("#141414");
         } else {
           child.material.color.set("#000000");
         }
       }
-      if (child.name === "Top-SIDE-SILVER" || child.name ==='TOP-silver002' ) {
+      if (child.name === "Top-SIDE-SILVER" || child.name === "TOP-silver002") {
         child.material.roughness = 0.12;
       }
       if (
@@ -277,25 +320,28 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
         child.material.roughness = 0.22;
         child.material.metalness = 0.6;
       }
-      if(child.name === 'OVRM_bottom'){
+      if (child.name === "OVRM_bottom") {
         child.material.color.set("#1c1c1c");
       }
-      if(child.name === 'shell_0096' || child.name === 'shell_0098'){
+      if (child.name === "shell_0096" || child.name === "shell_0098") {
         child.material.color.set("#0a0a0a");
         child.material.roughness = 0.12;
       }
 
       if (
-        (child.name === "Top-SIDE-SILVER"|| child.name ==='TOP-silver002' ) &&
+        (child.name === "Top-SIDE-SILVER" || child.name === "TOP-silver002") &&
         !selColor.includes("Black roof")
       ) {
         child.material.color.set("#8F8F8F");
       }
-      if ((child.name === "Top-SIDE-SILVER" || child.name ==='TOP-silver002' ) && selColor.includes("Black roof")) {
+      if (
+        (child.name === "Top-SIDE-SILVER" || child.name === "TOP-silver002") &&
+        selColor.includes("Black roof")
+      ) {
         child.material.color.set("#1A1B23");
       }
       if (
-        (child.name === "Top-SIDE-SILVER"|| child.name ==='TOP-silver002' ) &&
+        (child.name === "Top-SIDE-SILVER" || child.name === "TOP-silver002") &&
         selColor.includes("Atlas White with Abyss Black roof")
       ) {
         child.material.color.set("#000000");
@@ -316,15 +362,19 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
       ) {
         child.material.color.set("#000000");
       }
-      if (child.material.name.includes("CAR_PAINT_BODY-white") || child.material.name.includes("White-side-panel-bake")|| child.material.name.includes("BODY")) {
+      if (
+        child.material.name.includes("CAR_PAINT_BODY-white") ||
+        child.material.name.includes("White-side-panel-bake") ||
+        child.material.name.includes("BODY")
+      ) {
         if (selColor.includes("Ocean Blue")) {
           child.material.color.set(color);
           child.material.emissive.setHex("#000000");
           child.material.emissiveIntensity = 1;
           child.material.IOR = 1.0;
           child.material.reflectivity = 0.5;
-          if(selColor.includes('Metallic')){
-            child.material.roughness = 0.13
+          if (selColor.includes("Metallic")) {
+            child.material.roughness = 0.13;
             child.material.reflectivity = 0.68;
           }
         } else if (selColor === "Starry Night") {
@@ -366,22 +416,25 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
           child.material.reflectivity = 0.5;
         }
         //ambient light
-        if (ambientLightRef.current){
-          if(selColor.includes("Atlas White") || selColor === "Fiery Red" || selColor === "Starry Night" ) {
+        if (ambientLightRef.current) {
+          if (
+            selColor.includes("Atlas White") ||
+            selColor === "Fiery Red" ||
+            selColor === "Starry Night"
+          ) {
             ambientLightRef.current.intensity = 3;
-          }else{
+          } else {
             ambientLightRef.current.intensity = 2;
           }
-        } 
-
-        if (selColor.includes("Matte")){
-           child.material.roughness = 0.2;
-           if(selColor.includes('Ocean')){
-              child.material.roughness = 0.2;
-              child.material.reflectivity = 0.4;
-            }
         }
-        else child.material.roughness = 0.13;
+
+        if (selColor.includes("Matte")) {
+          child.material.roughness = 0.2;
+          if (selColor.includes("Ocean")) {
+            child.material.roughness = 0.2;
+            child.material.reflectivity = 0.4;
+          }
+        } else child.material.roughness = 0.13;
       }
     }
   });
@@ -392,122 +445,161 @@ function CarModel({ visible,color, lightsOn, selColor,licensePlateMap, onLoad ,s
       position={[0, 0.03, -1.5]}
       rotation={[0, (3 * Math.PI) / 2, 0]}
     >
-    <ambientLight ref ={ambientLightRef} intensity={2} color="#ffffff" />
-    <OrbitControls
-          ref={controlRef}
-          target={activeCamera === "default" ? [-0, 0, -0] : (activeCamera === 'interior'?[0, 1.5, 0.0]:[0, 1.5, -2.5])}
-          enablePan={activeCamera === "default" ?enablePan:false}
-          enableZoom={activeCamera === "default" ?enableZoom:false}
-          enableRotate={true}
-          // enableDamping = {activeCamera === "default" ?false:true}
-          // dampingFactor = {activeCamera === "default" ?0:0.21}
-          minPolarAngle = {activeCamera === "default" ?minPolarAngle : (activeCamera === 'interior'? Math.PI/6:Math.PI/6)} // Limit looking up/down
-          maxPolarAngle={activeCamera === "default" ?maxPolarAngle : (activeCamera === 'interior'? Math.PI/1.3:Math.PI/1.8)}
-          minAzimuthAngle={activeCamera === 'interior2'?-Math.PI / 2.4:-Infinity}
-          maxAzimuthAngle={activeCamera === 'interior2'?Math.PI / 2.4:Infinity}
-          minDistance={activeCamera === "default" ?minDistance:-20} // Minimum zoom distance
-          maxDistance={activeCamera === "default" ?maxDistance:20} // Maximum zoom distance
-        ></OrbitControls>
-      {" "}
+      <ambientLight ref={ambientLightRef} intensity={2} color="#ffffff" />
+      <OrbitControls
+        ref={controlRef}
+        target={
+          activeCamera === "default"
+            ? [-0, 0, -0]
+            : activeCamera === "interior"
+            ? [0, 1.5, 0.0]
+            : [0, 1.5, -2.5]
+        }
+        enablePan={activeCamera === "default" ? enablePan : false}
+        enableZoom={activeCamera === "default" ? enableZoom : false}
+        enableRotate={true}
+        // enableDamping = {activeCamera === "default" ?false:true}
+        // dampingFactor = {activeCamera === "default" ?0:0.21}
+        minPolarAngle={
+          activeCamera === "default"
+            ? minPolarAngle
+            : activeCamera === "interior"
+            ? Math.PI / 6
+            : Math.PI / 6
+        } // Limit looking up/down
+        maxPolarAngle={
+          activeCamera === "default"
+            ? maxPolarAngle
+            : activeCamera === "interior"
+            ? Math.PI / 1.3
+            : Math.PI / 1.8
+        }
+        minAzimuthAngle={
+          activeCamera === "interior2" ? -Math.PI / 2.4 : -Infinity
+        }
+        maxAzimuthAngle={
+          activeCamera === "interior2" ? Math.PI / 2.4 : Infinity
+        }
+        minDistance={activeCamera === "default" ? minDistance : -20} // Minimum zoom distance
+        maxDistance={activeCamera === "default" ? maxDistance : 20} // Maximum zoom distance
+      ></OrbitControls>{" "}
       {/* Scale up by 20% */}
       <primitive object={scene} />
     </group>
   );
 }
 
-function SkyDomeSunLit({visible,onClick}) {
+function SkyDomeSunLit({ visible, onClick }) {
   const { scene } = useGLTF("/skydomesunlit.glb"); // Replace with the path to your GLB file
   const handleClick = (event) => {
     // console.log(event.object.name);
-        
+
     // Call the parent handler when clicked
-    if (onClick && typeof onClick === 'function') {
+    if (onClick && typeof onClick === "function") {
       onClick(event.object.name); // Pass event if needed or modify the handler
     }
   };
   return (
-    <group rotation={[0, (3 * Math.PI) / 2, 0]} visible={visible} onClick = {handleClick}>
+    <group
+      rotation={[0, (3 * Math.PI) / 2, 0]}
+      visible={visible}
+      onClick={handleClick}
+    >
       <primitive object={scene} />
     </group>
   );
 }
-function SkyDomeMoonLit({visible, onClick}) {
+function SkyDomeMoonLit({ visible, onClick }) {
   const { scene } = useGLTF("/skydomemoonlit.glb"); // Replace with the path to your GLB file
   const handleClick = (event) => {
     // console.log(event.object.name);
-        
+
     // Call the parent handler when clicked
-    if (onClick && typeof onClick === 'function') {
+    if (onClick && typeof onClick === "function") {
       onClick(event.object.name); // Pass event if needed or modify the handler
     }
   };
   return (
-    <group rotation={[0, (3 * Math.PI) / 2, 0]} visible={visible} onClick = {handleClick}>
+    <group
+      rotation={[0, (3 * Math.PI) / 2, 0]}
+      visible={visible}
+      onClick={handleClick}
+    >
       <primitive object={scene} />
     </group>
   );
 }
 
-function IntDomeNight({visible}) {
+function IntDomeNight({ visible }) {
   const { scene } = useGLTF("/panonight.glb"); // Replace with the path to your GLB file
   const handleClick = (event) => {
     // console.log(event.object.name);
-        
+
     // Call the parent handler when clicked
-    if (onClick && typeof onClick === 'function') {
+    if (onClick && typeof onClick === "function") {
       onClick(event.object.name); // Pass event if needed or modify the handler
     }
   };
   return (
-    <group visible = {visible} position={[2,0, 3]} scale = {[0.125,0.125,0.125]}>
+    <group visible={visible} position={[2, 0, 3]} scale={[0.125, 0.125, 0.125]}>
       <primitive object={scene} />
     </group>
   );
 }
-function IntDome({visible}) {
+function IntDome({ visible }) {
   const { scene } = useGLTF("/panoday.glb"); // Replace with the path to your GLB file
   const handleClick = (event) => {
     // console.log(event.object.name);
-        
+
     // Call the parent handler when clicked
-    if (onClick && typeof onClick === 'function') {
+    if (onClick && typeof onClick === "function") {
       onClick(event.object.name); // Pass event if needed or modify the handler
     }
   };
   return (
-    <group visible = {visible} position={[2,0, 3]} scale = {[0.125,0.125,0.125]}>
+    <group visible={visible} position={[2, 0, 3]} scale={[0.125, 0.125, 0.125]}>
       <primitive object={scene} />
     </group>
   );
 }
-function IntDomeNight2({visible}) {
+function IntDomeNight2({ visible }) {
   const { scene } = useGLTF("/panonight2.glb"); // Replace with the path to your GLB file
   const handleClick = (event) => {
     // console.log(event.object.name);
-        
+
     // Call the parent handler when clicked
-    if (onClick && typeof onClick === 'function') {
+    if (onClick && typeof onClick === "function") {
       onClick(event.object.name); // Pass event if needed or modify the handler
     }
   };
   return (
-    <group rotation = {[0,-Math.PI/2,0]} visible = {visible} position={[2,0, 3]} scale = {[1,1,1]}>
+    <group
+      rotation={[0, -Math.PI / 2, 0]}
+      visible={visible}
+      position={[2, 0, 3]}
+      scale={[1, 1, 1]}
+    >
       <primitive object={scene} />
     </group>
   );
 }
-function IntDome2({visible}) {
+function IntDome2({ visible }) {
   const { scene } = useGLTF("/panoday2.glb"); // Replace with the path to your GLB file
   const handleClick = (event) => {
     // console.log(event.object.name);
-        
+
     // Call the parent handler when clicked
-    if (onClick && typeof onClick === 'function') {
+    if (onClick && typeof onClick === "function") {
       onClick(event.object.name); // Pass event if needed or modify the handler
     }
   };
   return (
-    <group rotation = {[0,-Math.PI/2,0]} visible = {visible} position={[2,0, 3]} scale = {[1,1,1]}>
+    <group
+      rotation={[0, -Math.PI / 2, 0]}
+      visible={visible}
+      position={[2, 0, 3]}
+      scale={[1, 1, 1]}
+    >
       <primitive object={scene} />
     </group>
   );
@@ -518,7 +610,8 @@ function CarShadow(visible) {
   const texture = useTexture("/carshadow.webp"); // Replace with your actual .webp path
 
   return (
-    <mesh visible = {visible}
+    <mesh
+      visible={visible}
       scale={[0.8, 0.8, 0.8]}
       position={[0, 0, 0]}
       rotation={[Math.PI / 2, 0, 0]}
@@ -534,17 +627,23 @@ function CarShadow(visible) {
     </mesh>
   );
 }
-function RotatingEnvironment({visible, path, rotationValue = 180 }) {
+function RotatingEnvironment({ visible, path, rotationValue = 180 }) {
   const group = useRef();
 
   return (
-    <group visible = {visible} ref={group}>
+    <group visible={visible} ref={group}>
       <Environment files={path} background />
     </group>
   );
 }
 
-const HotSpot = ({ id, position,scale=0.0405, url = '/dot.glb', onClick }) => {
+const HotSpot = ({
+  id,
+  position,
+  scale = 0.0405,
+  url = "/dot.glb",
+  onClick,
+}) => {
   const { scene, animations } = useGLTF(url);
   const meshRef = useRef();
   const [mixer] = useState(() => new THREE.AnimationMixer());
@@ -576,8 +675,11 @@ const HotSpot = ({ id, position,scale=0.0405, url = '/dot.glb', onClick }) => {
   }, [position]);
 
   const handleClick = (event) => {
-
-    if (onClick && typeof onClick === 'function' && event.object.parent.name !=='Scene') {
+    if (
+      onClick &&
+      typeof onClick === "function" &&
+      event.object.parent.name !== "Scene"
+    ) {
       onClick(event.object.parent.name); // Pass the name of the object that was clicked
     }
   };
@@ -592,7 +694,13 @@ const HotSpot = ({ id, position,scale=0.0405, url = '/dot.glb', onClick }) => {
     />
   );
 };
-const CamHotSpot = ({ id, position,scale, url = '/cambutton.glb', onClick }) => {
+const CamHotSpot = ({
+  id,
+  position,
+  scale,
+  url = "/cambutton.glb",
+  onClick,
+}) => {
   const { scene, animations } = useGLTF(url);
   const meshRef = useRef();
   const [mixer] = useState(() => new THREE.AnimationMixer());
@@ -624,8 +732,11 @@ const CamHotSpot = ({ id, position,scale, url = '/cambutton.glb', onClick }) => 
   }, [position]);
 
   const handleClick = (event) => {
-
-    if (onClick && typeof onClick === 'function' && event.object.parent.name !=='Scene') {
+    if (
+      onClick &&
+      typeof onClick === "function" &&
+      event.object.parent.name !== "Scene"
+    ) {
       onClick(event.object.parent.name); // Pass the name of the object that was clicked
     }
   };
@@ -634,7 +745,7 @@ const CamHotSpot = ({ id, position,scale, url = '/cambutton.glb', onClick }) => 
     <primitive
       name={id}
       ref={meshRef}
-      rotation ={[0,Math.PI/2,0]}
+      rotation={[0, Math.PI / 2, 0]}
       object={clonedScene}
       scale={scale}
       onClick={handleClick}
@@ -642,17 +753,16 @@ const CamHotSpot = ({ id, position,scale, url = '/cambutton.glb', onClick }) => 
   );
 };
 
-
 const AudioComponent = React.forwardRef((props, ref) => {
   return (
     <>
       <PositionalAudio
-      ref={ref}
-        url="./audio/ambient.mp3" 
-        distance={100}                     // Set distance for spatial effects (can be omitted if not needed)
-        loop= {true}                             // Enable looping
-        autoplay ={false}                         // Start playing immediately
-        volume={0.1}                      // Adjust volume
+        ref={ref}
+        url="./audio/ambient.mp3"
+        distance={100} // Set distance for spatial effects (can be omitted if not needed)
+        loop={true} // Enable looping
+        autoplay={false} // Start playing immediately
+        volume={0.1} // Adjust volume
       />
     </>
   );
@@ -661,12 +771,12 @@ const DoorAudioComponentOpen = React.forwardRef((props, ref) => {
   return (
     <>
       <PositionalAudio
-      ref={ref}
-        url="./audio/dooropen.mp3" 
-        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
-        loop= {false}                             // Enable looping
-        autoplay ={false}                         // Start playing immediately
-        volume={0.5}                      // Adjust volume
+        ref={ref}
+        url="./audio/dooropen.mp3"
+        distance={10} // Set distance for spatial effects (can be omitted if not needed)
+        loop={false} // Enable looping
+        autoplay={false} // Start playing immediately
+        volume={0.5} // Adjust volume
       />
     </>
   );
@@ -675,12 +785,12 @@ const DoorAudioComponentClose = React.forwardRef((props, ref) => {
   return (
     <>
       <PositionalAudio
-      ref={ref}
-        url="./audio/doorclose.mp3" 
-        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
-        loop= {false}                             // Enable looping
-        autoplay ={false}                         // Start playing immediately
-        volume={0.5}                      // Adjust volume
+        ref={ref}
+        url="./audio/doorclose.mp3"
+        distance={10} // Set distance for spatial effects (can be omitted if not needed)
+        loop={false} // Enable looping
+        autoplay={false} // Start playing immediately
+        volume={0.5} // Adjust volume
       />
     </>
   );
@@ -689,12 +799,12 @@ const SunRoofAudioComponentClose = React.forwardRef((props, ref) => {
   return (
     <>
       <PositionalAudio
-      ref={ref}
-        url="./audio/SunRoofClose.mp3" 
-        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
-        loop= {false}                             // Enable looping
-        autoplay ={false}                         // Start playing immediately
-        volume={0.5}                      // Adjust volume
+        ref={ref}
+        url="./audio/SunRoofClose.mp3"
+        distance={10} // Set distance for spatial effects (can be omitted if not needed)
+        loop={false} // Enable looping
+        autoplay={false} // Start playing immediately
+        volume={0.5} // Adjust volume
       />
     </>
   );
@@ -703,12 +813,12 @@ const SunRoofAudioComponentOpen = React.forwardRef((props, ref) => {
   return (
     <>
       <PositionalAudio
-      ref={ref}
-        url="./audio/SunRoofOpen.mp3" 
-        distance={10}                     // Set distance for spatial effects (can be omitted if not needed)
-        loop= {false}                             // Enable looping
-        autoplay ={false}                         // Start playing immediately
-        volume={0.5}                      // Adjust volume
+        ref={ref}
+        url="./audio/SunRoofOpen.mp3"
+        distance={10} // Set distance for spatial effects (can be omitted if not needed)
+        loop={false} // Enable looping
+        autoplay={false} // Start playing immediately
+        volume={0.5} // Adjust volume
       />
     </>
   );
@@ -719,9 +829,7 @@ export default function ThreeScene() {
   const targetRef = useRef(); // Reference for the light target
   //const [selectedColor, setSelectedColor] = useState("#bbe9ff"); // 71b1cf
   const [selectedColor, setSelectedColor] = useState("#EBF9FF"); // 71b1cf
-  const [selColor, setSelColor] = useState(
-    "Ocean Blue with Abyss Black roof"
-  ); // 71b1cf
+  const [selColor, setSelColor] = useState("Ocean Blue with Abyss Black roof"); // 71b1cf
 
   const [showColors, setShowColors] = useState(true);
   const [carColor, setCarColor] = useState("#7BCCF4");
@@ -737,10 +845,10 @@ export default function ThreeScene() {
   const [target, setTarget] = useState([-5, 3, -8]);
   const [minDistance, setMinDistance] = useState(5);
   const [maxDistance, setMaxDistance] = useState(8); // Default maxDistance
-  const [enablePan, setEnablePan] = useState(false); 
-  const [enableZoom, setEnableZoom] = useState(true); 
-  const [minPolarAngle, setMinPolarAngle] = useState(Math.PI / 5); 
-  const [maxPolarAngle, setMaxPolarAngle] = useState(Math.PI / 2.3); 
+  const [enablePan, setEnablePan] = useState(false);
+  const [enableZoom, setEnableZoom] = useState(true);
+  const [minPolarAngle, setMinPolarAngle] = useState(Math.PI / 5);
+  const [maxPolarAngle, setMaxPolarAngle] = useState(Math.PI / 2.3);
   const [selectedSpriteId, setselectedSpriteId] = useState("");
   const [activeCamera, setActiveCamera] = useState("default"); // State to manage the active camera
   const [selectedAnimation, setselectedAnimation] = useState(""); // State to manage the active camera
@@ -754,15 +862,15 @@ export default function ThreeScene() {
   const doorcloseaudioRef = useRef();
   const sunroofopenaudioRef = useRef();
   const sunroofcloseaudioRef = useRef();
-  const [isMob,setisMob] = useState(false);
+  const [isMob, setisMob] = useState(false);
   const [sunroofState, setSunroofState] = useState(false);
   const [playAnimation, setPlayAnimation] = useState({
-    openFrontLeftDoor: () => { },
-    openFrontRightDoor: () => { },
-    openRearLeftDoor: () => { },
-    openRearRightDoor: () => { },
-    openBehindBootDoor: () => { },
-    toggleSunroof: () => { },
+    openFrontLeftDoor: () => {},
+    openFrontRightDoor: () => {},
+    openRearLeftDoor: () => {},
+    openRearRightDoor: () => {},
+    openBehindBootDoor: () => {},
+    toggleSunroof: () => {},
   });
   const svgString = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="100px" height="100px">
@@ -819,10 +927,26 @@ export default function ThreeScene() {
     }, //#172f2b
   ];
   const sprites = [
-    { id: 'charger', event: 'handleSpriteClick', position: [0.22, 0.83, -2.65] },
-    { id: 'airflaps', event: 'handleSpriteClick', position: [-0.257, 0.46, -2.7] },
-    { id: 'bumper', event: 'handleSpriteClick', position: [-0.16973610994713895, 0.600119960444232, 2.7082867790909097] },
-    { id: 'wheel', event: 'handleSpriteClick', position: [1.166633102010636, 0.6027375218705294, -1.6985152476025873] },
+    {
+      id: "charger",
+      event: "handleSpriteClick",
+      position: [0.22, 0.83, -2.65],
+    },
+    {
+      id: "airflaps",
+      event: "handleSpriteClick",
+      position: [-0.257, 0.46, -2.7],
+    },
+    {
+      id: "bumper",
+      event: "handleSpriteClick",
+      position: [-0.16973610994713895, 0.600119960444232, 2.7082867790909097],
+    },
+    {
+      id: "wheel",
+      event: "handleSpriteClick",
+      position: [1.166633102010636, 0.6027375218705294, -1.6985152476025873],
+    },
     // { id: 'interior', event: 'switchTointerior', position: [1.1206609966479046, 1.1603088054062152, 0.2972193984778875] },
     // { id: 'exterior', event: 'switchTointerior', position: [0.6864094940674355, 1.0438238091050263, 0.16418587917159022] },
     // { id: 'steering', event: 'handleSpriteClick', position: [0.42432859476185947, 1.2086424446862685, -0.3089562841676877] },
@@ -832,18 +956,17 @@ export default function ThreeScene() {
     // { id: 'v2l', event: 'handleSpriteClick', position: [-0.0661013940479657, 1.1417463582073824, 0.31539398673229235] }
   ];
   const intsprites = [
-    { id: 'steering', event: 'handleSpriteClick', position: [1.38,1.1,-2] },
-    { id: 'display', event: 'handleSpriteClick', position: [0.5,1.05,-2] },
-    { id: 'seat', event: 'handleSpriteClick', position: [-0.5,0,-1.5] },
-    { id: 'console', event: 'handleSpriteClick', position: [0.2,0,-1.95] },
-    { id: 'v2l', event: 'handleSpriteClick', position: [0.2,0,0.19] },
+    { id: "steering", event: "handleSpriteClick", position: [1.38, 1.1, -2] },
+    { id: "display", event: "handleSpriteClick", position: [0.5, 1.05, -2] },
+    { id: "seat", event: "handleSpriteClick", position: [-0.5, 0, -1.5] },
+    { id: "console", event: "handleSpriteClick", position: [0.2, 0, -1.95] },
+    { id: "v2l", event: "handleSpriteClick", position: [0.2, 0, 0.19] },
   ];
   const intspritesnewview = [
-    { id: 'seat', event: 'handleSpriteClick', position: [-0.5,0,-1.5] },
-    { id: 'v2l', event: 'handleSpriteClick', position: [0.2,0,0.19] },
+    { id: "seat", event: "handleSpriteClick", position: [-0.5, 0, -1.5] },
+    { id: "v2l", event: "handleSpriteClick", position: [0.2, 0, 0.19] },
   ];
 
-    
   const handleColorChange = (hex, id) => {
     setCarColor(hex);
     setSelColor(id);
@@ -858,21 +981,19 @@ export default function ThreeScene() {
   };
   const handleClosePanel = () => {
     setSpriteClicked(!spriteClicked);
-    setselectedSpriteId(''); // Hide the side panel
+    setselectedSpriteId(""); // Hide the side panel
   };
-  const handleSpriteClick = (id) => {    
+  const handleSpriteClick = (id) => {
     // Handle the click event here and update the state
     setselectedSpriteId(id);
     // setSpriteClicked(!spriteClicked);
     setSpriteClicked(true);
     // console.log("Sprite clicked! Current state:", spriteClicked);
-  }
-  const handleintCameraChange = (id) => { 
-    if(activeCamera === 'interior')
-      setActiveCamera("interior2");
-    else
-      setActiveCamera("interior");
-  }
+  };
+  const handleintCameraChange = (id) => {
+    if (activeCamera === "interior") setActiveCamera("interior2");
+    else setActiveCamera("interior");
+  };
   const handleModeChange = (mode) => {
     setSelectedEnvMode(mode);
   };
@@ -880,29 +1001,30 @@ export default function ThreeScene() {
     // setSpriteClicked(!spriteClicked);
     // setselectedSpriteId('new');
     // console.log(activeCamera,id);
-    
-    if(activeCamera === 'default' && id === 'in'){
+
+    if (activeCamera === "default" && id === "in") {
       setActiveCamera("interior");
       sethideOthers(true);
       settoneMap(THREE.LinearToneMapping);
       settoneMapexp(1);
-
-    }
-    else if (activeCamera.includes('interior') && id === 'out'){
+    } else if (activeCamera.includes("interior") && id === "out") {
       setActiveCamera("default");
       sethideOthers(false);
       settoneMap(THREE.ACESFilmicToneMapping);
       settoneMapexp(1.2);
     }
-  }
+  };
   const handlePlayAnimation = (door) => {
     setDoorStates((prev) => {
       const isReversed = prev[door];
-      if (playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]) {
-        playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`](isReversed);
+      if (
+        playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]
+      ) {
+        playAnimation[
+          `open${door.charAt(0).toUpperCase() + door.slice(1)}Door`
+        ](isReversed);
       }
-      if(!isReversed)
-        playDoorOpenAudio();
+      if (!isReversed) playDoorOpenAudio();
       return { ...prev, [door]: !prev[door] }; // Toggle the door state
     });
   };
@@ -914,10 +1036,8 @@ export default function ThreeScene() {
   const handleToggleSunroof = () => {
     setSunroofState((prev) => {
       playAnimation.toggleSunroof(prev); // Play or reverse the sunroof animation
-      if(prev)
-        playSunRoofOpenAudio();
-      else
-        playSunRoofCloseAudio();
+      if (prev) playSunRoofOpenAudio();
+      else playSunRoofCloseAudio();
       return !prev; // Toggle the state
     });
   };
@@ -929,7 +1049,9 @@ export default function ThreeScene() {
     behindBoot: false,
   });
   const handlePlayAllDoors = () => {
-    const allDoorsOpen = Object.values(doorStates).every((state) => state === true);
+    const allDoorsOpen = Object.values(doorStates).every(
+      (state) => state === true
+    );
 
     setDoorStates((prev) => {
       const newStates = {};
@@ -937,33 +1059,43 @@ export default function ThreeScene() {
         const isReversed = allDoorsOpen; // Reverse if all doors are open
         if (!allDoorsOpen && prev[door] === false) {
           // Only play animation to open doors that are closed
-          if (playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]) {
-            playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`](isReversed);
+          if (
+            playAnimation[
+              `open${door.charAt(0).toUpperCase() + door.slice(1)}Door`
+            ]
+          ) {
+            playAnimation[
+              `open${door.charAt(0).toUpperCase() + door.slice(1)}Door`
+            ](isReversed);
           }
-          if(!isReversed)
-            playDoorOpenAudio();
+          if (!isReversed) playDoorOpenAudio();
           newStates[door] = true; // Mark door as open
         } else if (allDoorsOpen && prev[door] === true) {
           // Only play animation to close doors that are open
-          if (playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`]) {
-            playAnimation[`open${door.charAt(0).toUpperCase() + door.slice(1)}Door`](isReversed);
+          if (
+            playAnimation[
+              `open${door.charAt(0).toUpperCase() + door.slice(1)}Door`
+            ]
+          ) {
+            playAnimation[
+              `open${door.charAt(0).toUpperCase() + door.slice(1)}Door`
+            ](isReversed);
           }
-          if(!isReversed)
-            playDoorOpenAudio();
+          if (!isReversed) playDoorOpenAudio();
           newStates[door] = false; // Mark door as closed
         } else {
           // Keep state unchanged for already open/closed doors
           newStates[door] = prev[door];
         }
       }
-      
+
       return newStates;
     });
   };
   const eventHandlers = {
     handleSpriteClick: handleSpriteClick,
     handleintCameraChange: handleintCameraChange,
-    switchTointerior: switchTointerior
+    switchTointerior: switchTointerior,
   };
   const [isAudioPlaying, setIsAudioPlaying] = useState(false); // Track if audio is playing
   // const textureLoader = new THREE.TextureLoader();
@@ -973,74 +1105,74 @@ export default function ThreeScene() {
   useEffect(() => {
     // Load textures once and update state
     const textureMap = {
-      "Ocean Blue with Abyss Black roof": textureLoader.load('./nameplate/blue duotones.png'),
-      "Atlas White with Abyss Black roof": textureLoader.load('./nameplate/white dual tone.png'),
-      "Fiery Red": textureLoader.load('./nameplate/red.png'),
-      "Abyss Black": textureLoader.load('./nameplate/black.png'),
-      "Starry Night": textureLoader.load('./nameplate/starry night.png'),
-      "Ocean Blue": textureLoader.load('./nameplate/blue monotone.png'),
-      "Atlas White": textureLoader.load('./nameplate/white monotone.png'),
-      "Titan Grey Matte": textureLoader.load('./nameplate/titan grey.png'),
-      "Ocean Blue Matte": textureLoader.load('./nameplate/blue matte.png'),
-      "Robust Emerald Matte": textureLoader.load('./nameplate/green.png'),
+      "Ocean Blue with Abyss Black roof": textureLoader.load(
+        "./nameplate/blue duotones.png"
+      ),
+      "Atlas White with Abyss Black roof": textureLoader.load(
+        "./nameplate/white dual tone.png"
+      ),
+      "Fiery Red": textureLoader.load("./nameplate/red.png"),
+      "Abyss Black": textureLoader.load("./nameplate/black.png"),
+      "Starry Night": textureLoader.load("./nameplate/starry night.png"),
+      "Ocean Blue": textureLoader.load("./nameplate/blue monotone.png"),
+      "Atlas White": textureLoader.load("./nameplate/white monotone.png"),
+      "Titan Grey Matte": textureLoader.load("./nameplate/titan grey.png"),
+      "Ocean Blue Matte": textureLoader.load("./nameplate/blue matte.png"),
+      "Robust Emerald Matte": textureLoader.load("./nameplate/green.png"),
     };
-    
+
     setTextures(textureMap);
   }, []);
   const playAudio = () => {
     if (ambientaudioRef.current) {
       if (!isAudioPlaying) {
-
-      ambientaudioRef.current.context.resume().then(() => {
-        ambientaudioRef.current.play();});
+        ambientaudioRef.current.context.resume().then(() => {
+          ambientaudioRef.current.play();
+        });
         setIsAudioPlaying(true);
       }
     }
   };
   const playDoorOpenAudio = () => {
     if (dooropenaudioRef.current) {
-        dooropenaudioRef.current.context.resume().then(() => {
-          dooropenaudioRef.current.play();});
-        // setIsAudioPlaying(true);
-      
+      dooropenaudioRef.current.context.resume().then(() => {
+        dooropenaudioRef.current.play();
+      });
+      // setIsAudioPlaying(true);
     }
   };
   const playDoorCloseAudio = () => {
     if (doorcloseaudioRef.current) {
-      
       doorcloseaudioRef.current.context.resume().then(() => {
-        doorcloseaudioRef.current.play();});
-        // setIsAudioPlaying(true);
-      
+        doorcloseaudioRef.current.play();
+      });
+      // setIsAudioPlaying(true);
     }
   };
   const playSunRoofCloseAudio = () => {
     if (sunroofcloseaudioRef.current) {
-      
       sunroofcloseaudioRef.current.context.resume().then(() => {
-        sunroofcloseaudioRef.current.play();});
-        // setIsAudioPlaying(true);
-      
+        sunroofcloseaudioRef.current.play();
+      });
+      // setIsAudioPlaying(true);
     }
   };
   const playSunRoofOpenAudio = () => {
     if (sunroofopenaudioRef.current) {
-      
       sunroofopenaudioRef.current.context.resume().then(() => {
-        sunroofopenaudioRef.current.play();});
-        // setIsAudioPlaying(true);
-      
+        sunroofopenaudioRef.current.play();
+      });
+      // setIsAudioPlaying(true);
     }
   };
-  const handleCanvasClick = (event) => {  
-    
-    // playAudio();  
+  const handleCanvasClick = (event) => {
+    // playAudio();
     // if(spriteClicked)
     //   setSpriteClicked(false);
   };
   useEffect(() => {
     // Check if the device is mobile
-    const isMobile = window.innerWidth <= 768; // Adjust the breakpoint as needed    
+    const isMobile = window.innerWidth <= 768; // Adjust the breakpoint as needed
     if (isMobile) {
       setisMob(true);
       setShowColors(false); // Set true by default for mobile
@@ -1053,12 +1185,12 @@ export default function ThreeScene() {
       helperRef.current = helper;
       // lightRef.current.parent.add(helper); // Add the helper to the light's parent
     }
-  
+
     if (lightRef.current && targetRef.current) {
       // Set the target of the directional light to the origin (0, 0, 0)
       lightRef.current.target = targetRef.current;
     }
-  
+
     const updateMaxDistance = () => {
       if (window.innerWidth <= 768) {
         // For tablets and smaller devices
@@ -1067,26 +1199,26 @@ export default function ThreeScene() {
         setMaxDistance(7); // Default value for larger screens
       }
     };
-  
+
     // Call the function on initial load
     updateMaxDistance();
-  
+
     // Add a resize event listener to adjust maxDistance dynamically
     window.addEventListener("resize", updateMaxDistance);
-  
+
     // **New Logic**: Manage animation for boxes
     if (!modelLoaded) {
       const interval = setInterval(() => {
         setCurrentBox((prev) => (prev + 1) % 4); // Cycle through 0 to 3
       }, 300); // Adjust the duration (500ms per box)
-  
+
       // Cleanup the interval when the model is loaded or the component unmounts
       return () => {
         clearInterval(interval);
         window.removeEventListener("resize", updateMaxDistance); // Cleanup resize event listener
       };
     }
-  
+
     return () => {
       // Ensure cleanup happens even if `modelLoaded` is already true
       window.removeEventListener("resize", updateMaxDistance);
@@ -1103,9 +1235,9 @@ export default function ThreeScene() {
   const handleCanvasnClick = () => {
     // Example: Toggle ambient audio on click
     if (ambientaudioRef.current) {
-      const isPlaying = ambientaudioRef.current.isPlaying;//audioState.ambientPlaying;
+      const isPlaying = ambientaudioRef.current.isPlaying; //audioState.ambientPlaying;
 
-      if (isPlaying) {        
+      if (isPlaying) {
         // ambientaudioRef.current.stop();
         // setAudioState((prevState) => ({
         //   ...prevState,
@@ -1125,71 +1257,27 @@ export default function ThreeScene() {
 
   return (
     <div className="viewer-container no-select">
-        {hideOthers&& (<div class="disclaimer-container">
-        < img src="/disclaimer.png" alt="Disclaimer" class="disclaimer-image" />
-      </div>)}
-      {" "}
+      {hideOthers && (
+        <div class="disclaimer-container">
+          <img
+            src="/disclaimer.png"
+            alt="Disclaimer"
+            class="disclaimer-image"
+          />
+        </div>
+      )}{" "}
       {/* Full-screen canvas */}
-      {modelLoaded && !hideOthers && !isMob&& (
-        <div className={false?"bottom-banner-container-new":"bottom-banner-container"}>
+      {modelLoaded && !hideOthers && !isMob && (
+        <div
+          className={
+            false ? "bottom-banner-container-new" : "bottom-banner-container"
+          }
+        >
           <div className="bottom-banner">
             {/* <div className="banner-image">
               <img src="/Functions.png" alt="Functions Banner" />
             </div> */}
             <div className="button-list">
-              <button className="function-button" onClick={handleLightChange}>
-                <img src="/Light Indicator.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={() =>handlePlayAnimation("frontRight")}>
-                <img src="/doorrf.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={() =>handlePlayAnimation('frontLeft')}>
-                <img src="/doorlf.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={() =>handlePlayAnimation('rearRight')}>
-                <img src="/doorbr.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={() =>handlePlayAnimation('rearLeft')}>
-                <img src="/doorbl.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={handlePlayAllDoors}>
-                <img src="/door.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={() => handlePlayAnimation("behindBoot")}>
-                <img src="/back.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={handleToggleSunroof}>
-                <img src="/sun.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={() => switchTointerior("in")}>
-                <img src="/in.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={() =>  switchTointerior("out")}>
-                <img src="/out.png" alt="Icon 1" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {modelLoaded&&!hideOthers&&isMob &&(<div
-      className={
-        lightsOn
-          ? "bottom-banner-container expanded"
-          : "bottom-banner-container minimized"
-      }
-    >
-      <div className="bottom-banner">
-        <div className="button-list">
-          {!lightsOn && (
-            <button
-              className="function-button light-button"
-              onClick={handleLightChange}
-            >
-              <img src="/Light Indicator.png" alt="Light Icon" />
-            </button>
-          )}
-          {lightsOn && (
-            <>
               <button className="function-button" onClick={handleLightChange}>
                 <img src="/Light Indicator.png" alt="Icon 1" />
               </button>
@@ -1241,32 +1329,130 @@ export default function ThreeScene() {
               >
                 <img src="/out.png" alt="Icon 1" />
               </button>
-            </>
-          )}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>)}
+      )}
+      {modelLoaded && !hideOthers && isMob && (
+        <div
+          className={
+            lightsOn
+              ? "bottom-banner-container expanded"
+              : "bottom-banner-container minimized"
+          }
+        >
+          <div className="bottom-banner">
+            <div className="button-list">
+              {!lightsOn && (
+                <button
+                  className="function-button light-button"
+                  onClick={handleLightChange}
+                >
+                  <img src="/Light Indicator.png" alt="Light Icon" />
+                </button>
+              )}
+              {lightsOn && (
+                <>
+                  <button
+                    className="function-button"
+                    onClick={handleLightChange}
+                  >
+                    <img src="/Light Indicator.png" alt="Icon 1" />
+                  </button>
+                  <button
+                    className="function-button"
+                    onClick={() => handlePlayAnimation("frontRight")}
+                  >
+                    <img src="/doorrf.png" alt="Icon 1" />
+                  </button>
+                  <button
+                    className="function-button"
+                    onClick={() => handlePlayAnimation("frontLeft")}
+                  >
+                    <img src="/doorlf.png" alt="Icon 1" />
+                  </button>
+                  <button
+                    className="function-button"
+                    onClick={() => handlePlayAnimation("rearRight")}
+                  >
+                    <img src="/doorbr.png" alt="Icon 1" />
+                  </button>
+                  <button
+                    className="function-button"
+                    onClick={() => handlePlayAnimation("rearLeft")}
+                  >
+                    <img src="/doorbl.png" alt="Icon 1" />
+                  </button>
+                  <button
+                    className="function-button"
+                    onClick={handlePlayAllDoors}
+                  >
+                    <img src="/door.png" alt="Icon 1" />
+                  </button>
+                  <button
+                    className="function-button"
+                    onClick={() => handlePlayAnimation("behindBoot")}
+                  >
+                    <img src="/back.png" alt="Icon 1" />
+                  </button>
+                  <button
+                    className="function-button"
+                    onClick={handleToggleSunroof}
+                  >
+                    <img src="/sun.png" alt="Icon 1" />
+                  </button>
+                  <button
+                    className="function-button"
+                    onClick={() => switchTointerior("in")}
+                  >
+                    <img src="/in.png" alt="Icon 1" />
+                  </button>
+                  <button
+                    className="function-button"
+                    onClick={() => switchTointerior("out")}
+                  >
+                    <img src="/out.png" alt="Icon 1" />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       {modelLoaded && hideOthers && (
-        <div className={false?"bottom-banner-container-new":"bottom-banner-container"}>
+        <div
+          className={
+            false ? "bottom-banner-container-new" : "bottom-banner-container"
+          }
+        >
           <div className="bottom-banner">
             {/* <div className="banner-image">
               <img src="/Functions.png" alt="Functions Banner" />
             </div> */}
-            <div className="button-list">              
-              <button className="function-button" onClick={() => switchTointerior("in")}>
+            <div className="button-list">
+              <button
+                className="function-button"
+                onClick={() => switchTointerior("in")}
+              >
                 <img src="/in.png" alt="Icon 1" />
               </button>
-              <button className="function-button" onClick={() => switchTointerior("out")}>
+              <button
+                className="function-button"
+                onClick={() => switchTointerior("out")}
+              >
                 <img src="/out.png" alt="Icon 1" />
               </button>
             </div>
           </div>
         </div>
       )}
-      {modelLoaded &&!hideOthers && (<div className="mode-toggle">
+      {modelLoaded && !hideOthers && (
+        <div className="mode-toggle">
           <button
-            className={`toggle-button ${selectedEnvMode === "sunlit" ? "selected" : ""}`}
-            onClick={() => handleModeChange('sunlit')}
+            className={`toggle-button ${
+              selectedEnvMode === "sunlit" ? "selected" : ""
+            }`}
+            onClick={() => handleModeChange("sunlit")}
           >
             Sunlit
             <svg
@@ -1294,8 +1480,9 @@ export default function ThreeScene() {
           </button>
           <button
             className={`toggle-button ${
-              selectedEnvMode === "moonlit" ? "selected" : ""}`}
-            onClick={() => handleModeChange('moonlit')}
+              selectedEnvMode === "moonlit" ? "selected" : ""
+            }`}
+            onClick={() => handleModeChange("moonlit")}
           >
             Moonlit
             <svg
@@ -1313,7 +1500,8 @@ export default function ThreeScene() {
               <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"></path>
             </svg>
           </button>
-      </div>)}
+        </div>
+      )}
       {/* Brand Banner */}
       {!modelLoaded && (
         <div className={`brand-banner `}>
@@ -1327,7 +1515,9 @@ export default function ThreeScene() {
             .map((_, index) => (
               <div
                 key={index}
-                className={`loading-box ${currentBox === index ? "filled" : ""}`}
+                className={`loading-box ${
+                  currentBox === index ? "filled" : ""
+                }`}
               ></div>
             ))}
         </div>
@@ -1339,10 +1529,9 @@ export default function ThreeScene() {
           toneMapping: toneMap,
           toneMappingExposure: toneMapexp,
         }}
-        onClick={handleCanvasnClick} 
+        onClick={handleCanvasnClick}
       >
-
-      <PerspectiveCamera
+        <PerspectiveCamera
           makeDefault={activeCamera === "default"} // Activate this camera when it's active
           ref={defaultCameraRef}
           position={[-5, 3, -8]}
@@ -1353,97 +1542,162 @@ export default function ThreeScene() {
         <PerspectiveCamera
           makeDefault={activeCamera === "interior"} // Activate this camera when it's active
           ref={interiorCameraRef}
-          position={(activeCamera === "interior")?[0, 1.5, 0.0]:[0,0,0]} // Position for interior view
+          position={activeCamera === "interior" ? [0, 1.5, 0.0] : [0, 0, 0]} // Position for interior view
           fov={60}
-          target={[0,50,0]}
+          target={[0, 50, 0]}
         />
         {/* Interior Camera 2 */}
         <PerspectiveCamera
           makeDefault={activeCamera === "interior2"} // Activate this camera when it's active
           ref={interiorCameraRef}
-          position={(activeCamera === "interior2")?[0,1.5,8]:[0,0,0]} // Position for interior view
+          position={activeCamera === "interior2" ? [0, 1.5, 8] : [0, 0, 0]} // Position for interior view
           fov={50}
-          target={[2,50,0]}
+          target={[2, 50, 0]}
         />
         <Suspense fallback={null}>
-        <AudioComponent ref = {ambientaudioRef} />
-        <DoorAudioComponentOpen ref={dooropenaudioRef}/>
-        <DoorAudioComponentClose ref={doorcloseaudioRef}/>
-        <SunRoofAudioComponentOpen ref={sunroofopenaudioRef}/>
-        <SunRoofAudioComponentClose ref={sunroofcloseaudioRef}/>
+          <AudioComponent ref={ambientaudioRef} />
+          <DoorAudioComponentOpen ref={dooropenaudioRef} />
+          <DoorAudioComponentClose ref={doorcloseaudioRef} />
+          <SunRoofAudioComponentOpen ref={sunroofopenaudioRef} />
+          <SunRoofAudioComponentClose ref={sunroofcloseaudioRef} />
           {/* Load HDR Environment */}
           {/* <Image360Sphere imageUrl="/360.jpg" /> */}
-          <RotatingEnvironment visible={activeCamera === 'default'} path="/studio_small.hdr" rotationValue={180} />
-          <SkyDomeSunLit visible={activeCamera === 'default' && selectedEnvMode === 'sunlit'} onClick={handleCanvasClick}/>
-          <SkyDomeMoonLit visible={activeCamera === 'default' && selectedEnvMode === 'moonlit'} onClick={handleCanvasClick}/>
-          {!hideOthers?(false
-          ? sprites.map((sprite) =>
-              sprite.id === selectedSpriteId ? (
-                <HotSpot
-            key={sprite.id}
-            id={sprite.id}
-            position={sprite.position}
-            onClick={eventHandlers[sprite.event]}
+          <RotatingEnvironment
+            visible={activeCamera === "default"}
+            path="/studio_small.hdr"
+            rotationValue={180}
           />
-              ) : null // Hide other sprites
-            )
-          : sprites.map((sprite) => (
-              <HotSpot
-              key={sprite.id}
-              id={sprite.id}
-              position={sprite.position}
-              onClick={eventHandlers[sprite.event]}
+          <SkyDomeSunLit
+            visible={activeCamera === "default" && selectedEnvMode === "sunlit"}
+            onClick={handleCanvasClick}
+          />
+          <SkyDomeMoonLit
+            visible={
+              activeCamera === "default" && selectedEnvMode === "moonlit"
+            }
+            onClick={handleCanvasClick}
+          />
+          {!hideOthers
+            ? false
+              ? sprites.map(
+                  (sprite) =>
+                    sprite.id === selectedSpriteId ? (
+                      <HotSpot
+                        key={sprite.id}
+                        id={sprite.id}
+                        position={sprite.position}
+                        onClick={eventHandlers[sprite.event]}
+                      />
+                    ) : null // Hide other sprites
+                )
+              : sprites.map((sprite) => (
+                  <HotSpot
+                    key={sprite.id}
+                    id={sprite.id}
+                    position={sprite.position}
+                    onClick={eventHandlers[sprite.event]}
+                  />
+                ))
+            : null}
+          {/* Add the 3D Model */}
+          <CarModel
+            visible={!activeCamera.includes("interior")}
+            ref={carModelRef}
+            color={carColor}
+            selColor={selColor}
+            licensePlateMap={textures[selColor]}
+            onLoad={handleModelLoad}
+            lightsOn={lightsOn}
+            setPlayAnimation={setPlayAnimation}
+            selectedAnimation={selectedAnimation}
+            activeCamera={activeCamera}
+            onDoorAnimend={playDoorCloseAudio}
+          />
+          <IntDome
+            visible={
+              activeCamera === "interior" && selectedEnvMode === "sunlit"
+            }
+          />
+          <IntDomeNight
+            visible={
+              activeCamera === "interior" && selectedEnvMode === "moonlit"
+            }
+          />
+          <IntDome2
+            visible={
+              activeCamera === "interior2" && selectedEnvMode === "sunlit"
+            }
+          />
+          <IntDomeNight2
+            visible={
+              activeCamera === "interior2" && selectedEnvMode === "moonlit"
+            }
+          />
+          {hideOthers && activeCamera === "interior" && (
+            <CamHotSpot
+              key={"k"}
+              id={"k"}
+              position={[0.2, 1.25, -2]}
+              scale={0.015}
+              onClick={eventHandlers["handleintCameraChange"]}
             />
-          ))):null}
-              {/* Add the 3D Model */}
-              <CarModel
-                visible={!activeCamera.includes('interior')}
-                ref={carModelRef}
-                color={carColor}
-                selColor={selColor}
-                licensePlateMap = {textures[selColor]}
-                onLoad={handleModelLoad}
-                lightsOn={lightsOn}
-                setPlayAnimation={setPlayAnimation}
-                selectedAnimation={selectedAnimation}
-                activeCamera={activeCamera}
-                onDoorAnimend={playDoorCloseAudio}
-              />
-              <IntDome visible={activeCamera === 'interior' && selectedEnvMode === 'sunlit'}/>
-              <IntDomeNight visible={activeCamera === 'interior' && selectedEnvMode === 'moonlit'}/>
-              <IntDome2 visible={activeCamera === 'interior2' && selectedEnvMode === 'sunlit'}/>
-              <IntDomeNight2 visible={activeCamera === 'interior2' && selectedEnvMode === 'moonlit'}/>
-              {(hideOthers&&activeCamera==='interior')&& (<CamHotSpot key={"k"} id={'k'} position={[0.2,1.25,-2]} scale={0.015} onClick={eventHandlers['handleintCameraChange']}/>)}
-              {(hideOthers&&activeCamera==='interior2')&& (<CamHotSpot key={"ke"} id={'ke'} position={[2.0,1.95,-41]} scale={0.20} onClick={eventHandlers['handleintCameraChange']}/>)}
-              {(hideOthers&&activeCamera==='interior2')&&(<HotSpot key={'seat'} id={'seat'} position={[-7,-7,-41]} scale={0.80} onClick={eventHandlers['handleSpriteClick']}/>)}
-              {(hideOthers&&activeCamera==='interior2')&&(<HotSpot key={'v2l'} id={'v2l'} position={[0.8,-29,-30]} scale={0.80} onClick={eventHandlers['handleSpriteClick']}/>)}
-          {(hideOthers&&activeCamera==='interior')?(false
-          ? intsprites.map((sprite) =>
-              sprite.id === selectedSpriteId ? (
-                <HotSpot
-              key={sprite.id}
-              id={sprite.id}
-              position={sprite.position}
-              onClick={eventHandlers[sprite.event]}
+          )}
+          {hideOthers && activeCamera === "interior2" && (
+            <CamHotSpot
+              key={"ke"}
+              id={"ke"}
+              position={[2.0, 1.95, -41]}
+              scale={0.2}
+              onClick={eventHandlers["handleintCameraChange"]}
             />
-              ) : null // Hide other sprites
-            )
-          : intsprites.map((sprite) => (
+          )}
+          {hideOthers && activeCamera === "interior2" && (
             <HotSpot
-            key={sprite.id}
-            id={sprite.id}
-            position={sprite.position}
-            onClick={eventHandlers[sprite.event]}
-          />
-          ))):null}
+              key={"seat"}
+              id={"seat"}
+              position={[-7, -7, -41]}
+              scale={0.8}
+              onClick={eventHandlers["handleSpriteClick"]}
+            />
+          )}
+          {hideOthers && activeCamera === "interior2" && (
+            <HotSpot
+              key={"v2l"}
+              id={"v2l"}
+              position={[0.8, -29, -30]}
+              scale={0.8}
+              onClick={eventHandlers["handleSpriteClick"]}
+            />
+          )}
+          {hideOthers && activeCamera === "interior"
+            ? false
+              ? intsprites.map(
+                  (sprite) =>
+                    sprite.id === selectedSpriteId ? (
+                      <HotSpot
+                        key={sprite.id}
+                        id={sprite.id}
+                        position={sprite.position}
+                        onClick={eventHandlers[sprite.event]}
+                      />
+                    ) : null // Hide other sprites
+                )
+              : intsprites.map((sprite) => (
+                  <HotSpot
+                    key={sprite.id}
+                    id={sprite.id}
+                    position={sprite.position}
+                    onClick={eventHandlers[sprite.event]}
+                  />
+                ))
+            : null}
 
           {/* <CameraMover targetPosition={[0,0,0]} targetRotation={[Math.PI2,0,0]} spriteClicked={activeCamera === 'interior'} /> */}
-
         </Suspense>
         {/* {modelLoaded && <RaycasterHandler />} */}
 
         {/* Add Camera Controls */}
-         
+
         <hemisphereLight
           skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
           groundColor={0x000000} // Color of the light from the ground (bottom hemisphere)
@@ -1452,11 +1706,21 @@ export default function ThreeScene() {
           position={[0, 5, -5]} // Light intensity
         />
       </Canvas>
-
       {/* <SidePanel id={selectedSpriteId} show={spriteClicked} heading={'test'} description ={'testkndsknfnfdnkjfkjd'} imgsrc={''} onClose={handleClosePanel} /> */}
-      {modelLoaded && (<PopupBox show={spriteClicked} id={selectedSpriteId} onClose={handleClosePanel} />)}
-      {modelLoaded && (<PopoutBoxM show={spriteClicked} id={selectedSpriteId} onClose={handleClosePanel} />)}
-
+      {modelLoaded && (
+        <PopupBox
+          show={spriteClicked}
+          id={selectedSpriteId}
+          onClose={handleClosePanel}
+        />
+      )}
+      {modelLoaded && (
+        <PopoutBoxM
+          show={spriteClicked}
+          id={selectedSpriteId}
+          onClose={handleClosePanel}
+        />
+      )}
       {modelLoaded && !hideOthers && (
         <div
           className={
@@ -1558,37 +1822,34 @@ export default function ThreeScene() {
 //   const handleClick = (event) => {
 //     const { clientX, clientY } = event;
 //     const rect = gl.domElement.getBoundingClientRect();
-  
+
 //     // Calculate normalized device coordinates
 //     pointer.current.x = ((clientX - rect.left) / rect.width) * 2 - 1;
 //     pointer.current.y = -((clientY - rect.top) / rect.height) * 2 + 1;
-  
+
 //     // Update the raycaster
 //     raycaster.current.setFromCamera(pointer.current, camera);
-  
+
 //     // Perform raycasting
 //     const intersects = raycaster.current.intersectObjects(scene.children, true);
 //     if (intersects.length > 0) {
 //       const intersectionPoint = intersects[0].point;
 //       // console.log("Intersection point:", intersectionPoint);
-  
+
 //       const svgString = `
 //       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12px" height="12px">
 //         <!-- Outer Circle (more transparent) -->
 //         <circle cx="6" cy="6" r="2.5" fill="white" fill-opacity="0.4" />
-        
+
 //         <!-- Inner Circle (less transparent) -->
 //         <circle cx="6" cy="6" r="1.25" fill="white" fill-opacity="1" />
 //       </svg>
 //     `;
-    
-    
-  
+
 //       // Call the function to create the sprite with the SVG
 //       // createSpriteWithSvg(svgString, intersectionPoint,scene);
 //     }
 //   };
-  
 
 //   useEffect(() => {
 //     // Attach event listener to canvas
@@ -1617,7 +1878,7 @@ export default function ThreeScene() {
 
 //       const animate = () => {
 //         // console.log(camera.position);
-        
+
 //         const elapsed = performance.now() - startTime;
 //         const t = Math.min(elapsed / duration, 1); // Ensure t is between 0 and 1
 
@@ -1645,10 +1906,9 @@ export default function ThreeScene() {
 
 // // Create a function component that adds a sprite with a given SVG string at a given position
 // const SpriteWithSVG = ({ id, svgString, position = [0, 0, 0] , onClick}) => {
-  
+
 //   // Create a texture from the SVG string using a loader
 //   const texture = useLoader(THREE.TextureLoader, `data:image/svg+xml;base64,${btoa(svgString)}`);
-
 
 //   const spriteRef = useRef();
 
@@ -1661,7 +1921,7 @@ export default function ThreeScene() {
 
 //   const handleClick = (event) => {
 //     // console.log(event.object.name);
-        
+
 //     // Call the parent handler when clicked
 //     if (onClick && typeof onClick === 'function') {
 //       onClick(event.object.name); // Pass event if needed or modify the handler
@@ -1702,7 +1962,7 @@ export default function ThreeScene() {
 //     float dist1 = length(pos);
 //     dist1 = fract((dist1 * 5.0) - fract(iTime));
 //     float dist2 = dist1 - radius;
-//     float intensity = pow(radius / abs(dist2), width); 
+//     float intensity = pow(radius / abs(dist2), width);
 //     vec3 col = color.rgb * intensity * power * max((0.8 - abs(dist2)), 0.0);
 //     return col;
 //   }
@@ -1726,7 +1986,6 @@ export default function ThreeScene() {
 //   `
 // );
 
-
 // // Extend Drei's shader material
 // extend({ RippleShaderMaterial });
 
@@ -1743,7 +2002,7 @@ export default function ThreeScene() {
 //   useFrame(({ clock }) => {
 //     if (materialRef.current) {
 //       materialRef.current.iTime = clock.getElapsedTime();
-      
+
 //     }
 //   });
 
@@ -1751,7 +2010,7 @@ export default function ThreeScene() {
 //     <sprite ref={spriteRef}>
 //             <rippleShaderMaterial ref={materialRef} />
 //     </sprite>
-    
+
 //   );
 // }
 
@@ -1816,7 +2075,7 @@ export default function ThreeScene() {
 // //   }, [actions, animations]);
 // //     const handleClick = (event) => {
 // //     // console.log(event.object.name);
-        
+
 // //     // Call the parent handler when clicked
 // //     if (onClick && typeof onClick === 'function') {
 // //       onClick(event.object.name); // Pass event if needed or modify the handler
@@ -1826,4 +2085,3 @@ export default function ThreeScene() {
 // //   return (
 // //   <primitive name={id} onClick={handleClick}ref ={meshRef} position={position} object={scene} scale={0.0305}  />);
 // // };
-

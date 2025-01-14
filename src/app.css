@@ -42,6 +42,35 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  /* animation: fade-in 1s ease-in; */
+}
+.fade-in {
+  animation: fade-in 1s ease-in;
+}
+
+.fade-out {
+  animation: fade-out 1s ease-out;
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    background-color: black;
+  }
+  100% {
+    opacity: 1;
+    background-color: transparent;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+    background-color: black;
+  }
+  to {
+    opacity: 0;
+    background-color: transparent;
+  }
 }
 .bottom-banner-container {
   position: fixed;
@@ -149,25 +178,23 @@ body {
     width: 100%;
   } */
   .bottom-banner-container {
-    
-bottom: 1dvh;
-
+    bottom: 1dvh;
   }
   .bottom-banner-container-new {
     position: fixed;
-    bottom: 1dvh; 
+    bottom: 1dvh;
     right: 7%;
     top: 50%;
-    z-index: 10; 
+    z-index: 10;
     display: flex;
     justify-content: center;
     align-items: center;
-    transform:  translateY(-50%);
+    transform: translateY(-50%);
     /* margin-right: 40px; Keep the margin from the bottom */
     /* animation: slideOut 0.5s ease forwards; */
   }
 
-  .button-list{
+  .button-list {
     /* right: 10px; */
     /* transform: translateX(50%); */
     /* flex-direction: column; */
@@ -334,7 +361,6 @@ bottom: 1dvh;
 @media (max-width: 768px) {
   .loading-box-container {
     top: calc(50% + 50px); /* Position below the banner */
-
   }
   .loading-box {
     width: 20px; /* Width of each box */
@@ -345,14 +371,12 @@ bottom: 1dvh;
 @media (max-width: 480px) {
   .loading-box-container {
     top: calc(50% + 50px); /* Position below the banner */
-
   }
   .loading-box {
     width: 20px; /* Width of each box */
     height: 20px;
   }
 }
-
 
 .bottom-bar {
   position: absolute;
@@ -561,12 +585,12 @@ bottom: 1dvh;
   z-index: 1000; /* Ensure it is above other elements */
   background-color: transparent;
   padding-top: 15px;
-  margin-left: 20px;
-  animation: slideOut 0.5s ease forwards;
+  margin-left: 10px;
+  animation: slideOut 1s ease forwards;
 }
 @keyframes slideIn {
   0% {
-    transform: translateY(-50%) translateX(-0%);
+    transform: translateY(-0%) translateX(-0%);
     opacity: 1;
   }
   100% {
@@ -577,11 +601,11 @@ bottom: 1dvh;
 }
 @keyframes slideOut {
   0% {
-    transform: translateY(100%) translateX(0);
+    transform: translateY(-50%) translateX(0);
     opacity: 1;
   }
   100% {
-    transform: translateY(-50%) translateX(0%); /* Slide to the right */
+    transform: translateY(100%) translateX(0%); /* Slide to the right */
     opacity: 1;
   }
 }
@@ -763,7 +787,6 @@ bottom: 1dvh;
   }
 }
 
-
 /* Container for the toggle buttons */
 .mode-toggle {
   position: absolute;
@@ -798,7 +821,11 @@ bottom: 1dvh;
 
 /* Selected button styles */
 .toggle-button.selected {
-  background: linear-gradient(90deg, #003469, #0054aa); /* Gradient background */
+  background: linear-gradient(
+    90deg,
+    #003469,
+    #0054aa
+  ); /* Gradient background */
   color: white; /* White text */
   border: none; /* Remove border for cleaner look */
 }
@@ -852,7 +879,7 @@ bottom: 1dvh;
 .disclaimer-container {
   position: absolute;
   bottom: 10px; /* Adjust for desired margin */
-  left: 10px;  /* Adjust for desired margin */
+  left: 10px; /* Adjust for desired margin */
   z-index: 20; /* Ensure it is above other content */
 }
 
@@ -882,3 +909,44 @@ bottom: 1dvh;
   }
 }
 
+@media (max-width: 575px) {
+  .brush-icon,
+  .function-button.light-button,
+  .function-button {
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .brush-icon img,
+  .function-button.light-button img {
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+  }
+  .color-picker-container-new {
+    margin: 0;
+    padding: 0;
+    top: auto;
+    bottom: 100px;
+  }
+  .bottom-banner-container.minimized {
+    transform: none !important;
+    right: 10px !important;
+    left: auto;
+    bottom: 54px !important;
+    position: absolute;
+    max-width: fit-content;
+  }
+  .bottom-banner-container.expanded {
+    bottom: 4px !important;
+  }
+}
+@media (min-width: 992px) {
+  .color-picker-container-new {
+    padding: 0;
+    margin: 0;
+    transform: translateY(-50%) !important;
+  }
+}
