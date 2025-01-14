@@ -157,7 +157,7 @@ bottom: 1dvh;
   .button-list{
     /* right: 10px; */
     /* transform: translateX(50%); */
-    flex-direction: column;
+    /* flex-direction: column; */
   }
   .banner-image img {
     width: 100px; /* Further adjust image size */
