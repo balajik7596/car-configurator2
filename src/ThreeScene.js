@@ -1028,10 +1028,10 @@ export default function ThreeScene() {
         settoneMap(THREE.ACESFilmicToneMapping);
         settoneMapexp(1.2);
       }
-    }, 800);
+    }, 1000);
     setTimeout(() => {
       setBlackScreen(false); // Hide the black overlay after state update
-    }, 1500); // 5-milisecond delay
+    }, 1800); // 5-milisecond delay
   };
   const handlePlayAnimation = (door) => {
     setDoorStates((prev) => {
