@@ -125,10 +125,41 @@ body {
 }
 
 @media (max-width: 480px) {
-  .bottom-banner-container {
-    bottom: 1dvh; /* Keep the margin from the bottom */
+  /* .bottom-banner-container {
+    position: fixed;
+    bottom: 1dvh; 
+    left: 50%;
+    z-index: 10; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  } */
+  /* .bottom-banner-container {
+    
+    transform: translateY(-50%);
+    margin-right: 40px;
+
+  } */
+  .bottom-banner-container-new {
+    position: fixed;
+    bottom: 1dvh; 
+    right: 7%;
+    top: 50%;
+    z-index: 10; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform:  translateY(-50%);
+    /* margin-right: 40px; Keep the margin from the bottom */
+    /* animation: slideOut 0.5s ease forwards; */
   }
 
+  .button-list{
+    /* right: 10px; */
+    /* transform: translateX(50%); */
+    flex-direction: column;
+  }
   .banner-image img {
     width: 100px; /* Further adjust image size */
   }

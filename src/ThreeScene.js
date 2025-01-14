@@ -754,7 +754,7 @@ export default function ThreeScene() {
   const doorcloseaudioRef = useRef();
   const sunroofopenaudioRef = useRef();
   const sunroofcloseaudioRef = useRef();
-
+  const [isMob,setisMob] = useState(false);
   const [sunroofState, setSunroofState] = useState(false);
   const [playAnimation, setPlayAnimation] = useState({
     openFrontLeftDoor: () => { },
@@ -1039,6 +1039,14 @@ export default function ThreeScene() {
     //   setSpriteClicked(false);
   };
   useEffect(() => {
+    // Check if the device is mobile
+    const isMobile = window.innerWidth <= 768; // Adjust the breakpoint as needed    
+    if (isMobile) {
+      setisMob(true);
+      setShowColors(false); // Set true by default for mobile
+    }
+  }, []);
+  useEffect(() => {
     if (lightRef.current && !helperRef.current) {
       // Add DirectionalLightHelper after light is added
       const helper = new DirectionalLightHelper(lightRef.current, 1); // 1 is the size of the helper
@@ -1123,7 +1131,7 @@ export default function ThreeScene() {
       {" "}
       {/* Full-screen canvas */}
       {modelLoaded && !hideOthers && (
-        <div className="bottom-banner-container">
+        <div className={isMob?"bottom-banner-container-new":"bottom-banner-container"}>
           <div className="bottom-banner">
             {/* <div className="banner-image">
               <img src="/Functions.png" alt="Functions Banner" />
@@ -1164,7 +1172,7 @@ export default function ThreeScene() {
         </div>
       )}
       {modelLoaded && hideOthers && (
-        <div className="bottom-banner-container">
+        <div className={isMob?"bottom-banner-container-new":"bottom-banner-container"}>
           <div className="bottom-banner">
             {/* <div className="banner-image">
               <img src="/Functions.png" alt="Functions Banner" />
