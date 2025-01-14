@@ -135,12 +135,11 @@ body {
     align-items: center;
     width: 100%;
   } */
-  /* .bottom-banner-container {
+  .bottom-banner-container {
     
-    transform: translateY(-50%);
-    margin-right: 40px;
+bottom: 1dvh;
 
-  } */
+  }
   .bottom-banner-container-new {
     position: fixed;
     bottom: 1dvh; 
