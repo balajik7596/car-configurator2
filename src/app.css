@@ -125,7 +125,7 @@ body {
   justify-content: center;
   align-items: center;
   /* Space between buttons */
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .function-button {
@@ -134,12 +134,13 @@ body {
   /* padding: 8px; */
   cursor: pointer;
   transition: transform 0.2s ease;
+  width: 50px; /* Size of the buttons */
+  height: 50px;
 }
 
 .function-button img {
   width: 50px; /* Size of the buttons */
   height: 50px;
-  margin: -9px;
   object-fit: contain;
 }
 
@@ -573,7 +574,10 @@ body {
   align-items: center;
   z-index: 1000;
   background-color: rgba(255, 255, 255, 0.2);
-  padding-top: 15px;
+  padding-inline: 6px;
+  padding-top: 20px;
+  width: 50px;
+  box-sizing: border-box;
   animation: slideIn 1s ease forwards;
 }
 .color-picker-container-new {
@@ -592,7 +596,7 @@ body {
 }
 @keyframes slideIn {
   0% {
-    transform: translateY(-0%) translateX(-0%);
+    transform: translateY(-50%) translateX(-0%);
     opacity: 1;
   }
   100% {
@@ -603,11 +607,11 @@ body {
 }
 @keyframes slideOut {
   0% {
-    transform: translateY(-50%) translateX(0);
+    transform: translateY(100%) translateX(0);
     opacity: 1;
   }
   100% {
-    transform: translateY(100%) translateX(0%); /* Slide to the right */
+    transform: translateY(-50%) translateX(0%); /* Slide to the right */
     opacity: 1;
   }
 }
@@ -619,8 +623,8 @@ body {
   margin-bottom: 20px; /* Add space between the colors and the brush icon */
 }
 .color-circle {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   position: relative;
   cursor: pointer;
@@ -912,6 +916,17 @@ body {
 }
 
 @media (max-width: 575px) {
+  .hide-mobile {
+    display: none !important;
+  }
+  .button-list {
+    display: flex;
+    justify-content: center;
+  }
+  .brush-icon {
+    box-shadow: none !important;
+    overflow: hidden;
+  }
   .brush-icon,
   .function-button.light-button,
   .function-button {
@@ -927,11 +942,53 @@ body {
     min-width: 100%;
     min-height: 100%;
   }
+  .color-picker-container {
+    padding-top: 10px;
+    transform: none !important;
+    left: 48px !important;
+    width: 48px;
+    top: auto;
+    animation: bottom-to-top 0.3s ease-in !important;
+    bottom: 100px;
+    padding-bottom: 10px !important;
+  }
+  @keyframes bottom-to-top {
+    0% {
+      bottom: 86px;
+    }
+    100% {
+      bottom: 100px;
+    }
+  }
+  @keyframes slideIn {
+    0% {
+      transform: translateY(-0%) translateX(-0%);
+      opacity: 1;
+    }
+    100% {
+      left: 20px;
+      transform: translateY(-50%) translateX(0);
+      opacity: 1;
+    }
+  }
+  @keyframes slideOut {
+    0% {
+      transform: translateY(-50%) translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100%) translateX(0%); /* Slide to the right */
+      opacity: 1;
+    }
+  }
   .color-picker-container-new {
     margin: 0;
     padding: 0;
     top: auto;
+    left: 23px !important;
     bottom: 100px;
+    animation: none !important;
+    transform: translateY(100%) !important;
   }
   .bottom-banner-container.minimized {
     transform: none !important;
@@ -951,4 +1008,29 @@ body {
     margin: 0;
     transform: translateY(-50%) !important;
   }
+}
+/* .black-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999999999999999999999999999;
+  animation: fade-in 3s ease-in;
+} */
+.black-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0; /* Initially hidden */
+  pointer-events: none; /* Prevent interactions */
+  transition: opacity 1s ease-in-out; /* Smooth transition */
+  z-index: 9999; /* Ensure it's above everything */
+}
+
+.black-overlay.active {
+  opacity: 1; /* Fully visible */
+  pointer-events: auto; /* Allow interactions when active */
 }

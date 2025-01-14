@@ -21,6 +21,7 @@ import { extend } from "@react-three/fiber";
 import "./app.css";
 import PopupBox from "./PopupBox";
 import PopoutBoxM from "./PopoutBoxM";
+import { div } from "three/tsl";
 // import { useLoader } from "@react-three/fiber";
 // import { RGBELoader } from "three-stdlib";
 function CarModel({
@@ -864,6 +865,7 @@ export default function ThreeScene() {
   const sunroofcloseaudioRef = useRef();
   const [isMob, setisMob] = useState(false);
   const [sunroofState, setSunroofState] = useState(false);
+  const [blackScreen, setBlackScreen] = useState(false);
   const [playAnimation, setPlayAnimation] = useState({
     openFrontLeftDoor: () => {},
     openFrontRightDoor: () => {},
@@ -990,29 +992,41 @@ export default function ThreeScene() {
     setSpriteClicked(true);
     // console.log("Sprite clicked! Current state:", spriteClicked);
   };
-  const handleintCameraChange = (id) => {
-    if (activeCamera === "interior") setActiveCamera("interior2");
-    else setActiveCamera("interior");
-  };
-  const handleModeChange = (mode) => {
-    setSelectedEnvMode(mode);
-  };
-  const switchTointerior = (id) => {
-    // setSpriteClicked(!spriteClicked);
-    // setselectedSpriteId('new');
-    // console.log(activeCamera,id);
 
-    if (activeCamera === "default" && id === "in") {
-      setActiveCamera("interior");
-      sethideOthers(true);
-      settoneMap(THREE.LinearToneMapping);
-      settoneMapexp(1);
-    } else if (activeCamera.includes("interior") && id === "out") {
-      setActiveCamera("default");
-      sethideOthers(false);
-      settoneMap(THREE.ACESFilmicToneMapping);
-      settoneMapexp(1.2);
-    }
+  const handleintCameraChange = (id) => {
+    setBlackScreen(true);
+    setTimeout(() => {
+      if (activeCamera === "interior") setActiveCamera("interior2");
+      else setActiveCamera("interior");
+      setBlackScreen(false); // Hide the black overlay after state update
+    }, 1000);
+  };
+
+  const handleModeChange = (mode) => {
+    setBlackScreen(true);
+    setTimeout(() => {
+      setSelectedEnvMode(mode);
+      setBlackScreen(false); // Hide the black overlay after state update
+    }, 1000);
+  };
+
+  const switchTointerior = (id) => {
+    setBlackScreen(true); // Show the black overlay
+
+    setTimeout(() => {
+      if (activeCamera === "default" && id === "in") {
+        setActiveCamera("interior");
+        sethideOthers(true);
+        settoneMap(THREE.LinearToneMapping);
+        settoneMapexp(1);
+      } else if (activeCamera.includes("interior") && id === "out") {
+        setActiveCamera("default");
+        sethideOthers(false);
+        settoneMap(THREE.ACESFilmicToneMapping);
+        settoneMapexp(1.2);
+      }
+      setBlackScreen(false); // Hide the black overlay after state update
+    }, 1000); // 5-milisecond delay
   };
   const handlePlayAnimation = (door) => {
     setDoorStates((prev) => {
@@ -1130,10 +1144,9 @@ export default function ThreeScene() {
           ambientaudioRef.current.play();
         });
         setIsAudioPlaying(true);
-      }else{
+      } else {
         ambientaudioRef.current.stop();
         setIsAudioPlaying(false);
-
       }
     }
   };
@@ -1181,7 +1194,7 @@ export default function ThreeScene() {
       setisMob(true);
       setShowColors(false); // Set true by default for mobile
       setIsAudioPlaying(false);
-    }else{
+    } else {
       // setIsAudioPlaying(true);
       // playAudio();
     }
@@ -1241,7 +1254,7 @@ export default function ThreeScene() {
     sunroofClosePlaying: false,
   });
 
-  const handleCanvasnClick = () => {    
+  const handleCanvasnClick = () => {
     // Example: Toggle ambient audio on click
     if (ambientaudioRef.current) {
       const isPlaying = ambientaudioRef.current.isPlaying; //audioState.ambientPlaying;
@@ -1265,515 +1278,538 @@ export default function ThreeScene() {
   };
 
   return (
-    <div className="viewer-container no-select">
-      {hideOthers && (
-        <div class="disclaimer-container">
-          <img
-            src="/disclaimer.png"
-            alt="Disclaimer"
-            class="disclaimer-image"
-          />
-        </div>
-      )}{" "}
-      {/* Full-screen canvas */}
-      {modelLoaded && !hideOthers && !isMob && (
-        <div
-          className={
-            false ? "bottom-banner-container-new" : "bottom-banner-container"
-          }
-        >
-          <div className="bottom-banner">
-            {/* <div className="banner-image">
-              <img src="/Functions.png" alt="Functions Banner" />
-            </div> */}
-            <div className="button-list">
-              <button className="function-button" onClick={handleLightChange}>
-                <img src="/Light Indicator.png" alt="Icon 1" />
-              </button>
-              <button
-                className="function-button"
-                onClick={() => handlePlayAnimation("frontRight")}
-              >
-                <img src="/doorrf.png" alt="Icon 1" />
-              </button>
-              <button
-                className="function-button"
-                onClick={() => handlePlayAnimation("frontLeft")}
-              >
-                <img src="/doorlf.png" alt="Icon 1" />
-              </button>
-              <button
-                className="function-button"
-                onClick={() => handlePlayAnimation("rearRight")}
-              >
-                <img src="/doorbr.png" alt="Icon 1" />
-              </button>
-              <button
-                className="function-button"
-                onClick={() => handlePlayAnimation("rearLeft")}
-              >
-                <img src="/doorbl.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={handlePlayAllDoors}>
-                <img src="/door.png" alt="Icon 1" />
-              </button>
-              <button
-                className="function-button"
-                onClick={() => handlePlayAnimation("behindBoot")}
-              >
-                <img src="/back.png" alt="Icon 1" />
-              </button>
-              <button className="function-button" onClick={handleToggleSunroof}>
-                <img src="/sun.png" alt="Icon 1" />
-              </button>
-              <button
-                className="function-button"
-                onClick={() => switchTointerior("in")}
-              >
-                <img src="/in.png" alt="Icon 1" />
-              </button>
-              <button
-                className="function-button"
-                onClick={() => switchTointerior("out")}
-              >
-                <img src="/out.png" alt="Icon 1" />
-              </button>
-              {isAudioPlaying? (
-                    <button
-                      className="function-button"
-                      onClick={ playAudio}
-                    >
-                      <img src="/mute.png" alt="Mute Icon" />
-                    </button>
-                  ) : (
-                    <button
-                      className="function-button"
-                      onClick={playAudio}
-                    >
-                      <img src="/unmute.png" alt="Play Icon" />
-                    </button>
-                  )}
-            </div>
-          </div>
-        </div>
-      )}
-      {modelLoaded && !hideOthers && isMob && (
-        <div
-          className="bottom-banner-container expanded">
-          <div className="bottom-banner">
-            <div className="button-list">
-             
-                  <button className="function-button" onClick={handleLightChange}>
-                    <img src="/Light Indicator.png" alt="Icon 1" />
-                  </button>
-                  <button
-                    className="function-button"
-                    onClick={() => handlePlayAnimation("frontRight")}
-                  >
-                    <img src="/doorrf.png" alt="Icon 1" />
-                  </button>
-                  <button
-                    className="function-button"
-                    onClick={() => handlePlayAnimation("frontLeft")}
-                  >
-                    <img src="/doorlf.png" alt="Icon 1" />
-                  </button>
-                  <button
-                    className="function-button"
-                    onClick={() => handlePlayAnimation("rearRight")}
-                  >
-                    <img src="/doorbr.png" alt="Icon 1" />
-                  </button>
-                  <button
-                    className="function-button"
-                    onClick={() => handlePlayAnimation("rearLeft")}
-                  >
-                    <img src="/doorbl.png" alt="Icon 1" />
-                  </button>
-                  <button className="function-button" onClick={handlePlayAllDoors}>
-                    <img src="/door.png" alt="Icon 1" />
-                  </button>
-                  <button
-                    className="function-button"
-                    onClick={() => handlePlayAnimation("behindBoot")}
-                  >
-                    <img src="/back.png" alt="Icon 1" />
-                  </button>
-                  <button className="function-button" onClick={handleToggleSunroof}>
-                    <img src="/sun.png" alt="Icon 1" />
-                  </button>
-                  <button className="function-button" onClick={() => switchTointerior("in")}>
-                    <img src="/in.png" alt="Icon 1" />
-                  </button>
-                  <button className="function-button" onClick={() => switchTointerior("out")}>
-                    <img src="/out.png" alt="Icon 1" />
-                  </button>
-                  {isAudioPlaying ? (
-                    <button
-                      className="function-button"
-                      onClick={ playAudio}
-                    >
-                      <img src="/mute.png" alt="Mute Icon" />
-                    </button>
-                  ) : (
-                    <button
-                      className="function-button"
-                      onClick={playAudio}
-                    >
-                      <img src="/unmute.png" alt="Play Icon" />
-                    </button>
-                  )}              
-            </div>
-          </div>
-        </div>
-      )}
-      {modelLoaded && hideOthers && (
-        <div
-          className={
-            false ? "bottom-banner-container-new" : "bottom-banner-container"
-          }
-        >
-          <div className="bottom-banner">
-            {/* <div className="banner-image">
-              <img src="/Functions.png" alt="Functions Banner" />
-            </div> */}
-            <div className="button-list">
-              <button
-                className="function-button"
-                onClick={() => switchTointerior("in")}
-              >
-                <img src="/in.png" alt="Icon 1" />
-              </button>
-              <button
-                className="function-button"
-                onClick={() => switchTointerior("out")}
-              >
-                <img src="/out.png" alt="Icon 1" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {modelLoaded && !hideOthers && (
-        <div className="mode-toggle">
-          <button
-            className={`toggle-button ${
-              selectedEnvMode === "sunlit" ? "selected" : ""
-            }`}
-            onClick={() => handleModeChange("sunlit")}
-          >
-            Sunlit
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="icon sun-icon"
-            >
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
-          <button
-            className={`toggle-button ${
-              selectedEnvMode === "moonlit" ? "selected" : ""
-            }`}
-            onClick={() => handleModeChange("moonlit")}
-          >
-            Moonlit
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="icon moon-icon"
-            >
-              <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"></path>
-            </svg>
-          </button>
-        </div>
-      )}
-      {/* Brand Banner */}
-      {!modelLoaded && (
-        <div className={`brand-banner `}>
-          <img src="/banner.png" alt="Brand Logo" className="brand-logo" />
-        </div>
-      )}
-      {!modelLoaded && (
-        <div className="loading-box-container">
-          {Array(4)
-            .fill(0)
-            .map((_, index) => (
-              <div
-                key={index}
-                className={`loading-box ${
-                  currentBox === index ? "filled" : ""
-                }`}
-              ></div>
-            ))}
-        </div>
-      )}
-      <Canvas
-        // camera={{ position: [-5, 3, -8], fov: 50 }}
-        gl={{
-          antialias: true,
-          toneMapping: toneMap,
-          toneMappingExposure: toneMapexp,
-        }}
-      >
-        <PerspectiveCamera
-          makeDefault={activeCamera === "default"} // Activate this camera when it's active
-          ref={defaultCameraRef}
-          position={[-5, 3, -8]}
-          fov={50}
-        />
+    <>
+      {/* {blackScreen && <div className="black-overlay"></div>} */}
+      <div className={`black-overlay ${blackScreen ? "active" : ""}`}></div>
 
-        {/* Interior Camera */}
-        <PerspectiveCamera
-          makeDefault={activeCamera === "interior"} // Activate this camera when it's active
-          ref={interiorCameraRef}
-          position={activeCamera === "interior" ? [0, 1.5, 0.0] : [0, 0, 0]} // Position for interior view
-          fov={60}
-          target={[0, 50, 0]}
-        />
-        {/* Interior Camera 2 */}
-        <PerspectiveCamera
-          makeDefault={activeCamera === "interior2"} // Activate this camera when it's active
-          ref={interiorCameraRef}
-          position={activeCamera === "interior2" ? [0, 1.5, 8] : [0, 0, 0]} // Position for interior view
-          fov={50}
-          target={[2, 50, 0]}
-        />
-        <Suspense fallback={null}>
-          <AudioComponent ref={ambientaudioRef} />
-          <DoorAudioComponentOpen ref={dooropenaudioRef} />
-          <DoorAudioComponentClose ref={doorcloseaudioRef} />
-          <SunRoofAudioComponentOpen ref={sunroofopenaudioRef} />
-          <SunRoofAudioComponentClose ref={sunroofcloseaudioRef} />
-          {/* Load HDR Environment */}
-          {/* <Image360Sphere imageUrl="/360.jpg" /> */}
-          <RotatingEnvironment
-            visible={activeCamera === "default"}
-            path="/studio_small.hdr"
-            rotationValue={180}
-          />
-          <SkyDomeSunLit
-            visible={activeCamera === "default" && selectedEnvMode === "sunlit"}
-            onClick={handleCanvasClick}
-          />
-          <SkyDomeMoonLit
-            visible={
-              activeCamera === "default" && selectedEnvMode === "moonlit"
-            }
-            onClick={handleCanvasClick}
-          />
-          {!hideOthers
-            ? false
-              ? sprites.map(
-                  (sprite) =>
-                    sprite.id === selectedSpriteId ? (
-                      <HotSpot
-                        key={sprite.id}
-                        id={sprite.id}
-                        position={sprite.position}
-                        onClick={eventHandlers[sprite.event]}
-                      />
-                    ) : null // Hide other sprites
-                )
-              : sprites.map((sprite) => (
-                  <HotSpot
-                    key={sprite.id}
-                    id={sprite.id}
-                    position={sprite.position}
-                    onClick={eventHandlers[sprite.event]}
-                  />
-                ))
-            : null}
-          {/* Add the 3D Model */}
-          <CarModel
-            visible={!activeCamera.includes("interior")}
-            ref={carModelRef}
-            color={carColor}
-            selColor={selColor}
-            licensePlateMap={textures[selColor]}
-            onLoad={handleModelLoad}
-            lightsOn={lightsOn}
-            setPlayAnimation={setPlayAnimation}
-            selectedAnimation={selectedAnimation}
-            activeCamera={activeCamera}
-            onDoorAnimend={playDoorCloseAudio}
-          />
-          <IntDome
-            visible={
-              activeCamera === "interior" && selectedEnvMode === "sunlit"
-            }
-          />
-          <IntDomeNight
-            visible={
-              activeCamera === "interior" && selectedEnvMode === "moonlit"
-            }
-          />
-          <IntDome2
-            visible={
-              activeCamera === "interior2" && selectedEnvMode === "sunlit"
-            }
-          />
-          <IntDomeNight2
-            visible={
-              activeCamera === "interior2" && selectedEnvMode === "moonlit"
-            }
-          />
-          {hideOthers && activeCamera === "interior" && (
-            <CamHotSpot
-              key={"k"}
-              id={"k"}
-              position={[0.2, 1.25, -2]}
-              scale={0.015}
-              onClick={eventHandlers["handleintCameraChange"]}
-            />
-          )}
-          {hideOthers && activeCamera === "interior2" && (
-            <CamHotSpot
-              key={"ke"}
-              id={"ke"}
-              position={[2.0, 1.95, -41]}
-              scale={0.2}
-              onClick={eventHandlers["handleintCameraChange"]}
-            />
-          )}
-          {hideOthers && activeCamera === "interior2" && (
-            <HotSpot
-              key={"seat"}
-              id={"seat"}
-              position={[-7, -7, -41]}
-              scale={0.8}
-              onClick={eventHandlers["handleSpriteClick"]}
-            />
-          )}
-          {hideOthers && activeCamera === "interior2" && (
-            <HotSpot
-              key={"v2l"}
-              id={"v2l"}
-              position={[0.8, -29, -30]}
-              scale={0.8}
-              onClick={eventHandlers["handleSpriteClick"]}
-            />
-          )}
-          {hideOthers && activeCamera === "interior"
-            ? false
-              ? intsprites.map(
-                  (sprite) =>
-                    sprite.id === selectedSpriteId ? (
-                      <HotSpot
-                        key={sprite.id}
-                        id={sprite.id}
-                        position={sprite.position}
-                        onClick={eventHandlers[sprite.event]}
-                      />
-                    ) : null // Hide other sprites
-                )
-              : intsprites.map((sprite) => (
-                  <HotSpot
-                    key={sprite.id}
-                    id={sprite.id}
-                    position={sprite.position}
-                    onClick={eventHandlers[sprite.event]}
-                  />
-                ))
-            : null}
-
-          {/* <CameraMover targetPosition={[0,0,0]} targetRotation={[Math.PI2,0,0]} spriteClicked={activeCamera === 'interior'} /> */}
-        </Suspense>
-        {/* {modelLoaded && <RaycasterHandler />} */}
-
-        {/* Add Camera Controls */}
-
-        <hemisphereLight
-          skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
-          groundColor={0x000000} // Color of the light from the ground (bottom hemisphere)
-          intensity={0.5}
-          rotation={[0, 0, 0]}
-          position={[0, 5, -5]} // Light intensity
-        />
-      </Canvas>
-      {/* <SidePanel id={selectedSpriteId} show={spriteClicked} heading={'test'} description ={'testkndsknfnfdnkjfkjd'} imgsrc={''} onClose={handleClosePanel} /> */}
-      {modelLoaded && (
-        <PopupBox
-          show={spriteClicked}
-          id={selectedSpriteId}
-          onClose={handleClosePanel}
-        />
-      )}
-      {modelLoaded && (
-        <PopoutBoxM
-          show={spriteClicked}
-          id={selectedSpriteId}
-          onClose={handleClosePanel}
-        />
-      )}
-      {modelLoaded && !hideOthers && (
-        <div
-          className={
-            showColors ? "color-picker-container" : "color-picker-container-new"
-          }
-        >
-          <div className="color-options-opened">
-            {showColors && (
-              <div className="color-options">
-                {colors.map((color) => (
-                  <div key={color.id} className="tooltip">
-                    <div
-                      className={`color-circle ${
-                        selColor === color.id ? "selected" : ""
-                      }`}
-                      style={{ backgroundColor: color.hex }}
-                      onClick={() => handleColorChange(color.hex, color.id)}
-                    >
-                      {/* Add the image inside the color circle if needed */}
-                      <img
-                        src={color.path}
-                        alt={color.id}
-                        className="color-image"
-                        style={{
-                          display: "block",
-                          width: "100%",
-                          height: "100%",
-                        }}
-                      />
-                    </div>
-                    <span className="tooltiptext">{color.id}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="brush-icon" onClick={handleBrushClick}>
+      <div className="viewer-container no-select">
+        {hideOthers && (
+          <div class="disclaimer-container">
             <img
-              src="/bottom-img6.png"
-              alt="Brush"
-              style={{ width: "60px", cursor: "pointer" }}
+              src="/disclaimer.png"
+              alt="Disclaimer"
+              class="disclaimer-image"
             />
           </div>
-        </div>
-      )}
-    </div>
+        )}{" "}
+        {/* Full-screen canvas */}
+        {modelLoaded && !hideOthers && !isMob && (
+          <div
+            className={
+              false ? "bottom-banner-container-new" : "bottom-banner-container"
+            }
+          >
+            <div className="bottom-banner">
+              {/* <div className="banner-image">
+              <img src="/Functions.png" alt="Functions Banner" />
+            </div> */}
+
+              <div className="button-list">
+                <button className="function-button" onClick={handleLightChange}>
+                  <img src="/Light Indicator.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => handlePlayAnimation("frontRight")}
+                >
+                  <img src="/doorrf.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => handlePlayAnimation("frontLeft")}
+                >
+                  <img src="/doorlf.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => handlePlayAnimation("rearRight")}
+                >
+                  <img src="/doorbr.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => handlePlayAnimation("rearLeft")}
+                >
+                  <img src="/doorbl.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={handlePlayAllDoors}
+                >
+                  <img src="/door.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => handlePlayAnimation("behindBoot")}
+                >
+                  <img src="/back.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={handleToggleSunroof}
+                >
+                  <img src="/sun.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => switchTointerior("in")}
+                >
+                  <img src="/in.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => switchTointerior("out")}
+                >
+                  <img src="/out.png" alt="Icon 1" />
+                </button>
+                {isAudioPlaying ? (
+                  <button className="function-button" onClick={playAudio}>
+                    <img src="/mute.png" alt="Mute Icon" />
+                  </button>
+                ) : (
+                  <button className="function-button" onClick={playAudio}>
+                    <img src="/unmute.png" alt="Play Icon" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        {modelLoaded && !hideOthers && isMob && (
+          <div className="bottom-banner-container expanded">
+            <div className="bottom-banner">
+              <div className="button-list">
+                <button className="function-button" onClick={handleBrushClick}>
+                  <img
+                    src="/bottom-img6.png"
+                    alt="Brush"
+                    style={{ width: "48px", cursor: "pointer" }}
+                  />
+                </button>
+                <button className="function-button" onClick={handleLightChange}>
+                  <img src="/Light Indicator.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => handlePlayAnimation("frontRight")}
+                >
+                  <img src="/doorrf.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => handlePlayAnimation("frontLeft")}
+                >
+                  <img src="/doorlf.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => handlePlayAnimation("rearRight")}
+                >
+                  <img src="/doorbr.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => handlePlayAnimation("rearLeft")}
+                >
+                  <img src="/doorbl.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={handlePlayAllDoors}
+                >
+                  <img src="/door.png" alt="Icon 1" />
+                </button>
+              </div>
+              <div className="button-list">
+                <button
+                  className="function-button"
+                  onClick={() => handlePlayAnimation("behindBoot")}
+                >
+                  <img src="/back.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={handleToggleSunroof}
+                >
+                  <img src="/sun.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => switchTointerior("in")}
+                >
+                  <img src="/in.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => switchTointerior("out")}
+                >
+                  <img src="/out.png" alt="Icon 1" />
+                </button>
+                {isAudioPlaying ? (
+                  <button className="function-button" onClick={playAudio}>
+                    <img src="/mute.png" alt="Mute Icon" />
+                  </button>
+                ) : (
+                  <button className="function-button" onClick={playAudio}>
+                    <img src="/unmute.png" alt="Play Icon" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        {modelLoaded && hideOthers && (
+          <div
+            className={
+              false ? "bottom-banner-container-new" : "bottom-banner-container"
+            }
+          >
+            <div className="bottom-banner">
+              {/* <div className="banner-image">
+              <img src="/Functions.png" alt="Functions Banner" />
+            </div> */}
+              <div className="button-list">
+                <button
+                  className="function-button"
+                  onClick={() => switchTointerior("in")}
+                >
+                  <img src="/in.png" alt="Icon 1" />
+                </button>
+                <button
+                  className="function-button"
+                  onClick={() => switchTointerior("out")}
+                >
+                  <img src="/out.png" alt="Icon 1" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {modelLoaded && !hideOthers && (
+          <div className="mode-toggle">
+            <button
+              className={`toggle-button ${
+                selectedEnvMode === "sunlit" ? "selected" : ""
+              }`}
+              onClick={() => handleModeChange("sunlit")}
+            >
+              Sunlit
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon sun-icon"
+              >
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            </button>
+            <button
+              className={`toggle-button ${
+                selectedEnvMode === "moonlit" ? "selected" : ""
+              }`}
+              onClick={() => handleModeChange("moonlit")}
+            >
+              Moonlit
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon moon-icon"
+              >
+                <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"></path>
+              </svg>
+            </button>
+          </div>
+        )}
+        {/* Brand Banner */}
+        {!modelLoaded && (
+          <div className={`brand-banner `}>
+            <img src="/banner.png" alt="Brand Logo" className="brand-logo" />
+          </div>
+        )}
+        {!modelLoaded && (
+          <div className="loading-box-container">
+            {Array(4)
+              .fill(0)
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className={`loading-box ${
+                    currentBox === index ? "filled" : ""
+                  }`}
+                ></div>
+              ))}
+          </div>
+        )}
+        <Canvas
+          // camera={{ position: [-5, 3, -8], fov: 50 }}
+          gl={{
+            antialias: true,
+            toneMapping: toneMap,
+            toneMappingExposure: toneMapexp,
+          }}
+        >
+          <PerspectiveCamera
+            makeDefault={activeCamera === "default"} // Activate this camera when it's active
+            ref={defaultCameraRef}
+            position={[-5, 3, -8]}
+            fov={50}
+          />
+
+          {/* Interior Camera */}
+          <PerspectiveCamera
+            makeDefault={activeCamera === "interior"} // Activate this camera when it's active
+            ref={interiorCameraRef}
+            position={activeCamera === "interior" ? [0, 1.5, 0.0] : [0, 0, 0]} // Position for interior view
+            fov={60}
+            target={[0, 50, 0]}
+          />
+          {/* Interior Camera 2 */}
+          <PerspectiveCamera
+            makeDefault={activeCamera === "interior2"} // Activate this camera when it's active
+            ref={interiorCameraRef}
+            position={activeCamera === "interior2" ? [0, 1.5, 8] : [0, 0, 0]} // Position for interior view
+            fov={50}
+            target={[2, 50, 0]}
+          />
+          <Suspense fallback={null}>
+            <AudioComponent ref={ambientaudioRef} />
+            <DoorAudioComponentOpen ref={dooropenaudioRef} />
+            <DoorAudioComponentClose ref={doorcloseaudioRef} />
+            <SunRoofAudioComponentOpen ref={sunroofopenaudioRef} />
+            <SunRoofAudioComponentClose ref={sunroofcloseaudioRef} />
+            {/* Load HDR Environment */}
+            {/* <Image360Sphere imageUrl="/360.jpg" /> */}
+            <RotatingEnvironment
+              visible={activeCamera === "default"}
+              path="/studio_small.hdr"
+              rotationValue={180}
+            />
+            <SkyDomeSunLit
+              visible={
+                activeCamera === "default" && selectedEnvMode === "sunlit"
+              }
+              onClick={handleCanvasClick}
+            />
+            <SkyDomeMoonLit
+              visible={
+                activeCamera === "default" && selectedEnvMode === "moonlit"
+              }
+              onClick={handleCanvasClick}
+            />
+            {!hideOthers
+              ? false
+                ? sprites.map(
+                    (sprite) =>
+                      sprite.id === selectedSpriteId ? (
+                        <HotSpot
+                          key={sprite.id}
+                          id={sprite.id}
+                          position={sprite.position}
+                          onClick={eventHandlers[sprite.event]}
+                        />
+                      ) : null // Hide other sprites
+                  )
+                : sprites.map((sprite) => (
+                    <HotSpot
+                      key={sprite.id}
+                      id={sprite.id}
+                      position={sprite.position}
+                      onClick={eventHandlers[sprite.event]}
+                    />
+                  ))
+              : null}
+            {/* Add the 3D Model */}
+            <CarModel
+              visible={!activeCamera.includes("interior")}
+              ref={carModelRef}
+              color={carColor}
+              selColor={selColor}
+              licensePlateMap={textures[selColor]}
+              onLoad={handleModelLoad}
+              lightsOn={lightsOn}
+              setPlayAnimation={setPlayAnimation}
+              selectedAnimation={selectedAnimation}
+              activeCamera={activeCamera}
+              onDoorAnimend={playDoorCloseAudio}
+            />
+            <IntDome
+              visible={
+                activeCamera === "interior" && selectedEnvMode === "sunlit"
+              }
+            />
+            <IntDomeNight
+              visible={
+                activeCamera === "interior" && selectedEnvMode === "moonlit"
+              }
+            />
+            <IntDome2
+              visible={
+                activeCamera === "interior2" && selectedEnvMode === "sunlit"
+              }
+            />
+            <IntDomeNight2
+              visible={
+                activeCamera === "interior2" && selectedEnvMode === "moonlit"
+              }
+            />
+            {hideOthers && activeCamera === "interior" && (
+              <CamHotSpot
+                key={"k"}
+                id={"k"}
+                position={[0.2, 1.25, -2]}
+                scale={0.015}
+                onClick={eventHandlers["handleintCameraChange"]}
+              />
+            )}
+            {hideOthers && activeCamera === "interior2" && (
+              <CamHotSpot
+                key={"ke"}
+                id={"ke"}
+                position={[2.0, 1.95, -41]}
+                scale={0.2}
+                onClick={eventHandlers["handleintCameraChange"]}
+              />
+            )}
+            {hideOthers && activeCamera === "interior2" && (
+              <HotSpot
+                key={"seat"}
+                id={"seat"}
+                position={[-7, -7, -41]}
+                scale={0.8}
+                onClick={eventHandlers["handleSpriteClick"]}
+              />
+            )}
+            {hideOthers && activeCamera === "interior2" && (
+              <HotSpot
+                key={"v2l"}
+                id={"v2l"}
+                position={[0.8, -29, -30]}
+                scale={0.8}
+                onClick={eventHandlers["handleSpriteClick"]}
+              />
+            )}
+            {hideOthers && activeCamera === "interior"
+              ? false
+                ? intsprites.map(
+                    (sprite) =>
+                      sprite.id === selectedSpriteId ? (
+                        <HotSpot
+                          key={sprite.id}
+                          id={sprite.id}
+                          position={sprite.position}
+                          onClick={eventHandlers[sprite.event]}
+                        />
+                      ) : null // Hide other sprites
+                  )
+                : intsprites.map((sprite) => (
+                    <HotSpot
+                      key={sprite.id}
+                      id={sprite.id}
+                      position={sprite.position}
+                      onClick={eventHandlers[sprite.event]}
+                    />
+                  ))
+              : null}
+
+            {/* <CameraMover targetPosition={[0,0,0]} targetRotation={[Math.PI2,0,0]} spriteClicked={activeCamera === 'interior'} /> */}
+          </Suspense>
+          {/* {modelLoaded && <RaycasterHandler />} */}
+
+          {/* Add Camera Controls */}
+
+          <hemisphereLight
+            skyColor={0xffffff} // Color of the light from the sky (top hemisphere)
+            groundColor={0x000000} // Color of the light from the ground (bottom hemisphere)
+            intensity={0.5}
+            rotation={[0, 0, 0]}
+            position={[0, 5, -5]} // Light intensity
+          />
+        </Canvas>
+        {/* <SidePanel id={selectedSpriteId} show={spriteClicked} heading={'test'} description ={'testkndsknfnfdnkjfkjd'} imgsrc={''} onClose={handleClosePanel} /> */}
+        {modelLoaded && (
+          <PopupBox
+            show={spriteClicked}
+            id={selectedSpriteId}
+            onClose={handleClosePanel}
+          />
+        )}
+        {modelLoaded && (
+          <PopoutBoxM
+            show={spriteClicked}
+            id={selectedSpriteId}
+            onClose={handleClosePanel}
+          />
+        )}
+        {modelLoaded && !hideOthers && (
+          <div
+            className={
+              showColors
+                ? "color-picker-container"
+                : "color-picker-container-new"
+            }
+          >
+            <div className="color-options-opened">
+              {showColors && (
+                <div className="color-options">
+                  {colors.map((color) => (
+                    <div key={color.id} className="tooltip">
+                      <div
+                        className={`color-circle ${
+                          selColor === color.id ? "selected" : ""
+                        }`}
+                        style={{ backgroundColor: color.hex }}
+                        onClick={() => handleColorChange(color.hex, color.id)}
+                      >
+                        {/* Add the image inside the color circle if needed */}
+                        <img
+                          src={color.path}
+                          alt={color.id}
+                          className="color-image"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            height: "100%",
+                          }}
+                        />
+                      </div>
+                      <span className="tooltiptext">{color.id}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="brush-icon hide-mobile" onClick={handleBrushClick}>
+              <img
+                src="/bottom-img6.png"
+                alt="Brush"
+                style={{ width: "50px", cursor: "pointer" }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 //old
