@@ -45,15 +45,28 @@ body {
 }
 .bottom-banner-container {
   position: fixed;
-  bottom: 1dvh; /* Margin from the bottom */
+  bottom: 1dvh;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10; /* Ensure the banner stays above other content */
+  z-index: 10;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* padding: 10px; */
   width: 100%;
+  transition: all 0.3s ease-in-out; /* Smooth transition */
+}
+
+.bottom-banner-container.minimized {
+  justify-content: flex-end; /* Align to bottom-right */
+  left: auto;
+  right: 1dvh; /* Adjust spacing from the edge */
+  transform: translateX(38%);
+}
+
+.bottom-banner-container.expanded {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
 }
 
 .bottom-banner {

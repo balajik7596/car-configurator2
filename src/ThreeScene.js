@@ -1130,7 +1130,7 @@ export default function ThreeScene() {
       </div>)}
       {" "}
       {/* Full-screen canvas */}
-      {modelLoaded && !hideOthers && (
+      {modelLoaded && !hideOthers && !isMob&& (
         <div className={false?"bottom-banner-container-new":"bottom-banner-container"}>
           <div className="bottom-banner">
             {/* <div className="banner-image">
@@ -1171,6 +1171,81 @@ export default function ThreeScene() {
           </div>
         </div>
       )}
+      {modelLoaded&&!hideOthers&&isMob &&(<div
+      className={
+        lightsOn
+          ? "bottom-banner-container expanded"
+          : "bottom-banner-container minimized"
+      }
+    >
+      <div className="bottom-banner">
+        <div className="button-list">
+          {!lightsOn && (
+            <button
+              className="function-button light-button"
+              onClick={handleLightChange}
+            >
+              <img src="/Light Indicator.png" alt="Light Icon" />
+            </button>
+          )}
+          {lightsOn && (
+            <>
+              <button className="function-button" onClick={handleLightChange}>
+                <img src="/Light Indicator.png" alt="Icon 1" />
+              </button>
+              <button
+                className="function-button"
+                onClick={() => handlePlayAnimation("frontRight")}
+              >
+                <img src="/doorrf.png" alt="Icon 1" />
+              </button>
+              <button
+                className="function-button"
+                onClick={() => handlePlayAnimation("frontLeft")}
+              >
+                <img src="/doorlf.png" alt="Icon 1" />
+              </button>
+              <button
+                className="function-button"
+                onClick={() => handlePlayAnimation("rearRight")}
+              >
+                <img src="/doorbr.png" alt="Icon 1" />
+              </button>
+              <button
+                className="function-button"
+                onClick={() => handlePlayAnimation("rearLeft")}
+              >
+                <img src="/doorbl.png" alt="Icon 1" />
+              </button>
+              <button className="function-button" onClick={handlePlayAllDoors}>
+                <img src="/door.png" alt="Icon 1" />
+              </button>
+              <button
+                className="function-button"
+                onClick={() => handlePlayAnimation("behindBoot")}
+              >
+                <img src="/back.png" alt="Icon 1" />
+              </button>
+              <button className="function-button" onClick={handleToggleSunroof}>
+                <img src="/sun.png" alt="Icon 1" />
+              </button>
+              <button
+                className="function-button"
+                onClick={() => switchTointerior("in")}
+              >
+                <img src="/in.png" alt="Icon 1" />
+              </button>
+              <button
+                className="function-button"
+                onClick={() => switchTointerior("out")}
+              >
+                <img src="/out.png" alt="Icon 1" />
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>)}
       {modelLoaded && hideOthers && (
         <div className={false?"bottom-banner-container-new":"bottom-banner-container"}>
           <div className="bottom-banner">
