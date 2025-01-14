@@ -746,9 +746,9 @@ const CamHotSpot = ({
     <primitive
       name={id}
       ref={meshRef}
-      rotation={[0, Math.PI / 2, 0]}
+      rotation={[0, 0, 0]}
       object={clonedScene}
-      scale={scale}
+      scale={scale*2}
       onClick={handleClick}
     />
   );
@@ -1677,7 +1677,7 @@ export default function ThreeScene() {
               <CamHotSpot
                 key={"k"}
                 id={"k"}
-                position={[0.2, 1.25, -2]}
+                position={[0.051, 1.25, -2]}
                 scale={0.015}
                 onClick={eventHandlers["handleintCameraChange"]}
               />
@@ -1686,7 +1686,7 @@ export default function ThreeScene() {
               <CamHotSpot
                 key={"ke"}
                 id={"ke"}
-                position={[2.0, 1.95, -41]}
+                position={[-0.5, 1.95, -41]}
                 scale={0.2}
                 onClick={eventHandlers["handleintCameraChange"]}
               />

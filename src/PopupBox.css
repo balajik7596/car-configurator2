@@ -70,7 +70,11 @@
   z-index: 1100;
   backdrop-filter: blur(10px); /* Match frosted effect */
 }
-
+.popup-message .popup-disclaimer {
+  
+  font-size: 10px; /* Smaller font size for the disclaimer */
+  color: #000000; /* Optional: lighter color to differentiate */
+}
 .popup-toggle.closed,
 .popup-toggle.open {
   margin-bottom: 0px;

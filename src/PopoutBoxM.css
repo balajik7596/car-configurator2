@@ -43,7 +43,11 @@
     backdrop-filter: blur(10px); /* Match frosted effect */
 
   }
+  .popup-description .popup-disclaimer {
   
+    font-size: 8px; /* Smaller font size for the disclaimer */
+    color: #000000; /* Optional: lighter color to differentiate */
+  }
   
   .popout-content {
     padding: 0px;

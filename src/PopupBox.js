@@ -18,10 +18,10 @@ const hotspotDescriptions = [
     },
     {
       id: "charger",
-      heading: "Vehicle-to-Load (V2L) : Outside",
+      heading: "State of charge (SOC) indicator",
       imgsrc: "./hotspots/charger.jpg",
       message:
-        "Whether you're camping or in need of an emergency power source, the Hyundai CRETA Electric enables you to power your gadgets and appliances both inside and outside the vehicle, ensuring you never run out of power. Hyundai CRETA Electric comes equipped with a charging port with multi-colour surround light and state of charge (SOC) indicator to provide ease of access while charging. ",
+        "Hyundai CRETA Electric comes equipped with a charging port with multi-colour surround light and state of charge (SOC) indicator to provide ease of access while charging.",
     },
     {
       id: "wheel",
@@ -50,7 +50,8 @@ const hotspotDescriptions = [
       heading: "Eco-friendly seat upholstery with CRETA Electric branding",
       imgsrc: "./hotspots/seat.jpg",
       message:
-        "Hyundai CRETA Electric features eco-friendly seats crafted from sustainable materials including recycled plastic bottles and corn extract, and adorned with unique Hyundai CRETA Electric branding, showcasing a perfect blend of comfort, style and sustainability. ",
+        "Hyundai CRETA Electric features eco-friendly seats crafted from sustainable materials including recycled plastic bottles and corn extract.**",
+      disclaimer: "**Basis variants seat upholstery are of two types either fabric or bio-leather. Fabric upholstery consist of 20% recycled PET bottle material. Bio-leather consist of 10% bio-material (corn extracts)."
     },
     {
       id: "v2l",
@@ -105,6 +106,8 @@ const PopupBox = ({ show, id, onClose }) => {
   const [heading, setHeading] = useState("");
   const [description, setDescription] = useState("");
   const [imgSrc, setImgSrc] = useState("");
+  const [disclaimer, setDisclaimer] = useState("");
+
 
   useEffect(() => {
     if (id !== "") {
@@ -113,11 +116,13 @@ const PopupBox = ({ show, id, onClose }) => {
         setHeading(selectedHotspot.heading);
         setDescription(selectedHotspot.message);
         setImgSrc(selectedHotspot.imgsrc);
+        setDisclaimer(selectedHotspot.disclaimer?selectedHotspot.disclaimer:"")
       }
     } else {
       setHeading("");
       setDescription("");
       setImgSrc("");
+      setDisclaimer("");
     }
   }, [id]);
 
@@ -139,6 +144,7 @@ const PopupBox = ({ show, id, onClose }) => {
               </div>
               <div className="popup-message">
                 <p>{description}</p>
+                <p className="popup-disclaimer">{disclaimer}</p>
               </div>
             </>
           ) : (
