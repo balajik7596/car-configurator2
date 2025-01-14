@@ -1003,6 +1003,8 @@ export default function ThreeScene() {
   };
 
   const handleModeChange = (mode) => {
+    if(selectedEnvMode === mode)
+      return;
     setBlackScreen(true);
     setTimeout(() => {
       setSelectedEnvMode(mode);
