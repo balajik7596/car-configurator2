@@ -1130,6 +1130,10 @@ export default function ThreeScene() {
           ambientaudioRef.current.play();
         });
         setIsAudioPlaying(true);
+      }else{
+        ambientaudioRef.current.stop();
+        setIsAudioPlaying(false);
+
       }
     }
   };
@@ -1176,8 +1180,13 @@ export default function ThreeScene() {
     if (isMobile) {
       setisMob(true);
       setShowColors(false); // Set true by default for mobile
+      setIsAudioPlaying(false);
+    }else{
+      // setIsAudioPlaying(true);
+      // playAudio();
     }
   }, []);
+
   useEffect(() => {
     if (lightRef.current && !helperRef.current) {
       // Add DirectionalLightHelper after light is added
@@ -1232,17 +1241,17 @@ export default function ThreeScene() {
     sunroofClosePlaying: false,
   });
 
-  const handleCanvasnClick = () => {
+  const handleCanvasnClick = () => {    
     // Example: Toggle ambient audio on click
     if (ambientaudioRef.current) {
       const isPlaying = ambientaudioRef.current.isPlaying; //audioState.ambientPlaying;
 
       if (isPlaying) {
-        // ambientaudioRef.current.stop();
-        // setAudioState((prevState) => ({
-        //   ...prevState,
-        //   ambientPlaying: false,
-        // }));
+        ambientaudioRef.current.stop();
+        setAudioState((prevState) => ({
+          ...prevState,
+          ambientPlaying: false,
+        }));
       } else {
         ambientaudioRef.current.context.resume().then(() => {
           ambientaudioRef.current.play();
@@ -1329,34 +1338,32 @@ export default function ThreeScene() {
               >
                 <img src="/out.png" alt="Icon 1" />
               </button>
+              {isAudioPlaying? (
+                    <button
+                      className="function-button"
+                      onClick={ playAudio}
+                    >
+                      <img src="/mute.png" alt="Mute Icon" />
+                    </button>
+                  ) : (
+                    <button
+                      className="function-button"
+                      onClick={playAudio}
+                    >
+                      <img src="/unmute.png" alt="Play Icon" />
+                    </button>
+                  )}
             </div>
           </div>
         </div>
       )}
       {modelLoaded && !hideOthers && isMob && (
         <div
-          className={
-            lightsOn
-              ? "bottom-banner-container expanded"
-              : "bottom-banner-container minimized"
-          }
-        >
+          className="bottom-banner-container expanded">
           <div className="bottom-banner">
             <div className="button-list">
-              {!lightsOn && (
-                <button
-                  className="function-button light-button"
-                  onClick={handleLightChange}
-                >
-                  <img src="/Light Indicator.png" alt="Light Icon" />
-                </button>
-              )}
-              {lightsOn && (
-                <>
-                  <button
-                    className="function-button"
-                    onClick={handleLightChange}
-                  >
+             
+                  <button className="function-button" onClick={handleLightChange}>
                     <img src="/Light Indicator.png" alt="Icon 1" />
                   </button>
                   <button
@@ -1383,10 +1390,7 @@ export default function ThreeScene() {
                   >
                     <img src="/doorbl.png" alt="Icon 1" />
                   </button>
-                  <button
-                    className="function-button"
-                    onClick={handlePlayAllDoors}
-                  >
+                  <button className="function-button" onClick={handlePlayAllDoors}>
                     <img src="/door.png" alt="Icon 1" />
                   </button>
                   <button
@@ -1395,26 +1399,30 @@ export default function ThreeScene() {
                   >
                     <img src="/back.png" alt="Icon 1" />
                   </button>
-                  <button
-                    className="function-button"
-                    onClick={handleToggleSunroof}
-                  >
+                  <button className="function-button" onClick={handleToggleSunroof}>
                     <img src="/sun.png" alt="Icon 1" />
                   </button>
-                  <button
-                    className="function-button"
-                    onClick={() => switchTointerior("in")}
-                  >
+                  <button className="function-button" onClick={() => switchTointerior("in")}>
                     <img src="/in.png" alt="Icon 1" />
                   </button>
-                  <button
-                    className="function-button"
-                    onClick={() => switchTointerior("out")}
-                  >
+                  <button className="function-button" onClick={() => switchTointerior("out")}>
                     <img src="/out.png" alt="Icon 1" />
                   </button>
-                </>
-              )}
+                  {isAudioPlaying ? (
+                    <button
+                      className="function-button"
+                      onClick={ playAudio}
+                    >
+                      <img src="/mute.png" alt="Mute Icon" />
+                    </button>
+                  ) : (
+                    <button
+                      className="function-button"
+                      onClick={playAudio}
+                    >
+                      <img src="/unmute.png" alt="Play Icon" />
+                    </button>
+                  )}              
             </div>
           </div>
         </div>
@@ -1529,7 +1537,6 @@ export default function ThreeScene() {
           toneMapping: toneMap,
           toneMappingExposure: toneMapexp,
         }}
-        onClick={handleCanvasnClick}
       >
         <PerspectiveCamera
           makeDefault={activeCamera === "default"} // Activate this camera when it's active

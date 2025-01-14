@@ -120,6 +120,8 @@ body {
 
 .button-list {
   display: flex;
+  grid-template-columns: repeat(5, 1fr); /* Create 5 equal columns */
+
   justify-content: center;
   align-items: center;
   /* Space between buttons */

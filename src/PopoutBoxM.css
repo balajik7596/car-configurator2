@@ -26,9 +26,9 @@
   .popout-toggle {
     position: absolute;
     top: -30px; /* Place it above the container */
-    left: 50%;
-    transform: translateX(-50%);
-    background: #fff;
+    right: 0%;
+    transform: translateX(0);
+    background:rgba(255, 255, 255, 0.4); /* Increased transparency */
     color: #0b0b0b;
     border: none; /* Remove any default border */
     outline: none; /* Remove focus outline */
@@ -40,6 +40,8 @@
     font-size: 18px;
     cursor: pointer;
     z-index: 1001;
+    backdrop-filter: blur(10px); /* Match frosted effect */
+
   }
   
   
