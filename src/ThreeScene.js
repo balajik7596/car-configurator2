@@ -1028,7 +1028,7 @@ export default function ThreeScene() {
         settoneMapexp(1.2);
       }
       setBlackScreen(false); // Hide the black overlay after state update
-    }, 1000); // 5-milisecond delay
+    }, 1600); // 5-milisecond delay
   };
   const handlePlayAnimation = (door) => {
     setDoorStates((prev) => {

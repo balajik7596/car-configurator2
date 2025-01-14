@@ -113,7 +113,7 @@
     .popout-image {
         display: inline-block; /* Ensure the div wraps tightly around the image */
         margin: 0; /* Remove any default margins */
-        margin-left: 2px; /* Remove any default margins */
+        margin-left: 0px; /* Remove any default margins */
         width: auto; /* Allow the width to adjust based on the image size */
         height: auto; /* Allow the height to adjust automatically */
       }
