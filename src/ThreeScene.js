@@ -1016,7 +1016,6 @@ export default function ThreeScene() {
     if(activeCamera.includes(id) ||activeCamera === "default" && id === "out" )
       return;
     setBlackScreen(true); // Show the black overlay
-
     setTimeout(() => {
       if (activeCamera === "default" && id === "in") {
         setActiveCamera("interior");
@@ -1029,8 +1028,10 @@ export default function ThreeScene() {
         settoneMap(THREE.ACESFilmicToneMapping);
         settoneMapexp(1.2);
       }
+    }, 800);
+    setTimeout(() => {
       setBlackScreen(false); // Hide the black overlay after state update
-    }, 1600); // 5-milisecond delay
+    }, 1500); // 5-milisecond delay
   };
   const handlePlayAnimation = (door) => {
     setDoorStates((prev) => {
@@ -1188,8 +1189,8 @@ export default function ThreeScene() {
   };
   const handleCanvasClick = (event) => {
     // playAudio();
-    // if(spriteClicked)
-    //   setSpriteClicked(false);
+    if(spriteClicked)
+      setSpriteClicked(false);
   };
   useEffect(() => {
     // Check if the device is mobile

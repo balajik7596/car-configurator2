@@ -1026,7 +1026,7 @@ body {
   background-color: black;
   opacity: 0; /* Initially hidden */
   pointer-events: none; /* Prevent interactions */
-  transition: opacity 1s ease-in-out; /* Smooth transition */
+  transition: opacity 0.5s ease-in-out; /* Smooth transition */
   z-index: 9999; /* Ensure it's above everything */
 }
 
